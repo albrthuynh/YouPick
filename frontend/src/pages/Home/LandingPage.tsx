@@ -1,4 +1,17 @@
+import axios from 'axios';
+
 const LandingPage = () => {
+  const testMongoDB = async () => {
+    try {
+      const response = await axios.get('/api/getrandom');
+      console.log('✅ MongoDB Response:', response.data);
+      alert(`Success! Found: ${response.data.name || 'No name'} with ID: ${response.data.id || 'No ID'}`);
+    } catch (error) {
+      console.error('❌ MongoDB Error:', error);
+      alert('Failed to fetch from MongoDB');
+    }
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-pink-50 via-blue-50 to-purple-50">
       {/* Hero Section */}
@@ -11,26 +24,33 @@ const LandingPage = () => {
             Making group decisions effortless
           </p>
           <p className="text-lg text-gray-600 leading-relaxed mb-12 max-w-2xl mx-auto">
-            Stop the endless "what should we do?" conversations. YouPick helps indecisive friends 
+            Stop the endless "what should we do?" conversations. YouPick helps indecisive friends
             plan hangouts by finding when everyone's free and letting your group swipe on activities together.
           </p>
           <div className="flex flex-col sm:flex-row gap-6 justify-center items-center">
-            <button 
-              type="button" 
+            <button
+              type="button"
               className="px-8 py-4 bg-gradient-to-r from-pink-400 to-pink-300 text-white font-semibold rounded-full shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all duration-300 uppercase tracking-wide text-lg"
             >
               Get Started
             </button>
-            <button 
-              type="button" 
+            <button
+              type="button"
               className="px-8 py-4 bg-white/80 text-purple-600 font-semibold rounded-full border-2 border-purple-300 backdrop-blur-sm hover:bg-purple-50 transform hover:-translate-y-1 transition-all duration-300 uppercase tracking-wide text-lg"
             >
               Learn More
             </button>
+            <button
+              type="button"
+              onClick={testMongoDB}
+              className="px-8 py-4 bg-gradient-to-r from-green-400 to-green-300 text-white font-semibold rounded-full shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all duration-300 uppercase tracking-wide text-lg"
+            >
+              Test MongoDB
+            </button>
           </div>
         </div>
       </div>
-      
+
       {/* Features Section */}
       <div className="py-20 px-4 bg-white/40 backdrop-blur-sm">
         <div className="max-w-6xl mx-auto">
