@@ -1,0 +1,25 @@
+{
+  "name": "youpick-backend",
+  "version": "1.0.0",
+  "scripts": {
+    "start": "node dist/index.js",
+    "dev": "tsx watch index.ts",
+    "build": "tsc",
+    "test:db": "tsx mongodb.ts",
+    "clean": "rm -rf dist",
+    "build:clean": "npm run clean && npm run build"
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^17.2.3",
+    "express": "^5.1.0",
+    "mongodb": "^6.20.0"
+  },
+  "devDependencies": {
+    "@types/cors": "^2.8.19",
+    "@types/express": "^5.0.3",
+    "@types/node": "^24.6.2",
+    "tsx": "^4.0.0",
+    "typescript": "^5.2.2"
+  }
+}
