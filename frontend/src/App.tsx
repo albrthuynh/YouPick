@@ -5,7 +5,7 @@ function App() {
   return (
     <BrowserRouter>
       <Routes>
-        <Route path="/ass" element={<LandingPage />}/>
+        <Route path="/" element={<LandingPage />}/>
       </Routes> 
     </BrowserRouter>
   )
