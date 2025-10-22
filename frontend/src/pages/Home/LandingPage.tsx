@@ -1,7 +1,9 @@
 import { Button } from "@/components/ui/button"
 import { Link } from "react-router-dom"
+import { useAuth0 } from "@auth0/auth0-react"
 
 export default function LandingPage() {
+  const { isAuthenticated, isLoading } = useAuth0()
   return (
     <div className="min-h-screen bg-gradient-to-br from-sky-100 via-purple-50 to-pink-50 flex flex-col items-center justify-center px-4 relative overflow-hidden">
       <div className="absolute inset-0 pointer-events-none">
@@ -134,24 +136,39 @@ export default function LandingPage() {
 
         {/* CTA Buttons */}
         <div className="flex flex-col sm:flex-row gap-4 justify-center items-center pt-4">
-          <Link to="/login">
-            <Button
-              size="lg"
-              className="bg-gradient-to-r from-purple-400 to-pink-400 text-white hover:from-purple-500 hover:to-pink-500 font-poppins font-semibold px-8 py-6 rounded-full text-lg shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 spring-bounce"
-            >
-              Have an Account? Login
-            </Button>
-          </Link>
+          {!isLoading && (
+            isAuthenticated ? (
+              <Link to="/profile">
+                <Button
+                  size="lg"
+                  className="bg-gradient-to-r from-purple-400 to-pink-400 text-white hover:from-purple-500 hover:to-pink-500 font-poppins font-semibold px-8 py-6 rounded-full text-lg shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 spring-bounce"
+                >
+                  Go to Profile
+                </Button>
+              </Link>
+            ) : (
+              <>
+                <Link to="/login">
+                  <Button
+                    size="lg"
+                    className="bg-gradient-to-r from-purple-400 to-pink-400 text-white hover:from-purple-500 hover:to-pink-500 font-poppins font-semibold px-8 py-6 rounded-full text-lg shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 spring-bounce"
+                  >
+                    Have an Account? Login
+                  </Button>
+                </Link>
 
-          <Link to="/signup">
-            <Button
-              variant="outline"
-              size="lg"
-              className="border-2 border-purple-300 text-purple-600 hover:bg-purple-50 hover:border-purple-400 font-poppins font-semibold px-8 py-6 rounded-full text-lg transition-all duration-300 hover:scale-105 spring-bounce bg-white/70 backdrop-blur-sm"
-            >
-              Set Up Profile
-            </Button>
-          </Link>
+                <Link to="/signup">
+                  <Button
+                    variant="outline"
+                    size="lg"
+                    className="border-2 border-purple-300 text-purple-600 hover:bg-purple-50 hover:border-purple-400 font-poppins font-semibold px-8 py-6 rounded-full text-lg transition-all duration-300 hover:scale-105 spring-bounce bg-white/70 backdrop-blur-sm"
+                  >
+                    Set Up Profile
+                  </Button>
+                </Link>
+              </>
+            )
+          )}
         </div>
 
         {/* Feature Preview */}
