@@ -134,16 +134,16 @@ export default function LandingPage() {
 
         {/* CTA Buttons */}
         <div className="flex flex-col sm:flex-row gap-4 justify-center items-center pt-4">
-          <Link to="/swipe">
+          <Link to="/login">
             <Button
               size="lg"
               className="bg-gradient-to-r from-purple-400 to-pink-400 text-white hover:from-purple-500 hover:to-pink-500 font-poppins font-semibold px-8 py-6 rounded-full text-lg shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 spring-bounce"
             >
-              Start Planning Together
+              Have an Account? Login
             </Button>
           </Link>
 
-          <Link to="/profile">
+          <Link to="/signup">
             <Button
               variant="outline"
               size="lg"
