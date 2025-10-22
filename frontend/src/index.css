@@ -1,1 +1,228 @@
 @import "tailwindcss";
+
+:root {
+    /* Custom pastel color palette */
+    --soft-lavender: #b9a2ff;
+    --sky-blue: #9fd8ff;
+    --peach-coral: #ff9e8c;
+    --mint-green: #a7f3d0;
+    --butter-yellow: #ffe873;
+    --warm-white: #fafafa;
+    --light-gray: #ededed;
+    --charcoal: #2e2e2e;
+    --mid-gray: #6b6b6b;
+
+    /* Tailwind CSS variables for shadcn/ui compatibility */
+    --background: 255 255 255;
+    --foreground: 46 46 46;
+    --card: 255 255 255;
+    --card-foreground: 46 46 46;
+    --popover: 255 255 255;
+    --popover-foreground: 46 46 46;
+    --primary: 46 46 46;
+    --primary-foreground: 255 255 255;
+    --secondary: 237 237 237;
+    --secondary-foreground: 46 46 46;
+    --muted: 237 237 237;
+    --muted-foreground: 107 107 107;
+    --accent: 237 237 237;
+    --accent-foreground: 46 46 46;
+    --destructive: 239 68 68;
+    --destructive-foreground: 255 255 255;
+    --border: 237 237 237;
+    --input: 237 237 237;
+    --ring: 185 162 255;
+    --radius: 0.5rem;
+}
+
+/* Custom utility classes for pastel gradients */
+.gradient-primary {
+    background: linear-gradient(135deg, var(--soft-lavender) 0%, var(--sky-blue) 100%);
+}
+
+.gradient-secondary {
+    background: linear-gradient(135deg, var(--peach-coral) 0%, var(--mint-green) 100%);
+}
+
+.gradient-warm {
+    background: linear-gradient(135deg, var(--butter-yellow) 0%, var(--peach-coral) 100%);
+}
+
+/* Font utilities */
+.font-poppins {
+    font-family: 'Poppins', sans-serif;
+}
+
+/* Animation utilities */
+.spring-bounce {
+    transition: all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+
+.glow-effect {
+    box-shadow: 0 0 20px rgba(185, 162, 255, 0.4);
+}
+
+/* Custom animations */
+@keyframes float {
+
+    0%,
+    100% {
+        transform: translateY(0px);
+    }
+
+    50% {
+        transform: translateY(-10px);
+    }
+}
+
+@keyframes confetti {
+    0% {
+        transform: scale(0) rotate(0deg);
+        opacity: 1;
+    }
+
+    100% {
+        transform: scale(1) rotate(180deg);
+        opacity: 0;
+    }
+}
+
+@keyframes tilt {
+    0% {
+        transform: rotate(0deg);
+    }
+
+    25% {
+        transform: rotate(2deg);
+    }
+
+    75% {
+        transform: rotate(-2deg);
+    }
+
+    100% {
+        transform: rotate(0deg);
+    }
+}
+
+.float-animation {
+    animation: float 6s ease-in-out infinite;
+}
+
+.confetti-burst {
+    animation: confetti 0.5s ease-out;
+}
+
+.card-tilt:hover {
+    animation: tilt 0.3s ease-in-out;
+}
+
+/* Pastel theme utilities */
+.bg-pastel-lavender {
+    background-color: var(--soft-lavender);
+}
+
+.bg-pastel-sky {
+    background-color: var(--sky-blue);
+}
+
+.bg-pastel-coral {
+    background-color: var(--peach-coral);
+}
+
+.bg-pastel-mint {
+    background-color: var(--mint-green);
+}
+
+.bg-pastel-yellow {
+    background-color: var(--butter-yellow);
+}
+
+.text-pastel-lavender {
+    color: var(--soft-lavender);
+}
+
+.text-pastel-coral {
+    color: var(--peach-coral);
+}
+
+.text-pastel-mint {
+    color: var(--mint-green);
+}
+
+.text-pastel-yellow {
+    color: var(--butter-yellow);
+}
+
+.border-pastel-lavender {
+    border-color: var(--soft-lavender);
+}
+
+.border-pastel-coral {
+    border-color: var(--peach-coral);
+}
+
+/* Custom utility classes */
+.gradient-primary {
+    background: linear-gradient(135deg, #b9a2ff 0%, #9fd8ff 100%);
+}
+
+.gradient-secondary {
+    background: linear-gradient(135deg, #ff9e8c 0%, #a7f3d0 100%);
+}
+
+.font-recoleta {
+    font-family: "Recoleta", serif;
+}
+
+.font-poppins {
+    font-family: var(--font-poppins), sans-serif;
+}
+
+/* Animation utilities */
+.spring-bounce {
+    transition: all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+
+.glow-effect {
+    box-shadow: 0 0 20px rgba(185, 162, 255, 0.4);
+}
+
+/* Custom animations */
+@keyframes confetti {
+    0% {
+        transform: scale(0) rotate(0deg);
+        opacity: 1;
+    }
+
+    100% {
+        transform: scale(1) rotate(180deg);
+        opacity: 0;
+    }
+}
+
+@keyframes tilt {
+    0% {
+        transform: rotate(0deg);
+    }
+
+    25% {
+        transform: rotate(5deg);
+    }
+
+    75% {
+        transform: rotate(-5deg);
+    }
+
+    100% {
+        transform: rotate(0deg);
+    }
+}
+
+.confetti-burst {
+    animation: confetti 0.5s ease-out;
+}
+
+.card-tilt {
+    animation: tilt 0.3s ease-in-out;
+}
