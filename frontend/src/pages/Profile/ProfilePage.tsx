@@ -1,7 +1,9 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
+import { useAuth0 } from '@auth0/auth0-react';
 
 export default function ProfilePage() {
+  const { logout } = useAuth0();
   const [isEditing, setIsEditing] = useState(false);
   const [profile, setProfile] = useState({
     name: 'Alex Johnson',
@@ -71,13 +73,22 @@ export default function ProfilePage() {
             <div className="flex-1 text-center md:text-left">
               <h1 className="text-3xl font-bold text-slate-800 mb-2">{profile.name}</h1>
               <p className="text-slate-600 mb-4">{profile.email}</p>
-              <button
-                type="button"
-                onClick={() => setIsEditing(!isEditing)}
-                className="px-6 py-2 bg-gradient-to-r from-purple-400 to-pink-400 text-white rounded-full hover:from-purple-500 hover:to-pink-500 transition-all duration-300 shadow-md hover:shadow-lg"
-              >
-                {isEditing ? 'Save Changes' : 'Edit Profile'}
-              </button>
+              <div className="flex gap-3 justify-center md:justify-start">
+                <button
+                  type="button"
+                  onClick={() => setIsEditing(!isEditing)}
+                  className="px-6 py-2 bg-gradient-to-r from-purple-400 to-pink-400 text-white rounded-full hover:from-purple-500 hover:to-pink-500 transition-all duration-300 shadow-md hover:shadow-lg"
+                >
+                  {isEditing ? 'Save Changes' : 'Edit Profile'}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => logout({ logoutParams: { returnTo: window.location.origin } })}
+                  className="px-6 py-2 bg-red-500 hover:bg-red-600 text-white rounded-full transition-all duration-300 shadow-md hover:shadow-lg"
+                >
+                  Logout
+                </button>
+              </div>
             </div>
           </div>
         </div>
