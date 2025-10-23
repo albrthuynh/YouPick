@@ -1,89 +1,210 @@
-import axios from 'axios';
+import { Button } from "@/components/ui/button"
+import { Link } from "react-router-dom"
+import { useAuth0 } from "@auth0/auth0-react"
 
-const LandingPage = () => {
-  const testMongoDB = async () => {
-    try {
-      const response = await axios.get('/api/getrandom');
-      console.log('✅ MongoDB Response:', response.data);
-      alert(`Success! Found: ${response.data.name || 'No name'} with ID: ${response.data.id || 'No ID'}`);
-    } catch (error) {
-      console.error('❌ MongoDB Error:', error);
-      alert('Failed to fetch from MongoDB');
-    }
-  };
-
+export default function LandingPage() {
+  const { isAuthenticated, isLoading } = useAuth0()
   return (
-    <div className="min-h-screen bg-gradient-to-br from-pink-50 via-blue-50 to-purple-50">
-      {/* Hero Section */}
-      <div className="flex items-center justify-center min-h-screen px-4 text-center">
-        <div className="max-w-4xl mx-auto animate-fade-in-up">
-          <h1 className="text-6xl md:text-7xl font-bold mb-6 bg-gradient-to-r from-pink-400 via-green-300 to-purple-400 bg-clip-text text-transparent drop-shadow-lg">
-            YouPick
-          </h1>
-          <p className="text-2xl text-purple-600 mb-6 font-medium">
-            Making group decisions effortless
-          </p>
-          <p className="text-lg text-gray-600 leading-relaxed mb-12 max-w-2xl mx-auto">
-            Stop the endless "what should we do?" conversations. YouPick helps indecisive friends
-            plan hangouts by finding when everyone's free and letting your group swipe on activities together.
-          </p>
-          <div className="flex flex-col sm:flex-row gap-6 justify-center items-center">
-            <button
-              type="button"
-              className="px-8 py-4 bg-gradient-to-r from-pink-400 to-pink-300 text-white font-semibold rounded-full shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all duration-300 uppercase tracking-wide text-lg"
-            >
-              Get Started
-            </button>
-            <button
-              type="button"
-              className="px-8 py-4 bg-white/80 text-purple-600 font-semibold rounded-full border-2 border-purple-300 backdrop-blur-sm hover:bg-purple-50 transform hover:-translate-y-1 transition-all duration-300 uppercase tracking-wide text-lg"
-            >
-              Learn More
-            </button>
-            <button
-              type="button"
-              onClick={testMongoDB}
-              className="px-8 py-4 bg-gradient-to-r from-green-400 to-green-300 text-white font-semibold rounded-full shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all duration-300 uppercase tracking-wide text-lg"
-            >
-              Test MongoDB
-            </button>
-          </div>
-        </div>
+    <div className="min-h-screen bg-gradient-to-br from-sky-100 via-purple-50 to-pink-50 flex flex-col items-center justify-center px-4 relative overflow-hidden">
+      <div className="absolute inset-0 pointer-events-none">
+        {/* Top left squiggle */}
+        <svg className="absolute top-20 left-10 w-32 h-32 text-purple-300/30 float-animation" viewBox="0 0 100 100">
+          <path
+            d="M20,50 Q30,20 50,30 T80,50 Q70,80 50,70 T20,50"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+          />
+        </svg>
+
+        {/* Bottom right circles */}
+        <svg className="absolute bottom-32 right-16 w-40 h-40 text-emerald-300/25 float-animation" style={{ animationDelay: '1s' }} viewBox="0 0 100 100">
+          <circle cx="50" cy="50" r="30" fill="none" stroke="currentColor" strokeWidth="2" strokeDasharray="5,5" />
+          <circle cx="50" cy="50" r="20" fill="none" stroke="currentColor" strokeWidth="2" />
+        </svg>
+
+        {/* Top right zigzag */}
+        <svg className="absolute top-1/3 right-1/4 w-24 h-24 text-yellow-300/30 float-animation" style={{ animationDelay: '2s' }} viewBox="0 0 100 100">
+          <path
+            d="M10,50 L30,30 L50,50 L70,30 L90,50"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+          />
+        </svg>
+
+        {/* Left middle star */}
+        <svg className="absolute top-1/2 left-20 w-20 h-20 text-pink-300/25 float-animation" style={{ animationDelay: '0.5s' }} viewBox="0 0 100 100">
+          <path
+            d="M50,10 L60,40 L90,40 L65,60 L75,90 L50,70 L25,90 L35,60 L10,40 L40,40 Z"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
+        </svg>
+
+        {/* Top center wavy line */}
+        <svg className="absolute top-10 left-1/3 w-48 h-16 text-purple-300/20 float-animation" style={{ animationDelay: '3s' }} viewBox="0 0 200 50">
+          <path
+            d="M10,25 Q40,10 70,25 T130,25 Q160,10 190,25"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+          />
+        </svg>
+
+        {/* Bottom left triangle */}
+        <svg className="absolute bottom-20 left-1/4 w-28 h-28 text-emerald-300/20 float-animation" style={{ animationDelay: '4s' }} viewBox="0 0 100 100">
+          <path
+            d="M50,20 L80,70 L20,70 Z"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
+        </svg>
+
+        {/* Right middle spiral */}
+        <svg className="absolute top-2/3 right-10 w-32 h-32 text-yellow-300/25 float-animation" style={{ animationDelay: '1.5s' }} viewBox="0 0 100 100">
+          <path
+            d="M50,50 Q60,40 60,30 Q60,20 50,20 Q40,20 40,30 Q40,40 50,40 Q55,40 55,35"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+          />
+        </svg>
+
+        {/* Top left small dots */}
+        <svg className="absolute top-40 left-1/3 w-16 h-16 text-pink-300/30 float-animation" style={{ animationDelay: '2.5s' }} viewBox="0 0 100 100">
+          <circle cx="20" cy="20" r="3" fill="currentColor" />
+          <circle cx="50" cy="30" r="3" fill="currentColor" />
+          <circle cx="80" cy="20" r="3" fill="currentColor" />
+          <circle cx="35" cy="50" r="3" fill="currentColor" />
+          <circle cx="65" cy="50" r="3" fill="currentColor" />
+        </svg>
+
+        {/* Bottom center heart */}
+        <svg className="absolute bottom-40 left-1/2 w-24 h-24 text-purple-300/25 float-animation" style={{ animationDelay: '3.5s' }} viewBox="0 0 100 100">
+          <path
+            d="M50,80 Q30,60 30,45 Q30,30 40,30 Q50,30 50,40 Q50,30 60,30 Q70,30 70,45 Q70,60 50,80"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
+        </svg>
       </div>
 
-      {/* Features Section */}
-      <div className="py-20 px-4 bg-white/40 backdrop-blur-sm">
-        <div className="max-w-6xl mx-auto">
-          <h2 className="text-4xl font-bold text-center text-purple-600 mb-16">
-            How it works
-          </h2>
-          <div className="grid md:grid-cols-3 gap-8">
-            <div className="bg-white/70 p-8 rounded-3xl shadow-lg backdrop-blur-sm border border-white/30 hover:transform hover:-translate-y-2 transition-all duration-300 text-center border-t-4 border-t-green-300">
-              <div className="text-5xl mb-6">📅</div>
-              <h3 className="text-xl font-semibold text-gray-700 mb-4">Find Free Time</h3>
-              <p className="text-gray-600 leading-relaxed">
-                Automatically suggests the best times when everyone in your group is available
-              </p>
+      <div className="max-w-5xl mx-auto text-center space-y-12 relative z-10">
+        {/* Hero Section */}
+        <div className="space-y-6">
+          <h1 className="font-poppins text-5xl md:text-6xl lg:text-7xl font-bold text-slate-800 leading-tight tracking-tight">
+            Stop the endless
+            <br />
+            <span className="relative inline-block">
+              <span className="text-slate-800">group chat chaos</span>
+              <svg
+                className="absolute -bottom-2 left-0 w-full h-3 text-yellow-400"
+                viewBox="0 0 300 12"
+                preserveAspectRatio="none"
+              >
+                <path
+                  d="M5,7 Q75,3 150,7 T295,7"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="6"
+                  strokeLinecap="round"
+                />
+              </svg>
+            </span>
+          </h1>
+
+          <p className="text-lg md:text-xl text-slate-600 max-w-2xl mx-auto leading-relaxed font-poppins">
+            Finally, a fun way for indecisive friends to plan hangouts.
+            <br />
+            Swipe, vote, and let us find the perfect time and place for everyone.
+          </p>
+        </div>
+
+        {/* CTA Buttons */}
+        <div className="flex flex-col sm:flex-row gap-4 justify-center items-center pt-4">
+          {!isLoading && (
+            isAuthenticated ? (
+              <Link to="/profile">
+                <Button
+                  size="lg"
+                  className="bg-gradient-to-r from-purple-400 to-pink-400 text-white hover:from-purple-500 hover:to-pink-500 font-poppins font-semibold px-8 py-6 rounded-full text-lg shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 spring-bounce"
+                >
+                  Go to Profile
+                </Button>
+              </Link>
+            ) : (
+              <>
+                <Link to="/login">
+                  <Button
+                    size="lg"
+                    className="bg-gradient-to-r from-purple-400 to-pink-400 text-white hover:from-purple-500 hover:to-pink-500 font-poppins font-semibold px-8 py-6 rounded-full text-lg shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 spring-bounce"
+                  >
+                    Have an Account? Login
+                  </Button>
+                </Link>
+
+                <Link to="/signup">
+                  <Button
+                    variant="outline"
+                    size="lg"
+                    className="border-2 border-purple-300 text-purple-600 hover:bg-purple-50 hover:border-purple-400 font-poppins font-semibold px-8 py-6 rounded-full text-lg transition-all duration-300 hover:scale-105 spring-bounce bg-white/70 backdrop-blur-sm"
+                  >
+                    Set Up Profile
+                  </Button>
+                </Link>
+              </>
+            )
+          )}
+        </div>
+
+        {/* Feature Preview */}
+        <div className="pt-16 grid md:grid-cols-3 gap-8 max-w-5xl mx-auto">
+          <div className="bg-white/80 backdrop-blur-sm rounded-3xl p-8 text-center shadow-lg border border-emerald-200 hover:shadow-xl hover:border-emerald-300 transition-all duration-300 relative group card-tilt">
+            <div className="absolute -top-2 -right-2 w-12 h-12 bg-gradient-to-br from-emerald-300 to-teal-300 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300 -z-10"></div>
+            <div className="w-16 h-16 bg-gradient-to-br from-emerald-100 to-teal-100 rounded-2xl mx-auto mb-4 flex items-center justify-center text-3xl rotate-3 group-hover:rotate-6 transition-transform duration-300">
+              👥
             </div>
-            <div className="bg-white/70 p-8 rounded-3xl shadow-lg backdrop-blur-sm border border-white/30 hover:transform hover:-translate-y-2 transition-all duration-300 text-center border-t-4 border-t-pink-300">
-              <div className="text-5xl mb-6">👥</div>
-              <h3 className="text-xl font-semibold text-gray-700 mb-4">Group Swiping</h3>
-              <p className="text-gray-600 leading-relaxed">
-                Swipe right on activities you love, left on ones you don't - just like dating, but for hangouts!
-              </p>
+            <h3 className="font-poppins text-xl font-semibold text-slate-800 mb-3">Group Sync</h3>
+            <p className="text-slate-600 text-sm leading-relaxed">Everyone adds their availability and interests</p>
+          </div>
+
+          <div className="bg-white/80 backdrop-blur-sm rounded-3xl p-8 text-center shadow-lg border border-pink-200 hover:shadow-xl hover:border-pink-300 transition-all duration-300 relative group card-tilt">
+            <div className="absolute -top-2 -right-2 w-12 h-12 bg-gradient-to-br from-pink-300 to-rose-300 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300 -z-10"></div>
+            <div className="w-16 h-16 bg-gradient-to-br from-pink-100 to-rose-100 rounded-2xl mx-auto mb-4 flex items-center justify-center text-3xl -rotate-3 group-hover:-rotate-6 transition-transform duration-300">
+              💫
             </div>
-            <div className="bg-white/70 p-8 rounded-3xl shadow-lg backdrop-blur-sm border border-white/30 hover:transform hover:-translate-y-2 transition-all duration-300 text-center border-t-4 border-t-purple-300">
-              <div className="text-5xl mb-6">✨</div>
-              <h3 className="text-xl font-semibold text-gray-700 mb-4">Perfect Match</h3>
-              <p className="text-gray-600 leading-relaxed">
-                Get personalized suggestions based on your group's preferences and availability
-              </p>
+            <h3 className="font-poppins text-xl font-semibold text-slate-800 mb-3">Smart Matching</h3>
+            <p className="text-slate-600 text-sm leading-relaxed">
+              AI finds the perfect time and activity for your group
+            </p>
+          </div>
+
+          <div className="bg-white/80 backdrop-blur-sm rounded-3xl p-8 text-center shadow-lg border border-yellow-200 hover:shadow-xl hover:border-yellow-300 transition-all duration-300 relative group card-tilt">
+            <div className="absolute -top-2 -right-2 w-12 h-12 bg-gradient-to-br from-yellow-300 to-amber-300 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300 -z-10"></div>
+            <div className="w-16 h-16 bg-gradient-to-br from-yellow-100 to-amber-100 rounded-2xl mx-auto mb-4 flex items-center justify-center text-3xl rotate-2 group-hover:rotate-4 transition-transform duration-300">
+              📅
             </div>
+            <h3 className="font-poppins text-xl font-semibold text-slate-800 mb-3">Instant Calendar</h3>
+            <p className="text-slate-600 text-sm leading-relaxed">
+              QR code to add the final plan to everyone's calendar
+            </p>
           </div>
         </div>
       </div>
     </div>
-  );
-};
-
-export default LandingPage;
+  )
+}
