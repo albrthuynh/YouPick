@@ -2,7 +2,7 @@ import { BrowserRouter, Routes, Route } from 'react-router-dom'
 
 import axios from 'axios';
 
-// PAGES IMPORTED
+// Pages Imported (example comment)
 import LandingPage from './pages/Home/LandingPage'
 import LoginPage from './pages/Auth/LoginPage'
 import SignupPage from './pages/Auth/SignupPage'
