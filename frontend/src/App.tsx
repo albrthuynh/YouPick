@@ -6,7 +6,6 @@ import axios from 'axios';
 import LandingPage from './pages/Home/LandingPage'
 import LoginPage from './pages/Auth/LoginPage'
 import SignupPage from './pages/Auth/SignupPage'
-import CallbackPage from './pages/Auth/CallbackPage'
 import ProfilePage from './pages/Profile/ProfilePage';
 
 axios.defaults.baseURL = "http://localhost:3000";
@@ -18,7 +17,6 @@ function App() {
           <Route path="/" element={<LandingPage />}/>
           <Route path="/login" element={<LoginPage />}/>
           <Route path="/signup" element={<SignupPage />}/>
-          <Route path="/callback" element={<CallbackPage />}/>
           <Route path="/profile" element={<ProfilePage/>}/>          
 
           {/* Example of protected routes - uncomment when you have these pages */}
