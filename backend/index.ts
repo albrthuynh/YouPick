@@ -20,15 +20,15 @@ app.get('/', (req, res) => {
 });
 
 // Creating the user document
-app.get('/api/add-user', async (req, res) => {
+app.post('/api/create-user', async (req, res) => {
     try {
         const { auth0Id, name, email } = req.body
 
         // Validate the fields
-        if (!auth0Id || !name || !email) {
+        if (!auth0Id || !email) {
             return res.status(400).json({
                 success: false,
-                message: 'Fields for creating user not found'
+                message: 'auth0Id and email are required'
             })
         }
 
@@ -43,29 +43,31 @@ app.get('/api/add-user', async (req, res) => {
             return res.json({
                 success: true,
                 message: 'User already exists',
-                userId: existingUser._id
+                user: existingUser
             })
         }
 
         // Create the new user document
-        const result = await collection.insertOne({
-            id: auth0Id,
-            name: name,
-            email: email,
+        const newUser = {
+            auth0Id,
+            name: name || '',
+            email,
             createdAt: new Date()
-        })
+        }
 
+        const result = await collection.insertOne(newUser)
 
         // Verify that the user got inserted
         if (result.insertedId) {
-            res.json( {
+            res.json({
                 success: true,
-                message: 'User document created and inserted successfully!',
+                message: 'User created successfully!',
+                user: { ...newUser, _id: result.insertedId }
             })
         } else {
             res.status(500).json({
                 success: false,
-                message: 'User document failed to create and insert'
+                message: 'Failed to create user'
             })
         }
     } catch (error) {
@@ -74,7 +76,64 @@ app.get('/api/add-user', async (req, res) => {
     } finally {
         await closeMongoDB();
     }
-})
+});
+
+// Updating the user document
+app.put('/api/update-user', async (req, res) => {
+    try {
+        const { auth0Id, name, bio } = req.body
+
+        // Validate the fields
+        if (!auth0Id) {
+            return res.status(400).json({
+                success: false,
+                message: 'auth0Id is required'
+            })
+        }
+
+        const client = await connectToMongoDB();
+        const db = client.db('users');
+        const collection = db.collection('user_documents');
+
+        // Build update object with only provided fields
+        const updateFields: any = {
+            updatedAt: new Date()
+        }
+
+        if (name !== undefined) updateFields.name = name
+        if (bio !== undefined) updateFields.bio = bio
+
+        // Update the user document
+        const result = await collection.updateOne(
+            { auth0Id },
+            { $set: updateFields }
+        )
+
+        if (result.matchedCount === 0) {
+            return res.status(404).json({
+                success: false,
+                message: 'User not found'
+            })
+        }
+
+        if (result.modifiedCount > 0) {
+            res.json({
+                success: true,
+                message: 'Profile updated successfully!'
+            })
+        } else {
+            res.json({
+                success: true,
+                message: 'No changes made'
+            })
+        }
+    } catch (error) {
+        console.error('MongoDB error:', error);
+        res.status(500).json({ error: 'Database query failed' });
+    } finally {
+        await closeMongoDB();
+    }
+});
 
 // The port that the backend is listening to
 app.listen(PORT, () => {
