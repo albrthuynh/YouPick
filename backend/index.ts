@@ -78,6 +78,43 @@ app.post('/api/create-user', async (req, res) => {
     }
 });
 
+// Getting the user document
+app.get('/api/get-user/:auth0Id', async (req, res) => {
+    try {
+        const { auth0Id } = req.params
+
+        if (!auth0Id) {
+            return res.status(400).json({
+                success: false,
+                message: 'auth0Id is required'
+            })
+        }
+
+        const client = await connectToMongoDB();
+        const db = client.db('users');
+        const collection = db.collection('user_documents');
+
+        const user = await collection.findOne({ auth0Id })
+
+        if (!user) {
+            return res.status(404).json({
+                success: false,
+                message: 'User not found'
+            })
+        }
+
+        res.json({
+            success: true,
+            user: user
+        })
+    } catch (error) {
+        console.error('MongoDB error:', error);
+        res.status(500).json({ error: 'Database query failed' });
+    } finally {
+        await closeMongoDB();
+    }
+});
+
 // Updating the user document
 app.put('/api/update-user', async (req, res) => {
     try {

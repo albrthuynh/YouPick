@@ -7,6 +7,18 @@ export default function ProfilePage() {
   const { user, isAuthenticated, logout } = useAuth0();
   const [isEditing, setIsEditing] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+
+  const [profile, setProfile] = useState({
+    name: '',
+    email: '',
+    bio: '',
+    availability: {
+      weekdays: true,
+      weekends: true,
+      evenings: true,
+    }
+  });
 
   // Create user in MongoDB only if they don't exist yet
   useEffect(() => {
@@ -39,16 +51,50 @@ export default function ProfilePage() {
     createUser();
   }, [isAuthenticated, user]);
 
-  const [profile, setProfile] = useState({
-    name: user?.name || 'User',
-    email: user?.email || 'user@email.com',
-    bio: 'Love trying new restaurants and outdoor activities! Always down for spontaneous adventures.',
-    availability: {
-      weekdays: true,
-      weekends: true,
-      evenings: true,
-    }
-  });
+  // Fetch user profile from MongoDB
+  useEffect(() => {
+    const fetchUserProfile = async () => {
+      if (!isAuthenticated || !user) {
+        setIsLoading(false);
+        return;
+      }
+
+      try {
+        const response = await axios.get(`/api/get-user/${user.sub}`);
+
+        if (response.data.success) {
+          const userData = response.data.user;
+          setProfile({
+            name: userData.name || user.name || '',
+            email: userData.email || user.email || '',
+            bio: userData.bio || '',
+            availability: userData.availability || {
+              weekdays: true,
+              weekends: true,
+              evenings: true,
+            }
+          });
+        }
+      } catch (error) {
+        console.error('Error fetching user profile:', error);
+        // Fall back to Auth0 data if database fetch fails
+        setProfile({
+          name: user.name || '',
+          email: user.email || '',
+          bio: '',
+          availability: {
+            weekdays: true,
+            weekends: true,
+            evenings: true,
+          }
+        });
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchUserProfile();
+  }, [isAuthenticated, user]);
 
   const handleSaveProfile = async () => {
     if (!user) return;
@@ -70,6 +116,17 @@ export default function ProfilePage() {
       setIsSaving(false);
     }
   };
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-sky-100 via-purple-50 to-pink-50 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-400 mx-auto mb-4"></div>
+          <p className="text-slate-700 font-poppins">Loading profile...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-sky-100 via-purple-50 to-pink-50">
@@ -98,8 +155,8 @@ export default function ProfilePage() {
             {/* Avatar */}
             <div className="relative">
               {user?.picture ? (
-                <img 
-                  src={user.picture} 
+                <img
+                  src={user.picture}
                   alt={profile.name}
                   className="w-32 h-32 rounded-full shadow-lg object-cover"
                 />
