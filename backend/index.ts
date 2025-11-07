@@ -19,29 +19,54 @@ app.get('/', (req, res) => {
     res.json({ message: 'YouPick API is running!' });
 });
 
-// TESTING GET FROM MONGO DB
-app.get('/api/getrandom', async (req, res) => {
+// Creating the user document
+app.get('/api/add-user', async (req, res) => {
     try {
+        const { auth0Id, name, email } = req.body
+
+        // Validate the fields
+        if (!auth0Id || !name || !email) {
+            return res.status(400).json({
+                success: false,
+                message: 'Fields for creating user not found'
+            })
+        }
+
         const client = await connectToMongoDB();
-        const db = client.db('sample_airbnb');
-        const collection = db.collection('listingsAndReviews');
+        const db = client.db('users');
+        const collection = db.collection('user_documents');
 
-        // Search for "Ribeira Charming Duplex"
-        const listing = await collection.findOne({ name: "Ribeira Charming Duplex" });
+        // Check if user exists
+        const existingUser = await collection.findOne({ auth0Id })
 
-        if (listing) {
-            console.log('🎉 Found Ribeira Charming Duplex!');
-            console.log('ID:', listing._id);
-            console.log('Name:', listing.name);
-            res.json({
+        if (existingUser) {
+            return res.json({
                 success: true,
-                message: 'Found the listing!',
-                id: listing._id,
-                name: listing.name
-            });
+                message: 'User already exists',
+                userId: existingUser._id
+            })
+        }
+
+        // Create the new user document
+        const result = await collection.insertOne({
+            id: auth0Id,
+            name: name,
+            email: email,
+            createdAt: new Date()
+        })
+
+
+        // Verify that the user got inserted
+        if (result.insertedId) {
+            res.json( {
+                success: true,
+                message: 'User document created and inserted successfully!',
+            })
         } else {
-            console.log('❌ Ribeira Charming Duplex not found');
-            res.json({ success: false, message: 'Listing not found' });
+            res.status(500).json({
+                success: false,
+                message: 'User document failed to create and insert'
+            })
         }
     } catch (error) {
         console.error('MongoDB error:', error);
