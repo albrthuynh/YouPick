@@ -3,8 +3,6 @@
 @custom-variant dark (&:is(.dark *));
 
 :root {
-  /* Updated to warm, muted earth tone palette inspired by bakery and lifestyle brands */
-  /* Cream background, warm tan primary, rich brown accents */
   --background: oklch(0.965 0.005 70);
   --foreground: oklch(0.22 0.01 50);
   --card: oklch(0.98 0.002 70);

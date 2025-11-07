@@ -8,9 +8,6 @@ import { DayPicker } from "react-day-picker";
 import "react-day-picker/style.css";
 import { useNavigate } from 'react-router-dom';
 import InputNumber from '@rc-component/input-number';
-
-
-
 import {
   Popover,
   PopoverContent,
@@ -31,25 +28,35 @@ export default function CreateHangout() {
     
     const activityOptions: ActivityOption[] = [
         
-        { value: "dinner", label: "Go out for dinner" },
-        { value: "coffee", label: "Grab coffee" },
-        { value: "movie", label: "Watch a movie" },
-        { value: "walk", label: "Take a walk" },
-        { value: "museum", label: "Visit a museum" },
-        { value: "concert", label: "Go to a concert" },
-        { value: "game-night", label: "Game night" },
-        { value: "study", label: "Study session" },
-        { value: "shopping", label: "Go shopping" },
-        { value: "beach", label: "Beach day" },
-        { value: "picnic", label: "Have a picnic" },
-        { value: "sports", label: "Play sports" },
-        { value: "hiking", label: "Go hiking" },
-        { value: "bowling", label: "Bowling" },
-        { value: "boba", label: "Get boba" },
+        { value: "dinner", label: "Go Out for Dinner" },
+        { value: "coffee", label: "Grab Coffee" },
+        { value: "movie", label: "Watch a Movie" },
+        { value: "museum", label: "Visit a Museum" },
+        { value: "concert", label: "Go to a Concert" },
+        { value: "game-night", label: "Game Night" },
+        { value: "study", label: "Study Session" },
+        { value: "amusement-park", label: "Go to a Amusement Park" },
+        { value: "sleepover", label: "Have a Sleepover" },
+        { value: "shopping", label: "Go Shopping" },
+        { value: "beach", label: "Beach Day" },
+        
+        { value: "picnic", label: "Have a Picnic" },
+        { value: "sports", label: "Play Sports" },
+        { value: "hiking", label: "Go Hiking" },
+        { value: "bowling", label: "Go Bowling" },
+        { value: "boba", label: "Get Boba" },
+        { value: "mini-golf", label: "Go Mini Golfing" },
+        { value: "arcade", label: "Go to an Arcade" },
+        { value: "zoo", label: "Go to a Zoo" },
+        { value: "house", label: "House Hangout" },
+        { value: "baking", label: "Bake Together" },
+        { value: "cooking", label: "Cook Together" },
+
+
+
+
     ];
 
-    
-    
     const [open1, setOpen1] = React.useState(false)
     const [open2, setOpen2] = React.useState(false)
     const [open3, setOpen3] = React.useState(false)
@@ -63,8 +70,6 @@ export default function CreateHangout() {
 
     
     const [hangoutName, setHangoutName] = useState<string>('');
-
-    const [allDatesCheck, setDatesCheck] = useState<string>('');
 
     const [participants, setParticipants]= useState<number>(1);
 
@@ -94,13 +99,6 @@ export default function CreateHangout() {
     const navigate = useNavigate();
 
     const createHangout = async () => {
-
-        // date1Chosen = true
-        // date2Chosen = true
-        // date3Chosen = true
-        // time1Chosen = true
-        // time2Chosen = true
-        // time3Chosen = true
         
         let navigateToFinal = true
         if(hangoutName === ""){
@@ -122,42 +120,35 @@ export default function CreateHangout() {
             //error message
             navigateToFinal = false
             setDate1Chosen(false)
-            // date1Chosen = false
             setDateTimeError("Unselected dates/times!");
         }
         if(date2 === undefined){
             //error message
             navigateToFinal = false
-            // date2Chosen = false
             setDate2Chosen(false)
             setDateTimeError("Unselected dates/times!");
-            // setDate2Error("Select all 3 dates/times!");
         }
         if(date3=== undefined){
             //error message
             navigateToFinal = false
-            // date3Chosen = false
             setDate3Chosen(false)
             setDateTimeError("Unselected dates/times!");
         }
           if(time1 === ""){
             //error message
             navigateToFinal = false
-            // time1Chosen = false
             setTime1Chosen(false)
             setDateTimeError("Unselected dates/times!");
         }
         if(time2 === "" ){
             //error message
             navigateToFinal = false
-            // time1Chosen = false
             setTime2Chosen(false)
             setDateTimeError("Unselected dates/times!");
         }
         if(time3 === "" ){
             //error message
             navigateToFinal = false
-            // time3Chosen = false
             setTime3Chosen(false)
             setDateTimeError("Unselected dates/times!");
         }
@@ -183,7 +174,6 @@ export default function CreateHangout() {
     // html, layout of page
     return (        
         <div
-            // className="min-h-screen bg-gradient-to-br from-blue-500 to-purple-300 flex flex-col items-center justify-center px-4 relative overflow-hidden gap-7"
             style={{ fontFamily: "American Typewriter, serif" }}
         >
             <div className="max-w-7xl mx-auto">
@@ -245,7 +235,7 @@ export default function CreateHangout() {
                         <div className="flex-1 space-y-8"> 
                             <h2 className="text-lg font-semibold mb-2 ">Select Number of Participants</h2>
                             
-                            {/* <InputNumber defaultValue={10} className="bg-background border-border text-foreground placeholder:text-muted-foreground text-base py-3 px-2 h-auto rounded-md" /> */}
+                            {/* <InputNumber */}
                             <InputNumber
                                 value = {participants}
                                 onChange = {(value) => setParticipants(value ?? 0)}
@@ -254,24 +244,9 @@ export default function CreateHangout() {
                                 className={`bg-background border ${
                                     participError ? "border-red-500" : "border-border"
                                 } text-foreground placeholder:text-muted-foreground text-base py-3 px-2 h-auto rounded-md`}
-                                // className="bg-background border border-border text-foreground placeholder:text-muted-foreground text-base py-3 px-2 h-auto rounded-md"
                             />
                             {participError && <p className="text-red-500 text-sm">{participError}</p>}
 
-                            {/* <select
-                                value={participants}
-                                onChange={(e) => setParticipants(Number(e.target.value))}
-                                className="border border-gray-300 rounded-md p-2 text-center"
-                                size={4}
-                            >
-                                {numberofParticips.map((num) => (
-                                <option key={num} value={num}>
-                                    {num}
-                                </option>
-                                ))}
-                            </select> */}
-
-                            {/* <p className= "mt-1"> Selected Participants: {participants}</p> */}
                         </div>
 
                         {/* Choose Days*/}
@@ -294,7 +269,6 @@ export default function CreateHangout() {
                                         <PopoverTrigger asChild>
                                         <Button
                                             variant="outline"
-                                            //className="w-full justify-between font-normal"
                                             className={`w-full justify-between font-normal border ${
                                                 !date1Chosen ? "border-red-500" : "border-border"
                                             }`}
@@ -331,7 +305,6 @@ export default function CreateHangout() {
                                     <input
                                         type="time"
                                         value={time1}
-                                        //onChange={(e) => {setTime1(e.target.value)}}
                                         onChange={(e) => {setTime1(e.target.value); setTime1Chosen(true)}}
                                         className={`w-full px-3 py-2 rounded-md border ${
                                             !time1Chosen ? "border-red-500" : "border-border"
@@ -354,7 +327,6 @@ export default function CreateHangout() {
                                         <PopoverTrigger asChild>
                                         <Button
                                             variant="outline"
-                                            //className="w-full justify-between font-normal"
                                             className={`w-full justify-between font-normal border ${
                                                 !date2Chosen  ? "border-red-500" : "border-border"
                                             }`}
@@ -389,9 +361,7 @@ export default function CreateHangout() {
                                     <input
                                         type="time"
                                         value={time2}
-                                        //onChange={(e) => {setTime2(e.target.value)}}
                                         onChange={(e) => {setTime2(e.target.value); setTime2Chosen(true)}}
-                                        // className="w-full px-3 py-2 rounded-md border border-border bg-background text-foreground text-sm"
                                         className={`w-full px-3 py-2 rounded-md border ${
                                             !time2Chosen ? "border-red-500" : "border-border"
                                         } bg-background text-foreground text-sm`}
@@ -413,7 +383,6 @@ export default function CreateHangout() {
                                         <PopoverTrigger asChild>
                                         <Button
                                             variant="outline"
-                                            //className="w-full justify-between font-normal"
                                             className={`w-full justify-between font-normal border ${
                                                 !date3Chosen ? "border-red-500" : "border-border"
                                             }`}
@@ -450,7 +419,6 @@ export default function CreateHangout() {
                                         type="time"
                                         value={time3}
                                         onChange={(e) => {setTime3(e.target.value); setTime3Chosen(true)}}
-                                        // className="w-full px-3 py-2 rounded-md border border-border bg-background text-foreground text-sm"
                                         className={`w-full px-3 py-2 rounded-md border ${
                                             !time3Chosen ? "border-red-500" : "border-border"
                                         } bg-background text-foreground text-sm`}
@@ -467,7 +435,6 @@ export default function CreateHangout() {
 
                     <div className="flex-1 space-y-8">
                         <div className="space-y-3">
-                            {/* <div className = "space-y-4 pb-6 border-b border-border"> */}
                                 <div className="space-y-4 pb-6 border-b border-border">
                                     <h3 className="text-lg font-semibold mb-2">Summary</h3>
                                     <div className="space-y-3 text-sm">
@@ -503,28 +470,8 @@ export default function CreateHangout() {
                                     </Button>
                                     <p className="text-xs text-muted-foreground text-center">Friends will get an invite to vote</p>
                                 </div>
-
-                                {/* Button Create Hangout*/}
-                                {/* <MyButton title="Create Hangout" />  */}
-                                {/* <div className="space-y-3"> */}
-                                    {/* <h3 className="text-xs font-semibold mb2 text-muted-foreground uppercase tracking-widest">Summary</h3>
-                            
-                                    
-                                <Button  onClick={handleLogin}
-                                    className="w-full bg-gray-400 text-white hover:from-grey-600 hover:via-pink-600 hover:to-cyan-600 font-poppins font-bold py-6 rounded-2xl text-xl shadow-2xl hover:shadow-purple-500/25 transition-all duration-300 hover:scale-105 spring-bounce disabled:opacity-50 disabled:cursor-not-allowed relative overflow-hidden"
-                                >
-                                
-                                    Create Hangout
-
-                                </Button>  */}
-                                {/* </div> */}
-                            {/* </div> */}
                         </div>
                     </div>
-
-
-
-                    {/* </div> */}
                 </div>
             </div>
         </div>
