@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth0 } from '@auth0/auth0-react';
 import axios from 'axios';
+import React from 'react';
 
 export default function ProfilePage() {
   const { user, isAuthenticated, logout } = useAuth0();
