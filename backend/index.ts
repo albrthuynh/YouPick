@@ -51,6 +51,36 @@ app.get('/api/getrandom', async (req, res) => {
     }
 })
 
+app.get('/api/hangouts', async (req, res) => {
+    try {
+        const client = await connectToMongoDB();
+        const db = client.db('youpick');
+        const collection = db.collection('hangouts');
+
+        const hangouts = await collection.find({}).toArray();
+
+        // Just print names in the console for now
+        console.log("=== All Hangouts ===");
+        hangouts.forEach(h => console.log(h.title));
+
+        res.json({
+            success: true,
+            count: hangouts.length,
+            hangouts: hangouts.map(h => ({
+                id: h._id,
+                title: h.title,
+                date: h.date,
+                location: h.location
+            }))
+        });
+    } catch (error) {
+        console.error('MongoDB fetch error:', error);
+        res.status(500).json({ error: 'Failed to fetch hangouts' });
+    } finally {
+        await closeMongoDB();
+    }
+});
+
 // The port that the backend is listening to
 app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);
