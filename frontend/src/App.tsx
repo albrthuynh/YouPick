@@ -21,7 +21,8 @@ function App() {
   return (
       <BrowserRouter>
         <Routes>
-          <Route path="/" element={<LandingPage />}/>
+          <Route path="/" element={<HomePage />}/>
+          <Route path="/landing" element={<LandingPage />} />
           <Route path="/login" element={<LoginPage />}/>
           <Route path="/signup" element={<SignupPage />}/>
           <Route path="/profile" element={<ProfilePage/>}/>
@@ -32,6 +33,10 @@ function App() {
           {/* Example of protected routes - uncomment when you have these pages */}
           {/* <Route path="/profile" element={<ProtectedRoute><ProfilePage /></ProtectedRoute>}/> */}
           {/* <Route path="/swipe" element={<ProtectedRoute><SwipePage /></ProtectedRoute>}/> */}
+          {/* <Route path="/create-hangout" element={<ProtectedRoute><SwipePage /></ProtectedRoute>}/> */}
+          {/* <Route path="/join-hangout" element={<ProtectedRoute><SwipePage /></ProtectedRoute>}/> */}
+          {/* <Route path="/all-hangouts" element={<ProtectedRoute><SwipePage /></ProtectedRoute>}/> */}
+
         </Routes> 
       </BrowserRouter>
   )
