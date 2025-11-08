@@ -14,6 +14,7 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover"
 
+import { activityOptions } from '../activities';
 
 interface ActivityOption {
     value: string;
@@ -22,40 +23,12 @@ interface ActivityOption {
 
 // variable to be used in another file
 export let exportedNumParticipants: number;
+export let exportedActivitiesChosen: ActivityOption[];
+export let exportedHangoutName: string;
+
 
 export default function CreateHangout() {
     const [selectedActivities, setActivityOptions] = useState<ActivityOption[]>([]);
-    
-    const activityOptions: ActivityOption[] = [
-        
-        { value: "dinner", label: "Go Out for Dinner" },
-        { value: "coffee", label: "Grab Coffee" },
-        { value: "movie", label: "Watch a Movie" },
-        { value: "museum", label: "Visit a Museum" },
-        { value: "concert", label: "Go to a Concert" },
-        { value: "game-night", label: "Game Night" },
-        { value: "study", label: "Study Session" },
-        { value: "amusement-park", label: "Go to a Amusement Park" },
-        { value: "sleepover", label: "Have a Sleepover" },
-        { value: "shopping", label: "Go Shopping" },
-        { value: "beach", label: "Beach Day" },
-        
-        { value: "picnic", label: "Have a Picnic" },
-        { value: "sports", label: "Play Sports" },
-        { value: "hiking", label: "Go Hiking" },
-        { value: "bowling", label: "Go Bowling" },
-        { value: "boba", label: "Get Boba" },
-        { value: "mini-golf", label: "Go Mini Golfing" },
-        { value: "arcade", label: "Go to an Arcade" },
-        { value: "zoo", label: "Go to a Zoo" },
-        { value: "house", label: "House Hangout" },
-        { value: "baking", label: "Bake Together" },
-        { value: "cooking", label: "Cook Together" },
-
-
-
-
-    ];
 
     const [open1, setOpen1] = React.useState(false)
     const [open2, setOpen2] = React.useState(false)
@@ -154,8 +127,10 @@ export default function CreateHangout() {
         }
         
         if(navigateToFinal){    
-            // set this var to use in other file 
+            // set these vars to use in other file 
             exportedNumParticipants = participants
+            exportedActivitiesChosen = selectedActivities
+            exportedHangoutName = hangoutName
             //go to finalize page
             navigate('/finalize')
         }             

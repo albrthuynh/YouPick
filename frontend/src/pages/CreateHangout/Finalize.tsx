@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { useNavigate } from 'react-router-dom';
 
 import { Button } from "@/components/ui/button"
 // import { exportedNumParticipants } from './Create';
@@ -17,19 +18,25 @@ export default function FinalizePage() {
   const [emails, setEmails] = useState("")
   let listEmails: string[] = []
   
+  const navigate = useNavigate();
+  
   const finalizeHangout = async () => {
     //send emails
     
     listEmails = emails.split(",").map((e) => e.trim());
 
-    if(listEmails.length > exportedNumParticipants){
+    
+    if(listEmails.length == 0){
+      navigate("/swiping")
+    }else if(listEmails.length > exportedNumParticipants){
       setNumParticError("Number of emails exceeding number of participants")
+      setEmails("")
     }else{
       setNumParticError("")
       
       for (const email of listEmails){
     
-        await emailjs.send(
+        emailjs.send(
           "service_pqdgudr",
           "template_rzafuwo",
           { 
@@ -38,12 +45,9 @@ export default function FinalizePage() {
           },
           "5S6JLoJfXML-TAxeI"
         );
-      
       }
+      navigate("/swiping")
     }
-  
-    setEmails("")
-    //bring back to home page
   }
   
   
