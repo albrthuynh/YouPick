@@ -21,18 +21,23 @@ app.get('/', (req, res) => {
 
 // Creating the user document
 app.post('/api/create-user', async (req, res) => {
+    let client;
     try {
         const { auth0Id, name, email } = req.body
 
+        // Log the incoming request for debugging
+        console.log('📝 Create user request:', { auth0Id, name, email });
+
         // Validate the fields
         if (!auth0Id || !email) {
+            console.error('❌ Validation failed:', { auth0Id, email });
             return res.status(400).json({
                 success: false,
                 message: 'auth0Id and email are required'
             })
         }
 
-        const client = await connectToMongoDB();
+        client = await connectToMongoDB();
         const db = client.db('users');
         const collection = db.collection('user_documents');
 
@@ -59,22 +64,29 @@ app.post('/api/create-user', async (req, res) => {
 
         // Verify that the user got inserted
         if (result.insertedId) {
+            console.log('✅ User created successfully:', result.insertedId);
             res.json({
                 success: true,
                 message: 'User created successfully!',
                 user: { ...newUser, _id: result.insertedId }
             })
         } else {
+            console.error('❌ Failed to insert user');
             res.status(500).json({
                 success: false,
                 message: 'Failed to create user'
             })
         }
     } catch (error) {
-        console.error('MongoDB error:', error);
-        res.status(500).json({ error: 'Database query failed' });
+        console.error('❌ MongoDB error creating user:', error);
+        res.status(500).json({
+            error: 'Database query failed',
+            details: error instanceof Error ? error.message : 'Unknown error'
+        });
     } finally {
-        await closeMongoDB();
+        if (client) {
+            await closeMongoDB();
+        }
     }
 });
 

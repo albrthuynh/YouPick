@@ -1,5 +1,4 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
-
 import axios from 'axios';
 
 // changed a comment again!
@@ -21,14 +20,13 @@ function App() {
   return (
       <BrowserRouter>
         <Routes>
-          {/* <Route path="/" element={<LandingPage />}/> */}
-          <Route path="/" element={<CreateHangout/>}/>
+          <Route path="/" element={<LandingPage />}/>
           <Route path="/login" element={<LoginPage />}/>
           <Route path="/signup" element={<SignupPage />}/>
           <Route path="/profile" element={<ProfilePage/>}/>
           <Route path="/home" element={<HomePage/>}/>
           <Route path="/finalize" element={<FinalizePage/>}/>
-          {/* <Route path="/createhangout" element={<CreateHangout/>}/> */}
+          <Route path="/createhangout" element={<CreateHangout/>}/>
           <Route path="/swiping" element={<SwipingPage/>}/>
           {/* Example of protected routes - uncomment when you have these pages */}
           {/* <Route path="/profile" element={<ProtectedRoute><ProfilePage /></ProtectedRoute>}/> */}

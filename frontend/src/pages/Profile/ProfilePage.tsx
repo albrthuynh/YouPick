@@ -45,6 +45,16 @@ export default function ProfilePage() {
         localStorage.setItem(userCreatedKey, 'true');
       } catch (error) {
         console.error('Error creating user:', error);
+        // Log more details about the error
+        if (axios.isAxiosError(error)) {
+          console.error('Response data:', error.response?.data);
+          console.error('Response status:', error.response?.status);
+          console.error('User data being sent:', {
+            auth0Id: user.sub,
+            name: user.name,
+            email: user.email,
+          });
+        }
       }
     };
 
