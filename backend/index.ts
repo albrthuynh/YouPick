@@ -19,29 +19,56 @@ app.get('/', (req, res) => {
     res.json({ message: 'YouPick API is running!' });
 });
 
-// TESTING GET FROM MONGO DB
-app.get('/api/getrandom', async (req, res) => {
+// Creating the user document
+app.post('/api/create-user', async (req, res) => {
     try {
+        const { auth0Id, name, email } = req.body
+
+        // Validate the fields
+        if (!auth0Id || !email) {
+            return res.status(400).json({
+                success: false,
+                message: 'auth0Id and email are required'
+            })
+        }
+
         const client = await connectToMongoDB();
-        const db = client.db('sample_airbnb');
-        const collection = db.collection('listingsAndReviews');
+        const db = client.db('users');
+        const collection = db.collection('user_documents');
 
-        // Search for "Ribeira Charming Duplex"
-        const listing = await collection.findOne({ name: "Ribeira Charming Duplex" });
+        // Check if user exists
+        const existingUser = await collection.findOne({ auth0Id })
 
-        if (listing) {
-            console.log('🎉 Found Ribeira Charming Duplex!');
-            console.log('ID:', listing._id);
-            console.log('Name:', listing.name);
+        if (existingUser) {
+            return res.json({
+                success: true,
+                message: 'User already exists',
+                user: existingUser
+            })
+        }
+
+        // Create the new user document
+        const newUser = {
+            auth0Id,
+            name: name || '',
+            email,
+            createdAt: new Date()
+        }
+
+        const result = await collection.insertOne(newUser)
+
+        // Verify that the user got inserted
+        if (result.insertedId) {
             res.json({
                 success: true,
-                message: 'Found the listing!',
-                id: listing._id,
-                name: listing.name
-            });
+                message: 'User created successfully!',
+                user: { ...newUser, _id: result.insertedId }
+            })
         } else {
-            console.log('❌ Ribeira Charming Duplex not found');
-            res.json({ success: false, message: 'Listing not found' });
+            res.status(500).json({
+                success: false,
+                message: 'Failed to create user'
+            })
         }
     } catch (error) {
         console.error('MongoDB error:', error);
@@ -49,7 +76,101 @@ app.get('/api/getrandom', async (req, res) => {
     } finally {
         await closeMongoDB();
     }
-})
+});
+
+// Getting the user document
+app.get('/api/get-user/:auth0Id', async (req, res) => {
+    try {
+        const { auth0Id } = req.params
+
+        if (!auth0Id) {
+            return res.status(400).json({
+                success: false,
+                message: 'auth0Id is required'
+            })
+        }
+
+        const client = await connectToMongoDB();
+        const db = client.db('users');
+        const collection = db.collection('user_documents');
+
+        const user = await collection.findOne({ auth0Id })
+
+        if (!user) {
+            return res.status(404).json({
+                success: false,
+                message: 'User not found'
+            })
+        }
+
+        res.json({
+            success: true,
+            user: user
+        })
+    } catch (error) {
+        console.error('MongoDB error:', error);
+        res.status(500).json({ error: 'Database query failed' });
+    } finally {
+        await closeMongoDB();
+    }
+});
+
+// Updating the user document
+app.put('/api/update-user', async (req, res) => {
+    try {
+        const { auth0Id, name, bio } = req.body
+
+        // Validate the fields
+        if (!auth0Id) {
+            return res.status(400).json({
+                success: false,
+                message: 'auth0Id is required'
+            })
+        }
+
+        const client = await connectToMongoDB();
+        const db = client.db('users');
+        const collection = db.collection('user_documents');
+
+        // Build update object with only provided fields
+        const updateFields: any = {
+            updatedAt: new Date()
+        }
+
+        if (name !== undefined) updateFields.name = name
+        if (bio !== undefined) updateFields.bio = bio
+
+        // Update the user document
+        const result = await collection.updateOne(
+            { auth0Id },
+            { $set: updateFields }
+        )
+
+        if (result.matchedCount === 0) {
+            return res.status(404).json({
+                success: false,
+                message: 'User not found'
+            })
+        }
+
+        if (result.modifiedCount > 0) {
+            res.json({
+                success: true,
+                message: 'Profile updated successfully!'
+            })
+        } else {
+            res.json({
+                success: true,
+                message: 'No changes made'
+            })
+        }
+    } catch (error) {
+        console.error('MongoDB error:', error);
+        res.status(500).json({ error: 'Database query failed' });
+    } finally {
+        await closeMongoDB();
+    }
+});
 
 // The port that the backend is listening to
 app.listen(PORT, () => {
