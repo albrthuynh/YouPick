@@ -1,15 +1,18 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth0 } from '@auth0/auth0-react';
+import axios from 'axios';
 
 export default function ProfilePage() {
-  const { logout } = useAuth0();
+  const { user, isAuthenticated, logout } = useAuth0();
   const [isEditing, setIsEditing] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+
   const [profile, setProfile] = useState({
-    name: 'Alex Johnson',
-    email: 'alex.johnson@email.com',
-    bio: 'Love trying new restaurants and outdoor activities! Always down for spontaneous adventures.',
-    interests: ['Food & Dining', 'Outdoor Activities', 'Movies', 'Coffee Shops', 'Live Music'],
+    name: '',
+    email: '',
+    bio: '',
     availability: {
       weekdays: true,
       weekends: true,
@@ -17,20 +20,113 @@ export default function ProfilePage() {
     }
   });
 
-  const allInterests = [
-    'Food & Dining', 'Outdoor Activities', 'Movies', 'Coffee Shops', 
-    'Live Music', 'Sports', 'Gaming', 'Shopping', 'Museums', 'Hiking',
-    'Beach', 'Concerts', 'Theater', 'Bars & Clubs', 'Karaoke'
-  ];
+  // Create user in MongoDB only if they don't exist yet
+  useEffect(() => {
+    const createUser = async () => {
+      if (!isAuthenticated || !user) return;
 
-  const toggleInterest = (interest: string) => {
-    setProfile(prev => ({
-      ...prev,
-      interests: prev.interests.includes(interest)
-        ? prev.interests.filter(i => i !== interest)
-        : [...prev.interests, interest]
-    }));
+      // Check if we've already created this user (stored in localStorage)
+      const userCreatedKey = `user_created_${user.sub}`;
+      const alreadyCreated = localStorage.getItem(userCreatedKey);
+
+      if (alreadyCreated) {
+        return;
+      }
+
+      try {
+        console.log('Creating user in database...');
+        await axios.post('/api/create-user', {
+          auth0Id: user.sub,
+          name: user.name,
+          email: user.email,
+        });
+
+        // Mark this user as created in localStorage
+        localStorage.setItem(userCreatedKey, 'true');
+      } catch (error) {
+        console.error('Error creating user:', error);
+      }
+    };
+
+    createUser();
+  }, [isAuthenticated, user]);
+
+  // Fetch user profile from MongoDB
+  useEffect(() => {
+    const fetchUserProfile = async () => {
+      if (!isAuthenticated || !user) {
+        setIsLoading(false);
+        return;
+      }
+
+      try {
+        const response = await axios.get(`/api/get-user/${user.sub}`);
+
+        if (response.data.success) {
+          const userData = response.data.user;
+          setProfile({
+            name: userData.name || user.name || '',
+            email: userData.email || user.email || '',
+            bio: userData.bio || '',
+            availability: userData.availability || {
+              weekdays: true,
+              weekends: true,
+              evenings: true,
+            }
+          });
+        }
+      } catch (error) {
+        console.error('Error fetching user profile:', error);
+        // Fall back to Auth0 data if database fetch fails
+        setProfile({
+          name: user.name || '',
+          email: user.email || '',
+          bio: '',
+          availability: {
+            weekdays: true,
+            weekends: true,
+            evenings: true,
+          }
+        });
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchUserProfile();
+  }, [isAuthenticated, user]);
+
+  const handleSaveProfile = async () => {
+    if (!user) return;
+
+    setIsSaving(true);
+    try {
+      const response = await axios.put('/api/update-user', {
+        auth0Id: user.sub,
+        name: profile.name,
+        bio: profile.bio,
+      });
+
+      console.log('✅ Profile saved:', response.data.message);
+      setIsEditing(false);
+    } catch (error) {
+      console.error('❌ Error saving profile:', error);
+      alert('Failed to save profile. Please try again.');
+    } finally {
+      setIsSaving(false);
+    }
   };
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-sky-100 via-purple-50 to-pink-50 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-400 mx-auto mb-4"></div>
+          <p className="text-slate-700 font-poppins">Loading profile...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-sky-100 via-purple-50 to-pink-50">
@@ -58,10 +154,18 @@ export default function ProfilePage() {
           <div className="flex flex-col md:flex-row items-center md:items-start gap-6">
             {/* Avatar */}
             <div className="relative">
-              <div className="w-32 h-32 rounded-full bg-gradient-to-br from-purple-400 to-pink-400 flex items-center justify-center text-white text-4xl font-bold shadow-lg">
-                {profile.name.split(' ').map(n => n[0]).join('')}
-              </div>
-              <button 
+              {user?.picture ? (
+                <img
+                  src={user.picture}
+                  alt={profile.name}
+                  className="w-32 h-32 rounded-full shadow-lg object-cover"
+                />
+              ) : (
+                <div className="w-32 h-32 rounded-full bg-gradient-to-br from-purple-400 to-pink-400 flex items-center justify-center text-white text-4xl font-bold shadow-lg">
+                  {profile.name.split(' ').map(n => n[0]).join('')}
+                </div>
+              )}
+              <button
                 type="button"
                 className="absolute bottom-0 right-0 w-10 h-10 bg-white rounded-full shadow-lg flex items-center justify-center hover:bg-purple-50 transition-colors border-2 border-purple-200"
               >
@@ -71,16 +175,49 @@ export default function ProfilePage() {
 
             {/* Profile Info */}
             <div className="flex-1 text-center md:text-left">
-              <h1 className="text-3xl font-bold text-slate-800 mb-2">{profile.name}</h1>
+              {isEditing ? (
+                <input
+                  type="text"
+                  value={profile.name}
+                  onChange={(e) => setProfile({ ...profile, name: e.target.value })}
+                  className="text-3xl font-bold text-slate-800 mb-2 w-full px-3 py-1 rounded-lg border-2 border-purple-200 focus:border-purple-400 focus:outline-none bg-white/50"
+                  placeholder="Your name"
+                />
+              ) : (
+                <h1 className="text-3xl font-bold text-slate-800 mb-2">{profile.name}</h1>
+              )}
               <p className="text-slate-600 mb-4">{profile.email}</p>
               <div className="flex gap-3 justify-center md:justify-start">
                 <button
                   type="button"
-                  onClick={() => setIsEditing(!isEditing)}
-                  className="px-6 py-2 bg-gradient-to-r from-purple-400 to-pink-400 text-white rounded-full hover:from-purple-500 hover:to-pink-500 transition-all duration-300 shadow-md hover:shadow-lg"
+                  onClick={() => {
+                    if (isEditing) {
+                      handleSaveProfile();
+                    } else {
+                      setIsEditing(true);
+                    }
+                  }}
+                  disabled={isSaving}
+                  className="px-6 py-2 bg-gradient-to-r from-purple-400 to-pink-400 text-white rounded-full hover:from-purple-500 hover:to-pink-500 transition-all duration-300 shadow-md hover:shadow-lg disabled:opacity-50"
                 >
-                  {isEditing ? 'Save Changes' : 'Edit Profile'}
+                  {isSaving ? 'Saving...' : isEditing ? 'Save Changes' : 'Edit Profile'}
                 </button>
+                {isEditing && (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setIsEditing(false);
+                      setProfile({
+                        ...profile,
+                        name: user?.name || 'User',
+                        bio: profile.bio
+                      });
+                    }}
+                    className="px-6 py-2 bg-slate-400 hover:bg-slate-500 text-white rounded-full transition-all duration-300 shadow-md hover:shadow-lg"
+                  >
+                    Cancel
+                  </button>
+                )}
                 <button
                   type="button"
                   onClick={() => logout({ logoutParams: { returnTo: window.location.origin } })}
@@ -112,31 +249,6 @@ export default function ProfilePage() {
           )}
         </div>
 
-        {/* Interests Section */}
-        <div className="bg-white/80 backdrop-blur-sm rounded-3xl p-8 shadow-lg border border-pink-200/50 mb-8">
-          <div className="flex items-center gap-3 mb-6">
-            <span className="text-3xl">💫</span>
-            <h2 className="text-2xl font-semibold text-slate-800">My Interests</h2>
-          </div>
-          <div className="flex flex-wrap gap-3">
-            {allInterests.map((interest) => (
-              <button
-                key={interest}
-                type="button"
-                onClick={() => isEditing && toggleInterest(interest)}
-                disabled={!isEditing}
-                className={`px-4 py-2 rounded-full text-sm font-medium transition-all duration-300 ${
-                  profile.interests.includes(interest)
-                    ? 'bg-gradient-to-r from-purple-400 to-pink-400 text-white shadow-md hover:shadow-lg'
-                    : 'bg-white/70 text-slate-600 border-2 border-slate-200 hover:border-purple-300'
-                } ${isEditing ? 'cursor-pointer hover:scale-105' : 'cursor-default'}`}
-              >
-                {interest}
-              </button>
-            ))}
-          </div>
-        </div>
-
         {/* Availability Section */}
         <div className="bg-white/80 backdrop-blur-sm rounded-3xl p-8 shadow-lg border border-yellow-200/50">
           <div className="flex items-center gap-3 mb-6">
@@ -151,13 +263,11 @@ export default function ProfilePage() {
             ].map(({ key, label, icon }) => (
               <label
                 key={key}
-                className={`flex items-center justify-between p-4 rounded-2xl border-2 transition-all duration-300 ${
-                  isEditing ? 'cursor-pointer hover:border-purple-400' : 'cursor-default'
-                } ${
-                  profile.availability[key as keyof typeof profile.availability]
+                className={`flex items-center justify-between p-4 rounded-2xl border-2 transition-all duration-300 ${isEditing ? 'cursor-pointer hover:border-purple-400' : 'cursor-default'
+                  } ${profile.availability[key as keyof typeof profile.availability]
                     ? 'bg-purple-50 border-purple-300'
                     : 'bg-white/50 border-slate-200'
-                }`}
+                  }`}
               >
                 <div className="flex items-center gap-3">
                   <span className="text-2xl">{icon}</span>
