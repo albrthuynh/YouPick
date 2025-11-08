@@ -24,7 +24,8 @@ export default function LoginPage() {
     setTimeout(async () => {
       await loginWithRedirect({
         appState: {
-          returnTo: window.location.origin
+          // returnTo: window.location.origin
+          returnTo: "/home"
         }
       })
     }, 500)
