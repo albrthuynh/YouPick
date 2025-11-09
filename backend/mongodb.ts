@@ -18,14 +18,25 @@ const client = new MongoClient(uri, {
     }
 });
 
+let isConnected = false;
+
 // Export reusable functions
 export async function connectToMongoDB() {
-    await client.connect();
+    if (!isConnected) {
+        await client.connect();
+        isConnected = true;
+        console.log('✅ Connected to MongoDB');
+    }
     return client;
 }
 
-export async function closeMongoDB() {
-    await client.close();
+// Only use this on server shutdown
+export async function disconnectFromMongoDB() {
+    if (isConnected) {
+        await client.close();
+        isConnected = false;
+        console.log('🔌 Disconnected from MongoDB');
+    }
 }
 
 // Test function

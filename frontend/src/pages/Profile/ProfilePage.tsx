@@ -2,7 +2,6 @@ import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth0 } from '@auth0/auth0-react';
 import axios from 'axios';
-import React from 'react';
 
 export default function ProfilePage() {
   const { user, isAuthenticated, logout } = useAuth0();
@@ -130,28 +129,28 @@ export default function ProfilePage() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-sky-100 via-purple-50 to-pink-50 flex items-center justify-center">
+      <div className="min-h-screen bg-background flex items-center justify-center">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-400 mx-auto mb-4"></div>
-          <p className="text-slate-700 font-poppins">Loading profile...</p>
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-accent mx-auto mb-4"></div>
+          <p className="text-foreground font-poppins">Loading profile...</p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-sky-100 via-purple-50 to-pink-50">
+    <div className="min-h-screen bg-background">
       {/* Header */}
-      <div className="bg-white/40 backdrop-blur-sm border-b border-purple-200/30">
+      <div className="bg-card/40 backdrop-blur-sm border-b border-border/30">
         <div className="max-w-5xl mx-auto px-4 py-4 flex items-center justify-between">
-          <Link to="/" className="text-2xl font-bold bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">
+          <Link to="/" className="text-2xl font-bold text-primary">
             YouPick
           </Link>
           <div className="flex gap-4">
-            <Link to="/groups" className="text-slate-600 hover:text-purple-600 transition-colors">
+            <Link to="/groups" className="text-muted-foreground hover:text-accent transition-colors">
               My Groups
             </Link>
-            <Link to="/swipe" className="text-slate-600 hover:text-purple-600 transition-colors">
+            <Link to="/swiping" className="text-muted-foreground hover:text-accent transition-colors">
               Swipe
             </Link>
           </div>
@@ -161,7 +160,7 @@ export default function ProfilePage() {
       {/* Main Content */}
       <div className="max-w-4xl mx-auto px-4 py-12">
         {/* Profile Header Card */}
-        <div className="bg-white/80 backdrop-blur-sm rounded-3xl p-8 shadow-lg border border-purple-200/50 mb-8">
+        <div className="bg-card/80 backdrop-blur-sm rounded-3xl p-8 shadow-lg border border-border/50 mb-8">
           <div className="flex flex-col md:flex-row items-center md:items-start gap-6">
             {/* Avatar */}
             <div className="relative">
@@ -172,13 +171,13 @@ export default function ProfilePage() {
                   className="w-32 h-32 rounded-full shadow-lg object-cover"
                 />
               ) : (
-                <div className="w-32 h-32 rounded-full bg-gradient-to-br from-purple-400 to-pink-400 flex items-center justify-center text-white text-4xl font-bold shadow-lg">
+                <div className="w-32 h-32 rounded-full bg-primary flex items-center justify-center text-primary-foreground text-4xl font-bold shadow-lg">
                   {profile.name.split(' ').map(n => n[0]).join('')}
                 </div>
               )}
               <button
                 type="button"
-                className="absolute bottom-0 right-0 w-10 h-10 bg-white rounded-full shadow-lg flex items-center justify-center hover:bg-purple-50 transition-colors border-2 border-purple-200"
+                className="absolute bottom-0 right-0 w-10 h-10 bg-card rounded-full shadow-lg flex items-center justify-center hover:bg-muted transition-colors border-2 border-border"
               >
                 📷
               </button>
@@ -191,13 +190,13 @@ export default function ProfilePage() {
                   type="text"
                   value={profile.name}
                   onChange={(e) => setProfile({ ...profile, name: e.target.value })}
-                  className="text-3xl font-bold text-slate-800 mb-2 w-full px-3 py-1 rounded-lg border-2 border-purple-200 focus:border-purple-400 focus:outline-none bg-white/50"
+                  className="text-3xl font-bold text-foreground mb-2 w-full px-3 py-1 rounded-lg border-2 border-border focus:border-accent focus:outline-none bg-card/50"
                   placeholder="Your name"
                 />
               ) : (
-                <h1 className="text-3xl font-bold text-slate-800 mb-2">{profile.name}</h1>
+                <h1 className="text-3xl font-bold text-foreground mb-2">{profile.name}</h1>
               )}
-              <p className="text-slate-600 mb-4">{profile.email}</p>
+              <p className="text-muted-foreground mb-4">{profile.email}</p>
               <div className="flex gap-3 justify-center md:justify-start">
                 <button
                   type="button"
@@ -209,7 +208,7 @@ export default function ProfilePage() {
                     }
                   }}
                   disabled={isSaving}
-                  className="px-6 py-2 bg-gradient-to-r from-purple-400 to-pink-400 text-white rounded-full hover:from-purple-500 hover:to-pink-500 transition-all duration-300 shadow-md hover:shadow-lg disabled:opacity-50"
+                  className="px-6 py-2 bg-primary text-primary-foreground rounded-full hover:bg-primary/90 transition-all duration-300 shadow-md hover:shadow-lg disabled:opacity-50"
                 >
                   {isSaving ? 'Saving...' : isEditing ? 'Save Changes' : 'Edit Profile'}
                 </button>
@@ -224,7 +223,7 @@ export default function ProfilePage() {
                         bio: profile.bio
                       });
                     }}
-                    className="px-6 py-2 bg-slate-400 hover:bg-slate-500 text-white rounded-full transition-all duration-300 shadow-md hover:shadow-lg"
+                    className="px-6 py-2 bg-muted hover:bg-muted/80 text-muted-foreground rounded-full transition-all duration-300 shadow-md hover:shadow-lg"
                   >
                     Cancel
                   </button>
@@ -232,7 +231,7 @@ export default function ProfilePage() {
                 <button
                   type="button"
                   onClick={() => logout({ logoutParams: { returnTo: window.location.origin } })}
-                  className="px-6 py-2 bg-red-500 hover:bg-red-600 text-white rounded-full transition-all duration-300 shadow-md hover:shadow-lg"
+                  className="px-6 py-2 bg-destructive hover:bg-destructive/90 text-destructive-foreground rounded-full transition-all duration-300 shadow-md hover:shadow-lg"
                 >
                   Logout
                 </button>
@@ -242,29 +241,29 @@ export default function ProfilePage() {
         </div>
 
         {/* Bio Section */}
-        <div className="bg-white/80 backdrop-blur-sm rounded-3xl p-8 shadow-lg border border-emerald-200/50 mb-8">
+        <div className="bg-card/80 backdrop-blur-sm rounded-3xl p-8 shadow-lg border border-border/50 mb-8">
           <div className="flex items-center gap-3 mb-4">
             <span className="text-3xl">✨</span>
-            <h2 className="text-2xl font-semibold text-slate-800">About Me</h2>
+            <h2 className="text-2xl font-semibold text-foreground">About Me</h2>
           </div>
           {isEditing ? (
             <textarea
               value={profile.bio}
               onChange={(e) => setProfile({ ...profile, bio: e.target.value })}
-              className="w-full p-4 rounded-2xl border-2 border-purple-200 focus:border-purple-400 focus:outline-none bg-white/50 resize-none"
+              className="w-full p-4 rounded-2xl border-2 border-border focus:border-accent focus:outline-none bg-card/50 resize-none text-foreground"
               rows={3}
               placeholder="Tell us about yourself..."
             />
           ) : (
-            <p className="text-slate-600 leading-relaxed">{profile.bio}</p>
+            <p className="text-muted-foreground leading-relaxed">{profile.bio}</p>
           )}
         </div>
 
         {/* Availability Section */}
-        <div className="bg-white/80 backdrop-blur-sm rounded-3xl p-8 shadow-lg border border-yellow-200/50">
+        <div className="bg-card/80 backdrop-blur-sm rounded-3xl p-8 shadow-lg border border-border/50">
           <div className="flex items-center gap-3 mb-6">
             <span className="text-3xl">📅</span>
-            <h2 className="text-2xl font-semibold text-slate-800">Availability Preferences</h2>
+            <h2 className="text-2xl font-semibold text-foreground">Availability Preferences</h2>
           </div>
           <div className="space-y-4">
             {[
@@ -274,15 +273,15 @@ export default function ProfilePage() {
             ].map(({ key, label, icon }) => (
               <label
                 key={key}
-                className={`flex items-center justify-between p-4 rounded-2xl border-2 transition-all duration-300 ${isEditing ? 'cursor-pointer hover:border-purple-400' : 'cursor-default'
+                className={`flex items-center justify-between p-4 rounded-2xl border-2 transition-all duration-300 ${isEditing ? 'cursor-pointer hover:border-accent' : 'cursor-default'
                   } ${profile.availability[key as keyof typeof profile.availability]
-                    ? 'bg-purple-50 border-purple-300'
-                    : 'bg-white/50 border-slate-200'
+                    ? 'bg-muted border-primary'
+                    : 'bg-card/50 border-border'
                   }`}
               >
                 <div className="flex items-center gap-3">
                   <span className="text-2xl">{icon}</span>
-                  <span className="text-slate-700 font-medium">{label}</span>
+                  <span className="text-foreground font-medium">{label}</span>
                 </div>
                 <input
                   type="checkbox"
@@ -292,7 +291,7 @@ export default function ProfilePage() {
                     availability: { ...profile.availability, [key]: e.target.checked }
                   })}
                   disabled={!isEditing}
-                  className="w-6 h-6 rounded-lg accent-purple-400 cursor-pointer"
+                  className="w-6 h-6 rounded-lg accent-accent cursor-pointer"
                 />
               </label>
             ))}

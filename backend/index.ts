@@ -1,7 +1,7 @@
 import cors from 'cors';
 import express from 'express';
 import dotenv from 'dotenv';
-import { connectToMongoDB, closeMongoDB } from './mongodb';
+import { connectToMongoDB, disconnectFromMongoDB } from './mongodb';
 
 dotenv.config({ path: '../.env' });
 
@@ -21,7 +21,6 @@ app.get('/', (req, res) => {
 
 // Creating the user document
 app.post('/api/create-user', async (req, res) => {
-    let client;
     try {
         const { auth0Id, name, email } = req.body
 
@@ -37,7 +36,7 @@ app.post('/api/create-user', async (req, res) => {
             })
         }
 
-        client = await connectToMongoDB();
+        const client = await connectToMongoDB();
         const db = client.db('users');
         const collection = db.collection('user_documents');
 
@@ -83,10 +82,6 @@ app.post('/api/create-user', async (req, res) => {
             error: 'Database query failed',
             details: error instanceof Error ? error.message : 'Unknown error'
         });
-    } finally {
-        if (client) {
-            await closeMongoDB();
-        }
     }
 });
 
@@ -122,8 +117,6 @@ app.get('/api/get-user/:auth0Id', async (req, res) => {
     } catch (error) {
         console.error('MongoDB error:', error);
         res.status(500).json({ error: 'Database query failed' });
-    } finally {
-        await closeMongoDB();
     }
 });
 
@@ -179,8 +172,6 @@ app.put('/api/update-user', async (req, res) => {
     } catch (error) {
         console.error('MongoDB error:', error);
         res.status(500).json({ error: 'Database query failed' });
-    } finally {
-        await closeMongoDB();
     }
 });
 
@@ -209,12 +200,21 @@ app.get('/api/hangouts', async (req, res) => {
     } catch (error) {
         console.error('MongoDB fetch error:', error);
         res.status(500).json({ error: 'Failed to fetch hangouts' });
-    } finally {
-        await closeMongoDB();
     }
 });
 
 // The port that the backend is listening to
 app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);
+});
+
+// Close MongoDB when server stops
+process.on('SIGINT', async () => {
+    await disconnectFromMongoDB();
+    process.exit(0);
+});
+
+process.on('SIGTERM', async () => {
+    await disconnectFromMongoDB();
+    process.exit(0);
 });
