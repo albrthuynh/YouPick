@@ -1,6 +1,7 @@
 import { Hero1 } from "@/components/hero1";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import Card from "@/components/card";
+import React from 'react';
 
 export default function HomePage() {
   return (

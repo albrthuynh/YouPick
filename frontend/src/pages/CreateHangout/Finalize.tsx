@@ -27,7 +27,7 @@ export default function FinalizePage() {
 
     
     if(listEmails.length == 0){
-      navigate("/swiping")
+      navigate("/home")
     }else if(listEmails.length > exportedNumParticipants){
       setNumParticError("Number of emails exceeding number of participants")
       setEmails("")
@@ -46,7 +46,7 @@ export default function FinalizePage() {
           "5S6JLoJfXML-TAxeI"
         );
       }
-      navigate("/swiping")
+      navigate("/home")
     }
   }
   

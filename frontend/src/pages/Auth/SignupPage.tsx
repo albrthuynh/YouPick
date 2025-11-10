@@ -19,11 +19,11 @@ export default function SignupPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-sky-100 via-purple-50 to-pink-50 flex flex-col items-center justify-center px-4 relative overflow-hidden">
+    <div className="min-h-screen bg-background flex flex-col items-center justify-center px-4 relative overflow-hidden">
       {/* Simple decorative shapes */}
       <div className="absolute inset-0 pointer-events-none">
         {/* Top left shape */}
-        <svg className="absolute top-20 left-10 w-32 h-32 text-emerald-300/30 float-animation" viewBox="0 0 100 100">
+        <svg className="absolute top-20 left-10 w-32 h-32 text-accent/20 float-animation" viewBox="0 0 100 100">
           <path
             d="M50,10 L60,40 L90,40 L65,60 L75,90 L50,70 L25,90 L35,60 L10,40 L40,40 Z"
             fill="none"
@@ -35,13 +35,13 @@ export default function SignupPage() {
         </svg>
 
         {/* Bottom right shape */}
-        <svg className="absolute bottom-32 right-16 w-40 h-40 text-pink-300/25 float-animation" style={{ animationDelay: '1s' }} viewBox="0 0 100 100">
+        <svg className="absolute bottom-32 right-16 w-40 h-40 text-primary/15 float-animation" style={{ animationDelay: '1s' }} viewBox="0 0 100 100">
           <circle cx="50" cy="50" r="30" fill="none" stroke="currentColor" strokeWidth="2" strokeDasharray="5,5" />
           <circle cx="50" cy="50" r="20" fill="none" stroke="currentColor" strokeWidth="2" />
         </svg>
 
         {/* Top right shape */}
-        <svg className="absolute top-1/3 right-1/4 w-24 h-24 text-yellow-300/30 float-animation" style={{ animationDelay: '2s' }} viewBox="0 0 100 100">
+        <svg className="absolute top-1/3 right-1/4 w-24 h-24 text-accent/25 float-animation" style={{ animationDelay: '2s' }} viewBox="0 0 100 100">
           <path
             d="M10,50 L30,30 L50,50 L70,30 L90,50"
             fill="none"
@@ -52,7 +52,7 @@ export default function SignupPage() {
         </svg>
 
         {/* Left middle shape */}
-        <svg className="absolute top-1/2 left-20 w-20 h-20 text-purple-300/25 float-animation" style={{ animationDelay: '0.5s' }} viewBox="0 0 100 100">
+        <svg className="absolute top-1/2 left-20 w-20 h-20 text-primary/18 float-animation" style={{ animationDelay: '0.5s' }} viewBox="0 0 100 100">
           <path
             d="M20,50 Q30,20 50,30 T80,50 Q70,80 50,70 T20,50"
             fill="none"
@@ -63,7 +63,7 @@ export default function SignupPage() {
         </svg>
 
         {/* Bottom left shape */}
-        <svg className="absolute bottom-20 left-1/4 w-28 h-28 text-emerald-300/20 float-animation" style={{ animationDelay: '3s' }} viewBox="0 0 100 100">
+        <svg className="absolute bottom-20 left-1/4 w-28 h-28 text-accent/15 float-animation" style={{ animationDelay: '3s' }} viewBox="0 0 100 100">
           <path
             d="M50,20 L80,70 L20,70 Z"
             fill="none"
@@ -78,13 +78,13 @@ export default function SignupPage() {
       <div className="max-w-lg w-full mx-auto relative z-10">
         {/* Header */}
         <div className="text-center mb-12">
-          <h1 className="font-poppins text-5xl md:text-6xl font-bold text-slate-800 mb-4">
+          <h1 className="font-poppins text-5xl md:text-6xl font-bold text-foreground mb-4">
             Join the
             <br />
             <span className="relative inline-block">
-              <span className="text-slate-800">adventure!</span>
+              <span className="text-foreground">adventure!</span>
               <svg
-                className="absolute -bottom-2 left-0 w-full h-3 text-pink-400"
+                className="absolute -bottom-2 left-0 w-full h-3 text-accent"
                 viewBox="0 0 250 12"
                 preserveAspectRatio="none"
               >
@@ -98,17 +98,17 @@ export default function SignupPage() {
               </svg>
             </span>
           </h1>
-          <p className="text-lg text-slate-600 font-poppins mt-6">
+          <p className="text-lg text-muted-foreground font-poppins mt-6">
             Let's create some unforgettable memories together! ✨
           </p>
         </div>
 
         {/* Main Signup Card */}
-        <div className="bg-white/80 backdrop-blur-sm rounded-3xl p-8 shadow-lg border border-pink-200 hover:shadow-xl hover:border-pink-300 transition-all duration-300">
+        <div className="bg-card/80 backdrop-blur-sm rounded-3xl p-8 shadow-lg border border-border hover:shadow-xl hover:border-accent transition-all duration-300">
           <Button
             onClick={handleSignup}
             disabled={isLoading || isAnimating}
-            className="w-full bg-gradient-to-r from-purple-400 to-pink-400 text-white hover:from-purple-500 hover:to-pink-500 font-poppins font-semibold py-6 rounded-full text-lg shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 spring-bounce disabled:opacity-50 disabled:cursor-not-allowed"
+            className="w-full bg-primary text-primary-foreground hover:bg-primary/90 font-poppins font-semibold py-6 rounded-full text-lg shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 spring-bounce disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {isAnimating ? (
               <span className="flex items-center justify-center">
@@ -122,28 +122,28 @@ export default function SignupPage() {
 
           {/* Features preview */}
           <div className="mt-8 grid grid-cols-3 gap-4 text-center">
-            <div className="bg-white/60 backdrop-blur-sm rounded-xl p-3 border border-emerald-200">
+            <div className="bg-card/60 backdrop-blur-sm rounded-xl p-3 border border-border">
               <div className="text-2xl mb-1">🎯</div>
-              <div className="text-xs text-slate-600 font-poppins font-medium">Smart Planning</div>
+              <div className="text-xs text-muted-foreground font-poppins font-medium">Smart Planning</div>
             </div>
-            <div className="bg-white/60 backdrop-blur-sm rounded-xl p-3 border border-pink-200">
+            <div className="bg-card/60 backdrop-blur-sm rounded-xl p-3 border border-border">
               <div className="text-2xl mb-1">👥</div>
-              <div className="text-xs text-slate-600 font-poppins font-medium">Group Sync</div>
+              <div className="text-xs text-muted-foreground font-poppins font-medium">Group Sync</div>
             </div>
-            <div className="bg-white/60 backdrop-blur-sm rounded-xl p-3 border border-purple-200">
+            <div className="bg-card/60 backdrop-blur-sm rounded-xl p-3 border border-border">
               <div className="text-2xl mb-1">⚡</div>
-              <div className="text-xs text-slate-600 font-poppins font-medium">Instant Results</div>
+              <div className="text-xs text-muted-foreground font-poppins font-medium">Instant Results</div>
             </div>
           </div>
         </div>
 
         {/* Login Link */}
         <div className="text-center mt-8">
-          <p className="text-slate-600 font-poppins">
+          <p className="text-muted-foreground font-poppins">
             Already part of the crew?{" "}
             <Link
               to="/login"
-              className="text-purple-600 hover:text-purple-700 font-semibold transition-colors duration-200 hover:underline"
+              className="text-accent hover:text-accent/80 font-semibold transition-colors duration-200 hover:underline"
             >
               Welcome back! 🎉
             </Link>
@@ -154,7 +154,7 @@ export default function SignupPage() {
         <div className="text-center mt-6">
           <Link
             to="/"
-            className="text-slate-500 hover:text-slate-700 font-poppins text-sm transition-colors duration-200 hover:underline"
+            className="text-muted-foreground hover:text-foreground font-poppins text-sm transition-colors duration-200 hover:underline"
           >
             ← Back to home
           </Link>
@@ -163,10 +163,10 @@ export default function SignupPage() {
 
       {/* Loading overlay */}
       {isAnimating && (
-        <div className="fixed inset-0 bg-white/50 backdrop-blur-sm flex items-center justify-center z-50">
-          <div className="text-center bg-white/80 backdrop-blur-sm rounded-3xl p-8 shadow-lg border border-pink-200">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-pink-400 mx-auto mb-4"></div>
-            <p className="text-slate-700 font-poppins">Setting up your adventure...</p>
+        <div className="fixed inset-0 bg-background/50 backdrop-blur-sm flex items-center justify-center z-50">
+          <div className="text-center bg-card/80 backdrop-blur-sm rounded-3xl p-8 shadow-lg border border-border">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-accent mx-auto mb-4"></div>
+            <p className="text-foreground font-poppins">Setting up your adventure...</p>
           </div>
         </div>
       )}
