@@ -26,11 +26,11 @@ app.post('/api/create-user', async (req, res) => {
         const { auth0Id, name, email } = req.body
 
         // Log the incoming request for debugging
-        console.log('📝 Create user request:', { auth0Id, name, email });
+        console.log('Create user request:', { auth0Id, name, email });
 
         // Validate the fields
         if (!auth0Id || !email) {
-            console.error('❌ Validation failed:', { auth0Id, email });
+            console.error('Validation failed:', { auth0Id, email });
             return res.status(400).json({
                 success: false,
                 message: 'auth0Id and email are required'
@@ -64,21 +64,21 @@ app.post('/api/create-user', async (req, res) => {
 
         // Verify that the user got inserted
         if (result.insertedId) {
-            console.log('✅ User created successfully:', result.insertedId);
+            console.log('User created successfully:', result.insertedId);
             res.json({
                 success: true,
                 message: 'User created successfully!',
                 user: { ...newUser, _id: result.insertedId }
             })
         } else {
-            console.error('❌ Failed to insert user');
+            console.error('Failed to insert user');
             res.status(500).json({
                 success: false,
                 message: 'Failed to create user'
             })
         }
     } catch (error) {
-        console.error('❌ MongoDB error creating user:', error);
+        console.error('MongoDB error creating user:', error);
         res.status(500).json({
             error: 'Database query failed',
             details: error instanceof Error ? error.message : 'Unknown error'
@@ -188,7 +188,7 @@ app.get('/api/hangouts', async (req, res) => {
 
         const hangouts = await collection.find({}).toArray();
 
-        console.log("🔥 Hangouts fetched:", hangouts);
+        console.log("Hangouts fetched:", hangouts);
 
         res.json({
             success: true,
@@ -208,35 +208,13 @@ app.get('/api/hangouts', async (req, res) => {
         });
 
     } catch (error) {
-        console.error("❌ Error fetching hangouts:", error);
+        console.error("Error fetching hangouts:", error);
         res.status(500).json({ success: false, error: "Failed to fetch hangouts" });
     }
 });
 
 
-app.get('/api/hangouts/:userId', async (req, res) => {
-    try {
-        const client = await connectToMongoDB();
-        const db = client.db('YouPickDB');
 
-        const user = await db
-            .collection('users')
-            .findOne({ _id: new ObjectId(req.params.userId) });
-
-        if (!user) {
-            return res.status(404).json({ error: "User not found" });
-        }
-
-        res.json({
-            success: true,
-            count: user.hangouts?.length || 0,
-            hangouts: user.hangouts || []
-        });
-    } catch (error) {
-        console.error(error);
-        res.status(500).json({ error: "Failed to fetch hangouts" });
-    }
-});
 
 app.get("/api/user/hangouts/:email", async (req, res) => {
     const userEmail = req.params.email;

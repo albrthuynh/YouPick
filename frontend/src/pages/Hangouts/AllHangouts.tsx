@@ -5,7 +5,7 @@ function AllHangouts() {
   const [hangouts, setHangouts] = useState([]);
 
   useEffect(() => {
-    fetch("http://localhost:3000/api/hangouts") // use your backend port
+    fetch("http://localhost:3000/api/hangouts") 
       .then(res => res.json())
       .then(data => {
         if (data.success) setHangouts(data.hangouts);

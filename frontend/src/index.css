@@ -554,7 +554,7 @@
     }
 }
 
-/* Even smaller phones (iPhone SE size) */
+
 @media (max-width: 400px) {
     .hangout-card {
         border-radius: 0.75rem;
