@@ -23,7 +23,7 @@ function AllHangouts() {
         ) : (
             hangouts.map(h => (
 
-                <HangoutCard title={h.title} date={h.date} location={h.location} />
+                <HangoutCard title={h.title} date={h.date} location={h.location} invited={h.invited} />
 
             ))
         )}

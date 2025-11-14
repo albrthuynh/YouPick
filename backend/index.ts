@@ -238,6 +238,44 @@ app.get('/api/hangouts/:userId', async (req, res) => {
     }
 });
 
+app.get("/api/user/hangouts/:email", async (req, res) => {
+    const userEmail = req.params.email;
+
+    console.log(`📥 /api/user/hangouts called for email: ${userEmail}`);
+
+    try {
+        const client = await connectToMongoDB();
+        const db = client.db('users');
+
+        // Hangouts created by the user
+        console.log("🔎 Searching for hangouts created by the user...");
+        const createdHangouts = await db.collection("hangouts").find({
+            "organizer.email": userEmail
+        }).toArray();
+
+        // Hangouts the user is invited to
+        console.log("🔎 Searching for hangouts the user is invited to...");
+        const invitedHangouts = await db.collection("hangouts").find({
+            invited: { $elemMatch: { email: userEmail } }
+        }).toArray();
+
+        console.log(`📂 Found ${invitedHangouts.length} invited hangouts`);
+
+        res.json({
+            success: true,
+            email: userEmail,
+            createdCount: createdHangouts.length,
+            invitedCount: invitedHangouts.length,
+            createdHangouts,
+            invitedHangouts
+        });
+
+    } catch (err) {
+        console.error("Error fetching user hangouts:", err);
+        res.status(500).json({ error: "Failed to fetch hangouts" });
+    }
+});
+
 // The port that the backend is listening to
 app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);
