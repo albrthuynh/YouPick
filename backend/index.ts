@@ -1,6 +1,7 @@
 import cors from 'cors';
 import express from 'express';
 import dotenv from 'dotenv';
+import { ObjectId } from 'mongodb';
 import { connectToMongoDB, disconnectFromMongoDB } from './mongodb';
 
 dotenv.config({ path: '../.env' });
@@ -176,16 +177,18 @@ app.put('/api/update-user', async (req, res) => {
 });
 
 app.get('/api/hangouts', async (req, res) => {
+    console.log("📥 /api/hangouts called");
+
     try {
         const client = await connectToMongoDB();
-        const db = client.db('youpick');
+
+        // ✔ Correct DB and collection based on your schema
+        const db = client.db('users');
         const collection = db.collection('hangouts');
 
         const hangouts = await collection.find({}).toArray();
 
-        // Just print names in the console for now
-        console.log("=== All Hangouts ===");
-        hangouts.forEach(h => console.log(h.title));
+        console.log("🔥 Hangouts fetched:", hangouts);
 
         res.json({
             success: true,
@@ -193,13 +196,45 @@ app.get('/api/hangouts', async (req, res) => {
             hangouts: hangouts.map(h => ({
                 id: h._id,
                 title: h.title,
+                description: h.description,
+                location: h.location,
                 date: h.date,
-                location: h.location
+                time: h.time,
+                organizer: h.organizer,
+                invited: h.invited,
+                createdAt: h.createdAt,
+                updatedAt: h.updatedAt
             }))
         });
+
     } catch (error) {
-        console.error('MongoDB fetch error:', error);
-        res.status(500).json({ error: 'Failed to fetch hangouts' });
+        console.error("❌ Error fetching hangouts:", error);
+        res.status(500).json({ success: false, error: "Failed to fetch hangouts" });
+    }
+});
+
+
+app.get('/api/hangouts/:userId', async (req, res) => {
+    try {
+        const client = await connectToMongoDB();
+        const db = client.db('YouPickDB');
+
+        const user = await db
+            .collection('users')
+            .findOne({ _id: new ObjectId(req.params.userId) });
+
+        if (!user) {
+            return res.status(404).json({ error: "User not found" });
+        }
+
+        res.json({
+            success: true,
+            count: user.hangouts?.length || 0,
+            hangouts: user.hangouts || []
+        });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: "Failed to fetch hangouts" });
     }
 });
 
