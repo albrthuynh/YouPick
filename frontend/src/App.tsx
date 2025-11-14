@@ -14,6 +14,7 @@ import HomePage from './pages/Home/HomePage';
 import CreateHangout from './pages/CreateHangout/Create';
 import FinalizePage from './pages/CreateHangout/Finalize';
 import SwipingPage from './pages/Swiping/Swiping';
+import AllHangouts from './pages/AllHangouts';
 
 axios.defaults.baseURL = "http://localhost:3000";
 
@@ -34,7 +35,7 @@ function App() {
           {/* <Route path="/swipe" element={<ProtectedRoute><SwipePage /></ProtectedRoute>}/> */}
           {/* <Route path="/create-hangout" element={<ProtectedRoute><SwipePage /></ProtectedRoute>}/> */}
           {/* <Route path="/join-hangout" element={<ProtectedRoute><SwipePage /></ProtectedRoute>}/> */}
-          {/* <Route path="/all-hangouts" element={<ProtectedRoute><SwipePage /></ProtectedRoute>}/> */}
+          <Route path="/all-hangouts" element={<AllHangouts/>}/>
 
         </Routes> 
       </BrowserRouter>

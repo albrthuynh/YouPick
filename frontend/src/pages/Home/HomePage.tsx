@@ -43,7 +43,7 @@ export default function HomePage() {
           imgURL="https://americanbehavioralclinics.com/wp-content/uploads/2023/06/Depositphotos_252922046_L.jpg"
           title="View All Hangouts"
           body="Click here to see all your upcoming hangouts."
-          path="/hangouts"
+          path="/all-hangouts"
         />
         <Card
           imgURL="https://t4.ftcdn.net/jpg/02/66/93/65/360_F_266936504_3w1DXsWwy3CZqCL162jEDdfTPPi6vGlp.jpg"
