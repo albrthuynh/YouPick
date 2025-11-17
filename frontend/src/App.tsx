@@ -15,6 +15,9 @@ import CreateHangout from './pages/CreateHangout/Create';
 import FinalizePage from './pages/CreateHangout/Finalize';
 import SwipingPage from './pages/Swiping/Swiping';
 import ProtectedRoute from './components/ProtectedRoute';
+import JoinHangoutPage from './pages/JoinHangout/JoinHangoutPage';
+import CalendarPage from './pages/Calendar/CalendarPage';
+import ChooseTimesPage from './pages/JoinHangout/ChooseTimesPage';
 
 axios.defaults.baseURL = "http://localhost:3000";
 
