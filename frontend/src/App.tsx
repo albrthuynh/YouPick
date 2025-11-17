@@ -13,10 +13,12 @@ import HomePage from './pages/Home/HomePage';
 import CreateHangout from './pages/CreateHangout/Create';
 import FinalizePage from './pages/CreateHangout/Finalize';
 import SwipingPage from './pages/Swiping/Swiping';
-import AllHangouts from './pages/Hangouts/AllHangouts';
+import AllHangouts from './pages/Hangouts/AllHangouts'; // shows all hangouts
 import UserHangouts from './pages/Hangouts/UserHangouts';
 import { Navbar1 } from './components/navbar1';
-
+import JoinHangoutPage from './pages/JoinHangout/JoinHangoutPage';
+import CalendarPage from './pages/Calendar/CalendarPage';
+import ChooseTimesPage from './pages/JoinHangout/ChooseTimesPage';
 
 axios.defaults.baseURL = "http://localhost:3000";
 
@@ -53,14 +55,12 @@ function App() {
           <Route path="/finalize" element={<FinalizePage/>}/>
           <Route path="/createhangout" element={<CreateHangout/>}/>
           <Route path="/swiping" element={<SwipingPage/>}/>
-          {/* Example of protected routes - uncomment when you have these pages */}
-          {/* <Route path="/profile" element={<ProtectedRoute><ProfilePage /></ProtectedRoute>}/> */}
-          {/* <Route path="/swipe" element={<ProtectedRoute><SwipePage /></ProtectedRoute>}/> */}
-          {/* <Route path="/create-hangout" element={<ProtectedRoute><SwipePage /></ProtectedRoute>}/> */}
-          {/* <Route path="/join-hangout" element={<ProtectedRoute><SwipePage /></ProtectedRoute>}/> */}
-          <Route path="/all-hangouts" element={<AllHangouts/>}/>
-          <Route path="/user-hangouts" element={<UserHangouts/>}/>
+          <Route path="/join-hangout" element={<JoinHangoutPage/>}/>
+          <Route path="/calendar" element={<CalendarPage/>}/>
+          <Route path="/choose-times" element={<ChooseTimesPage/>}/>
 
+          {/* <Route path="/all-hangouts" element={<AllHangouts/>}/> */}
+          <Route path="/user-hangouts" element={<UserHangouts/>}/>
         </Routes> 
       </BrowserRouter>
     </>
