@@ -15,6 +15,8 @@ import {
 } from "@/components/ui/popover"
 
 import { activityOptions } from '../activities';
+import axios from 'axios';
+import { useAuth0 } from '@auth0/auth0-react';
 
 interface ActivityOption {
     value: string;
@@ -25,6 +27,7 @@ interface ActivityOption {
 export let exportedNumParticipants: number;
 export let exportedActivitiesChosen: ActivityOption[];
 export let exportedHangoutName: string;
+export let generatedCode: number;
 
 
 export default function CreateHangout() {
@@ -41,7 +44,6 @@ export default function CreateHangout() {
     const [time2, setTime2] = React.useState("")
     const [time3, setTime3] = React.useState("")
 
-    
     const [hangoutName, setHangoutName] = useState<string>('');
 
     const [participants, setParticipants]= useState<number>(1);
@@ -70,6 +72,55 @@ export default function CreateHangout() {
     }, [participants]);
 
     const navigate = useNavigate();
+    
+    const { user, isAuthenticated, logout } = useAuth0();
+
+
+    const createHangoutDB = async () => {
+        if (!isAuthenticated || !user) return;
+        
+        // create activities into a dictionary
+        let activitiesDict: Map<string, number> = new Map();
+
+        // create dictionary for hangouts and their votes
+        for (const activity of selectedActivities){
+            activitiesDict.set(activity.value, 0)
+        }
+
+        // create new hangout
+        try {
+            console.log('Creating hangout in database...');
+            await axios.post('/api/hangouts', {
+              auth0Id: user.sub,
+              orgName: user.name,
+              orgEmail: user.email,
+              hangoutName: hangoutNameChosen,
+              activities: activitiesDict,
+              numParticipants: participants,
+              date1: [date1, 0],
+              date2: [date2, 0],
+              date3: [date3, 0],
+              time1: [time1, 0],
+              time2: [time2, 0],
+              time3: [time3, 0],
+              hangoutCode: generatedCode
+            });
+    
+           
+          } catch (error) {
+            console.error('Error creating user:', error);
+            // Log more details about the error
+            if (axios.isAxiosError(error)) {
+              console.error('Response data:', error.response?.data);
+              console.error('Response status:', error.response?.status);
+              console.error('User data being sent:', {
+                auth0Id: user.sub,
+                name: user.name,
+                email: user.email,
+              });
+            }
+          }
+    }
 
     const createHangout = async () => {
         
@@ -131,6 +182,12 @@ export default function CreateHangout() {
             exportedNumParticipants = participants
             exportedActivitiesChosen = selectedActivities
             exportedHangoutName = hangoutName
+            // generate random 5 digit code
+            generatedCode = Math.floor(Math.random() * (100000 - 10000 + 1)) + 10000
+
+            // create hangout document in mongoDB
+            createHangoutDB()
+
             //go to finalize page
             navigate('/finalize')
         }             

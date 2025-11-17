@@ -2,14 +2,15 @@ import React, { useState } from "react";
 import { useNavigate } from 'react-router-dom';
 
 import { Button } from "@/components/ui/button"
-// import { exportedNumParticipants } from './Create';
+import { exportedNumParticipants } from './Create';
+import { generatedCode } from './Create'
 
 // just for testing purposes
-let exportedNumParticipants = 2
+// let exportedNumParticipants = 2
 import emailjs from "@emailjs/browser";
 
-// generate random 5 digit code
-const hangoutCode = Math.floor(Math.random() * (100000 - 10000 + 1)) + 10000
+// // generate random 5 digit code
+// const hangoutCode = Math.floor(Math.random() * (100000 - 10000 + 1)) + 10000
 
 export default function FinalizePage() {
 
@@ -41,7 +42,7 @@ export default function FinalizePage() {
           "template_rzafuwo",
           { 
             email: email, 
-            hangoutCode: hangoutCode 
+            hangoutCode: generatedCode 
           },
           "5S6JLoJfXML-TAxeI"
         );
@@ -64,7 +65,7 @@ export default function FinalizePage() {
         
         <div>
           <h2 className="space-y-10 text-2xl font-semibold mb-2 text-center">Your Generated Hangout Code</h2>
-          <p className = "text-center text-4xl" >{hangoutCode}</p>
+          <p className = "text-center text-4xl" >{generatedCode}</p>
         </div>
 
         {/* Add friends emails */}

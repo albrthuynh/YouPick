@@ -56,7 +56,8 @@ app.post('/api/create-user', async (req, res) => {
             auth0Id,
             name: name || '',
             email,
-            createdAt: new Date()
+            hangoutIds: [], 
+            createdAt: new Date(),
         }
 
         const result = await collection.insertOne(newUser)
@@ -123,7 +124,7 @@ app.get('/api/get-user/:auth0Id', async (req, res) => {
 // Updating the user document
 app.put('/api/update-user', async (req, res) => {
     try {
-        const { auth0Id, name, bio } = req.body
+        const { auth0Id, name, bio, hangoutIds } = req.body
 
         // Validate the fields
         if (!auth0Id) {
@@ -144,6 +145,7 @@ app.put('/api/update-user', async (req, res) => {
 
         if (name !== undefined) updateFields.name = name
         if (bio !== undefined) updateFields.bio = bio
+        if (hangoutIds !== undefined) updateFields.hangoutIds = hangoutIds
 
         // Update the user document
         const result = await collection.updateOne(
@@ -175,28 +177,173 @@ app.put('/api/update-user', async (req, res) => {
     }
 });
 
-app.get('/api/hangouts', async (req, res) => {
-    try {
+
+// create hangout document
+app.post('/api/hangouts', async (req, res) => {
+    try{
+
+        // variables to set when hangout is first created
+        const {auth0Id, orgName, orgEmail, hangoutName, activites, numParticipants, date1, date2, date3, time1, time2, time3, hangoutCode} = req.body
+        
+        // connect to MongoDB
         const client = await connectToMongoDB();
-        const db = client.db('youpick');
+        const db = client.db('users');
         const collection = db.collection('hangouts');
 
-        const hangouts = await collection.find({}).toArray();
+        // create Hangout document
+        const newHangout = {
+            auth0Id,
+            orgName,
+            orgEmail, 
+            hangoutName, 
+            activites, 
+            numParticipants, 
+            date1: [],
+            date2: [],
+            date3: [],
+            time1: [],
+            time2: [],
+            time3: [],
+            hangoutCode,
+            createdAt: new Date(),
+            finalTime: "",
+            finalDate: "",
+            finalActivity: "",
+            votedNum: 0,
+            voteStatus: "Pending",
+            idParticipants: [],
+            emailParticipants: []
+        }
+       
+        // insert hangout into database
+        const result = await collection.insertOne(newHangout)
+    }catch (error){
+        console.error('MongoDB fetch error:', error);
+        res.status(500).json({ error: 'Failed to create hangout' });
+    }
 
-        // Just print names in the console for now
-        console.log("=== All Hangouts ===");
-        hangouts.forEach(h => console.log(h.title));
+});
 
+//update hangout document
+app.put('/api/hangouts', async (req, res) => {
+    try{
+        const { auth0Id, activites, date1, date2, date3, time1, time2, time3, finalTime, finalDate, finalActivity, 
+            votedNum, votedStatus, idParticipants, emailParticipants} = req.body
+    
+        const client = await connectToMongoDB();
+        const db = client.db('users');
+        const collection = db.collection('user_documents');
+    
+        // Validate the fields
+        if (!auth0Id) {
+            return res.status(400).json({
+                success: false,
+                message: 'auth0Id is required'
+            })
+        }
+    
+        const user = await collection.findOne({ auth0Id })
+    
+        // Build update object with only provided fields
+        const updateFields: any = {
+            updatedAt: new Date()
+        }
+    
+        if (activites !== undefined) updateFields.activites = activites
+        if (date1 !== undefined) updateFields.date1 = date1
+        if (date2 !== undefined) updateFields.date2 = date2
+        if (date3 !== undefined) updateFields.date3 = date3
+        if (time1 !== undefined) updateFields.time1 = time1
+        if (time2 !== undefined) updateFields.time2 = time2
+        if (time3 !== undefined) updateFields.time3 = time3
+        if (finalTime !== undefined) updateFields.finalTime = finalTime
+        if (finalDate !== undefined) updateFields.finalDate = finalDate
+        if (finalActivity !== undefined) updateFields.finalActivity = finalActivity
+        if (votedNum !== undefined) updateFields.votedNum = votedNum
+        if (votedStatus !== undefined) updateFields.votedStatus = votedStatus
+        if (idParticipants !== undefined) updateFields.idParticipants = idParticipants
+        if (emailParticipants !== undefined) updateFields.emailParticipants = emailParticipants
+    
+    
+        // Update the user document
+        const result = await collection.updateOne(
+            { auth0Id },
+            { $set: updateFields }
+        )
+    
+         if (result.matchedCount === 0) {
+                return res.status(404).json({
+                    success: false,
+                    message: 'User not found'
+                })
+            }
+    
+            if (result.modifiedCount > 0) {
+                res.json({
+                    success: true,
+                    message: 'Profile updated successfully!'
+                })
+            } else {
+                res.json({
+                    success: true,
+                    message: 'No changes made'
+                })
+            }
+    }catch (error) {
+        console.error('MongoDB error:', error);
+        res.status(500).json({ error: 'Database query failed' });
+    }
+});
+
+
+// get hangout document
+app.get('/api/hangouts:auth0Id', async (req, res) => {
+    try {
+        const { auth0Id } = req.params
+
+        //validating the auth id
+        if (!auth0Id) {
+            return res.status(400).json({
+                success: false,
+                message: 'auth0Id is required'
+            })
+        }
+        
+        const client = await connectToMongoDB();
+        const db = client.db('users');
+        const collection = db.collection('hangouts');
+
+        //const hangouts = await collection.find({}).toArray();
+
+        const hangout = await collection.findOne({ auth0Id })
+
+        //if hangout does not exist, throw an error message
+        if (!hangout) {
+            return res.status(404).json({
+                success: false,
+                message: 'Hangout not found'
+            })
+        }
+        //returning the hangout object
         res.json({
             success: true,
-            count: hangouts.length,
-            hangouts: hangouts.map(h => ({
-                id: h._id,
-                title: h.title,
-                date: h.date,
-                location: h.location
-            }))
-        });
+            hangout: hangout
+        })
+
+        // Just print names in the console for now
+        // console.log("=== All Hangouts ===");
+        // hangouts.forEach(h => console.log(h.title));
+
+        // res.json({
+        //     success: true,
+        //     count: hangouts.length,
+        //     hangouts: hangouts.map(h => ({
+        //         id: h._id,
+        //         title: h.title,
+        //         date: h.date,
+        //         location: h.location
+        //     }))
+        // });
     } catch (error) {
         console.error('MongoDB fetch error:', error);
         res.status(500).json({ error: 'Failed to fetch hangouts' });

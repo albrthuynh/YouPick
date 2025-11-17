@@ -88,7 +88,6 @@ export default function SwipingPage() {
                   className="w-[600px] h-[350px] object-cover"
               />
               
-              
               <div className= "pl-4 space-y-4">
                 {/* Activity Name */}
                   <div className="flex items-center gap-3 text-foreground">
@@ -140,7 +139,6 @@ export default function SwipingPage() {
               <Heart className="h-10 w-10" />
             </Button>
           </div>
-
 
         </div>
       ):(
