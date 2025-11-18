@@ -29,15 +29,18 @@ function App() {
           <Route path="/login" element={<LoginPage />}/>
           <Route path="/signup" element={<SignupPage />}/>
 
-          {/* Example of protected routes - uncomment when you have these pages */}
+          {/* Protected Routes - Authenticated Users can Access these Pages */}
           <Route path="/profile" element={<ProtectedRoute><ProfilePage/></ProtectedRoute>}/>
           <Route path="/swiping" element={<ProtectedRoute><SwipingPage/></ProtectedRoute>}/>
           <Route path="/createhangout" element={<ProtectedRoute><CreateHangout/></ProtectedRoute>}/>
           <Route path="/home" element={<ProtectedRoute><HomePage/></ProtectedRoute>}/>
           <Route path="/finalize" element={<ProtectedRoute><FinalizePage/></ProtectedRoute>}/>
+          <Route path="/join-hangout" element={<ProtectedRoute><JoinHangoutPage/></ProtectedRoute>}/>
+          <Route path="/calendar" element={<ProtectedRoute><CalendarPage/></ProtectedRoute>}/>
+          <Route path="/choose-times" element={<ProtectedRoute><ChooseTimesPage/></ProtectedRoute>}/>
         </Routes> 
       </BrowserRouter>
-  )
-}
+  );
+};
 
 export default App
