@@ -216,28 +216,75 @@ app.get('/api/hangouts', async (req, res) => {
 
 
 
+// app.get("/api/user/hangouts/:email", async (req, res) => {
+//     const userEmail = req.params.email;
+
+//     console.log(`/api/user/hangouts called for email: ${userEmail}`);
+
+//     try {
+//         const client = await connectToMongoDB();
+//         const db = client.db("users");
+
+//         const allowedStatuses = ["Pending", "Finalized"];
+
+//         const userHangouts = await db.collection("hangouts").find({
+//             voteStatus: { $in: allowedStatuses },
+//             $or: [
+//                 { orgEmail: userEmail },                  // user created it
+//                 { emailParticipants: userEmail }          // user invited
+//             ]
+//         }).toArray();
+
+//         console.log(`Found ${userHangouts.length} total hangouts for user.`);
+
+//         // Format for frontend HangoutCard
+//         const formatted = userHangouts.map(h => ({
+//             _id: h._id,
+//             title: h.title,
+//             date: h.date,
+//             location: h.location,
+//             invited: h.emailParticipants,
+//             organizer: {
+//                 name: h.organizerName || h.organizer?.name || "Unknown"
+//             },
+//             voteStatus: h.voteStatus
+//         }));
+
+//         res.json({
+//             success: true,
+//             email: userEmail,
+//             total: formatted.length,
+//             hangouts: formatted
+//         });
+
+//     } catch (err) {
+//         console.error("Error fetching user hangouts:", err);
+//         res.status(500).json({ error: "Failed to fetch hangouts" });
+//     }
+// });
+
 app.get("/api/user/hangouts/:email", async (req, res) => {
     const userEmail = req.params.email;
 
-    console.log(`📥 /api/user/hangouts called for email: ${userEmail}`);
+    console.log(`/api/user/hangouts called for email: ${userEmail}`);
 
     try {
         const client = await connectToMongoDB();
         const db = client.db('users');
 
         // Hangouts created by the user
-        console.log("🔎 Searching for hangouts created by the user...");
+        console.log("Searching for hangouts created by the user...");
         const createdHangouts = await db.collection("hangouts").find({
             "organizer.email": userEmail
         }).toArray();
 
         // Hangouts the user is invited to
-        console.log("🔎 Searching for hangouts the user is invited to...");
+        console.log("Searching for hangouts the user is invited to...");
         const invitedHangouts = await db.collection("hangouts").find({
             invited: { $elemMatch: { email: userEmail } }
         }).toArray();
 
-        console.log(`📂 Found ${invitedHangouts.length} invited hangouts`);
+        console.log(`Found ${invitedHangouts.length} invited hangouts`);
 
         res.json({
             success: true,

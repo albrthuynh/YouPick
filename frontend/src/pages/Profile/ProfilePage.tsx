@@ -141,7 +141,7 @@ export default function ProfilePage() {
   return (
     <div className="min-h-screen bg-background">
       {/* Header */}
-      <div className="bg-card/40 backdrop-blur-sm border-b border-border/30">
+      {/* <div className="bg-card/40 backdrop-blur-sm border-b border-border/30">
         <div className="max-w-5xl mx-auto px-4 py-4 flex items-center justify-between">
           <Link to="/" className="text-2xl font-bold text-primary">
             YouPick
@@ -158,7 +158,7 @@ export default function ProfilePage() {
             </Link>
           </div>
         </div>
-      </div>
+      </div> */}
 
       {/* Main Content */}
       <div className="max-w-4xl mx-auto px-4 py-12">

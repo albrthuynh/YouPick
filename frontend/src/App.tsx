@@ -1,7 +1,6 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
 import axios from 'axios';
-import React from 'react';
-
+import { useAuth0 } from "@auth0/auth0-react";
 // changed a comment again!
 // Rogelio testing making a pull request
 // Pages Imported (example comment)
@@ -16,11 +15,34 @@ import FinalizePage from './pages/CreateHangout/Finalize';
 import SwipingPage from './pages/Swiping/Swiping';
 import AllHangouts from './pages/Hangouts/AllHangouts';
 import UserHangouts from './pages/Hangouts/UserHangouts';
+import { Navbar1 } from './components/navbar1';
+
 
 axios.defaults.baseURL = "http://localhost:3000";
 
 function App() {
+
+
   return (
+    <>
+    <Navbar1
+      menu={[
+        { title: "Home", url: "/home" },
+        { title: "Create Hangout", url: "/createhangout" },
+        { title: "My Hangouts", url: "/user-hangouts" },
+        { title: "Swipe", url: "/swiping" },
+      ]}
+      auth={{
+        login: { title: "Login", url: "/login" },
+        signup: { title: "Sign Up", url: "/signup" }
+      }}
+      logo={{
+        url: "/home",
+        src: "",
+        alt: "logo",
+        title: "YouPick"
+      }}
+    />
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<LandingPage />}/>
@@ -41,6 +63,7 @@ function App() {
 
         </Routes> 
       </BrowserRouter>
+    </>
   )
 }
 

@@ -8,6 +8,8 @@ function UserHangouts() {
     const [invitedHangouts, setInvitedHangouts] = useState([]);
     const [loading, setLoading] = useState(true);
 
+
+    
     useEffect(() => {
         if (!isAuthenticated || !user?.email) return;
 
@@ -69,6 +71,7 @@ function UserHangouts() {
                                         location={h.location}
                                         invited={h.invited}
                                         organizer={h.organizer.name}
+                                        voteStatus={h.voteStatus}
                                     />
                                 ))}
                             </div>
@@ -95,6 +98,7 @@ function UserHangouts() {
                                         location={h.location}
                                         invited={h.invited}
                                         organizer={h.organizer.name}
+                                        voteStatus={h.voteStatus}
                                     />
                                 ))}
                             </div>

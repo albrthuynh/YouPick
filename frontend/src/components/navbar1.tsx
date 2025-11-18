@@ -49,6 +49,7 @@ interface Navbar1Props {
       url: string;
     };
   };
+  isAuthenticated?: boolean;
 }
 
 const Navbar1 = ({
@@ -59,9 +60,9 @@ const Navbar1 = ({
     title: "Shadcnblocks.com",
   },
   menu = [
-    { title: "Home", url: "#" },
+    { title: "Home", url: "/" },
     {
-      title: "Products",
+      title: "Hangouts",
       url: "#",
       items: [
         {
@@ -136,20 +137,15 @@ const Navbar1 = ({
   },
 }: Navbar1Props) => {
   return (
-    <section className="py-4">
-      <div className="container">
+    <section className="py-4 w-full">
+      <div className="max-w-full w-full px-4">
         {/* Desktop Menu */}
         <nav className="hidden items-center justify-between lg:flex">
           <div className="flex items-center gap-6">
             {/* Logo */}
-            <a href={logo.url} className="flex items-center gap-2">
-              <img
-                src={logo.src}
-                className="max-h-8 dark:invert"
-                alt={logo.alt}
-              />
-              <span className="text-lg font-semibold tracking-tighter">
-                {logo.title}
+            <a href="/user-hangouts" className="flex items-center gap-2">
+              <span className="text-3xl font-semibold tracking-tighter">
+                YouPick
               </span>
             </a>
             <div className="flex items-center">
@@ -168,6 +164,8 @@ const Navbar1 = ({
               <a href={auth.signup.url}>{auth.signup.title}</a>
             </Button>
           </div>
+         
+
         </nav>
 
         {/* Mobile Menu */}

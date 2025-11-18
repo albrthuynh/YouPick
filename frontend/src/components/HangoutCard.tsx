@@ -2,6 +2,11 @@ import { Link } from 'react-router-dom';
 import '../index.css';
 
 function HangoutCard(props) {
+    const statusColor =
+        props.voteStatus === "Finalized"
+            ? "text-green-600"
+            : "text-orange-500";
+
     return (
         <div className='hangout-card'>
             <div className="relative flex flex-col my-6 bg-white shadow-sm border border-slate-200 rounded-lg w-96">
@@ -11,6 +16,9 @@ function HangoutCard(props) {
                         src="https://americanbehavioralclinics.com/wp-content/uploads/2023/06/Depositphotos_252922046_L.jpg" 
                         alt="card-image" 
                     />
+                    <p className={`absolute bg-black p-2 bottom-2 left-2 text-lg font-semibold drop-shadow ${statusColor} rounded-lg bg-opacity-30`}>
+                        {props.voteStatus}
+                    </p>
                 </div>
 
                 <div className="p-4">
