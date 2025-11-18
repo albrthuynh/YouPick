@@ -150,7 +150,7 @@ export default function ProfilePage() {
             <Link to="/groups" className="text-muted-foreground hover:text-accent transition-colors">
               My Groups
             </Link>
-            <Link to="/swiping" className="text-muted-foreground hover:text-accent transition-colors">
+            <Link to="/home" className="text-muted-foreground hover:text-accent transition-colors">
               Swipe
             </Link>
           </div>

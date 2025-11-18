@@ -63,9 +63,12 @@ export default function CreateHangout() {
     const [time2Chosen, setTime2Chosen] = React.useState(true)
     const [time3Chosen, setTime3Chosen] = React.useState(true)
 
+    const [createDatabase, setCreateDatabase] = React.useState(false) 
+
     const [hangoutNameChosen, setHangoutNameChosen] = React.useState(true)
 
     const [activitiesChosen, setActivitiesChosen] = React.useState(true)
+
 
     useEffect(() =>{
         participantNumberCheck();
@@ -73,39 +76,51 @@ export default function CreateHangout() {
 
     const navigate = useNavigate();
     
-    const { user, isAuthenticated, logout } = useAuth0();
+    const { user, isAuthenticated, isLoading } = useAuth0();
 
+    // create hangout document in mongoDB
+    // useEffect(() =>{
+    //     console.log("IN USE EFFECT")
+    //     if (createDatabase == true){
+    //         console.log("CREATE DATABASE SET TO TRUE")
+    //         createHangoutDB()
+    //     }
+    // }, [createDatabase]);
+    
 
     const createHangoutDB = async () => {
+        console.log("BEFORE RETURN")
+
         if (!isAuthenticated || !user) return;
-        
+
+        console.log("AFTER RETURN")
         // create activities into a dictionary
         let activitiesDict: Map<string, number> = new Map();
 
         // create dictionary for hangouts and their votes
         for (const activity of selectedActivities){
+            console.log(activity.value + " and " + activity.label)
             activitiesDict.set(activity.value, 0)
         }
 
         // create new hangout
         try {
             console.log('Creating hangout in database...');
-            await axios.post('/api/hangouts', {
+            await axios.post('/api/create-hangout', {
               auth0Id: user.sub,
               orgName: user.name,
               orgEmail: user.email,
-              hangoutName: hangoutNameChosen,
-              activities: activitiesDict,
+              hangoutName: hangoutName,
+              activities: Object.fromEntries(activitiesDict),
               numParticipants: participants,
-              date1: [date1, 0],
-              date2: [date2, 0],
-              date3: [date3, 0],
-              time1: [time1, 0],
-              time2: [time2, 0],
-              time3: [time3, 0],
+              date1: [date1, 0], 
+              date2: [date2, 0], 
+              date3: [date3, 0], 
+              time1: [time1, 0], 
+              time2: [time2, 0], 
+              time3: [time3, 0], 
               hangoutCode: generatedCode
             });
-    
            
           } catch (error) {
             console.error('Error creating user:', error);
@@ -185,13 +200,20 @@ export default function CreateHangout() {
             // generate random 5 digit code
             generatedCode = Math.floor(Math.random() * (100000 - 10000 + 1)) + 10000
 
-            // create hangout document in mongoDB
-            createHangoutDB()
+            setCreateDatabase(true)
 
             //go to finalize page
             navigate('/finalize')
         }             
     }
+    useEffect(() => {
+        console.log("IN USE EFFECT")
+        if (createDatabase) {
+            console.log("CREATE DATABASE SET TO TRUE")
+            createHangoutDB();
+        }
+    }, [createDatabase]);
+
 
     const participantNumberCheck = () =>{
 
