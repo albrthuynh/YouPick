@@ -199,7 +199,7 @@ app.post('/api/create-hangout', async (req, res) => {
             hangoutCode
         } = req.body;
 
-        console.log("Activities received: ", activities);
+        console.log("Activities received:", activities);
         
         // connect to MongoDB
         const client = await connectToMongoDB();
