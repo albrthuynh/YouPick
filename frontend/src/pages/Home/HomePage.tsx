@@ -17,7 +17,7 @@ export default function HomePage() {
           buttons={{
             primary: {
               text: "Create Hangout",
-              url: "/create-hangout", 
+              url: "/createhangout", 
             },
             secondary: {
               text: "Join Hangout",

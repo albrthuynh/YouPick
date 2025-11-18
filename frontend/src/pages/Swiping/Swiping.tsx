@@ -5,11 +5,16 @@ import { useNavigate } from 'react-router-dom';
 
 import Confetti from "react-confetti";
 
+import axios from 'axios';
+import { useAuth0 } from '@auth0/auth0-react';
+
 import {CircleUserRound, Sparkles, BookHeart, X, Heart, NotebookText} from "lucide-react"
 
 
 import { exportedActivitiesChosen } from '../CreateHangout/Create';
 import { exportedHangoutName } from '../CreateHangout/Create';
+// import { generatedCode } from '../join-hangout/Create';
+let generatedCode = 12345
 
 interface ActivityOption {
     value: string;
@@ -17,7 +22,10 @@ interface ActivityOption {
   }
 
 export default function SwipingPage() {
+    const { user, isAuthenticated, logout } = useAuth0();
 
+    const navigate = useNavigate();
+    
     const [currActivityIndex, setActivityIndex] = useState(0)
     const [fixIndexIssue, setfixIndexIssue] = useState(0)
     const [swipeDirection, setSwipeDirection] = useState<"left" | "right" | null>(null)
@@ -60,6 +68,84 @@ export default function SwipingPage() {
     const currEvent = exportedActivitiesChosen[currActivityIndex]
     const currImage = currEvent.value + '.jpg'
 
+    // find max
+    function findMax(a: [string, number], b: [string, number], c: [string, number]){
+      let maxNum = a[1]
+      let maxDate = a[0]
+
+      if(b[1] > maxNum){
+        maxNum = b[1]
+        maxDate = b[0]
+      }
+
+      if(c[1] > maxNum){
+        maxNum = c[1]
+        maxDate = c[0]
+      }
+      
+      return maxDate
+    }
+
+    const doneButtonLogic = async () =>{
+      
+      if (!isAuthenticated || !user) return;
+
+      const response = await axios.get(`/api/get-hangout/${generatedCode}`);
+      const hangoutData = response.data.hangout;
+
+      // add votes to hangout activites based on curr users picks
+      for (const activity of likedActivities){
+        // update count for specific activity
+        let activityVal = hangoutData.activities.get(activity.value)
+        hangoutData.activities.set(activity.value, activityVal+1)
+      }
+      
+      // updated num people voted
+      hangoutData.votedNum += 1
+
+      // if everyone has voted
+      if(hangoutData.votedNum === hangoutData.numParticipants){
+        hangoutData.voteStatus = "Finalized"
+        hangoutData.finalDate = findMax(hangoutData.date1, hangoutData.date2, hangoutData.date3)
+        hangoutData.finalTime = findMax(hangoutData.time1, hangoutData.time2, hangoutData.time3)
+
+        //converting activities json to Map
+        const activities = new Map<string, number>(
+          Object.entries(hangoutData.activities)
+        )
+
+        let maxHangoutVote: number = Math.max(...Array.from(activities.values()))
+
+        for (const [key, value] of hangoutData.activites.entries()) {
+          if (value === maxHangoutVote) {
+            hangoutData.finalActivity = key;
+          }
+        }
+  
+      }
+      
+      try {
+        const response = await axios.put('/api/update-hangout', {
+          auth0Id: user.sub,
+          activites: hangoutData.activities,
+          finalTime: hangoutData.finalTime,
+          finalDate: hangoutData.finalDate,
+          finalActivity: hangoutData.finalActivity,
+          votedNum: hangoutData.votedNum,
+          voteStatus: hangoutData.votedStatus,
+        });
+  
+        console.log('✅ Profile saved:', response.data.message);
+      } catch (error) {
+        console.error('❌ Error saving profile:', error);
+        alert('Failed to save profile. Please try again.');
+      }
+      // check if this is the last user who voted
+      
+      // navigate to home page
+      navigate('/home')
+      
+    }
     return (
 
       fixIndexIssue < exportedActivitiesChosen.length?(
@@ -87,7 +173,6 @@ export default function SwipingPage() {
                   src={`/images/${currImage}`}
                   className="w-[600px] h-[350px] object-cover"
               />
-              
               
               <div className= "pl-4 space-y-4">
                 {/* Activity Name */}
@@ -141,7 +226,6 @@ export default function SwipingPage() {
             </Button>
           </div>
 
-
         </div>
       ):(
         // h-screen flex items-center justify-center
@@ -156,7 +240,7 @@ export default function SwipingPage() {
           {/* Done*/}
           <div className="space-y-3 mt-8 flex justify-center items-center"> 
             <Button
-              onClick={async () => {useNavigate()("/home")}}
+              onClick={doneButtonLogic}
               className="px-6 py-3 text-lg w-80 h-12 bg-primary hover:bg-accent text-primary-foreground font-medium rounded-md transition-colors font-poppins font-bold py-6 rounded-2xl text-xl shadow-2xl transition-all duration-300 hover:scale-105 spring-bounce disabled:opacity-50 disabled:cursor-not-allowed relative overflow-hidden"
             >
             Done
