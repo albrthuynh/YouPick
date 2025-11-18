@@ -1,11 +1,8 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
 import axios from 'axios';
-import React from 'react';
+import { useAuth0 } from "@auth0/auth0-react";
 
-// changed a comment again!
-// Rogelio testing making a pull request
-// Pages Imported (example comment)
-// viviana changes!
+// IMPORTED PAGES
 import LandingPage from './pages/Home/LandingPage'
 import LoginPage from './pages/Auth/LoginPage'
 import SignupPage from './pages/Auth/SignupPage'
@@ -15,6 +12,9 @@ import CreateHangout from './pages/CreateHangout/Create';
 import FinalizePage from './pages/CreateHangout/Finalize';
 import SwipingPage from './pages/Swiping/Swiping';
 import ProtectedRoute from './components/ProtectedRoute';
+import AllHangouts from './pages/Hangouts/AllHangouts'; // shows all hangouts
+import UserHangouts from './pages/Hangouts/UserHangouts';
+import { Navbar1 } from './components/navbar1';
 import JoinHangoutPage from './pages/JoinHangout/JoinHangoutPage';
 import CalendarPage from './pages/Calendar/CalendarPage';
 import ChooseTimesPage from './pages/JoinHangout/ChooseTimesPage';
@@ -23,6 +23,26 @@ axios.defaults.baseURL = "http://localhost:3000";
 
 function App() {
   return (
+    <>
+    <Navbar1
+      menu={[
+        { title: "Home", url: "/home" },
+        { title: "Create Hangout", url: "/createhangout" },
+        { title: "My Hangouts", url: "/user-hangouts" },
+        { title: "Join Hangout", url: "/join-hangout"},
+        { title: "Calendar", url: "/calendar"},
+      ]}
+      auth={{
+        login: { title: "Login", url: "/login" },
+        signup: { title: "Sign Up", url: "/signup" }
+      }}
+      logo={{
+        url: "/home",
+        src: "",
+        alt: "logo",
+        title: "YouPick"
+      }}
+    />
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<LandingPage />}/>
@@ -38,9 +58,11 @@ function App() {
           <Route path="/join-hangout" element={<ProtectedRoute><JoinHangoutPage/></ProtectedRoute>}/>
           <Route path="/calendar" element={<ProtectedRoute><CalendarPage/></ProtectedRoute>}/>
           <Route path="/choose-times" element={<ProtectedRoute><ChooseTimesPage/></ProtectedRoute>}/>
+          <Route path="/user-hangouts" element={<ProtectedRoute><UserHangouts/></ProtectedRoute>}/>
         </Routes> 
       </BrowserRouter>
+    </>
   );
 };
 
-export default App
+export default App;

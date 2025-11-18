@@ -1,4 +1,5 @@
-import { Book, Menu, Sunset, Trees, Zap } from "lucide-react";
+import { Book, Menu, Sunset, Trees, Zap, User } from "lucide-react";
+import { useAuth0 } from '@auth0/auth0-react';
 
 import {
   Accordion,
@@ -59,9 +60,9 @@ const Navbar1 = ({
     title: "Shadcnblocks.com",
   },
   menu = [
-    { title: "Home", url: "#" },
+    { title: "Home", url: "/" },
     {
-      title: "Products",
+      title: "Hangouts",
       url: "#",
       items: [
         {
@@ -135,21 +136,18 @@ const Navbar1 = ({
     signup: { title: "Sign up", url: "#" },
   },
 }: Navbar1Props) => {
+  const { isAuthenticated } = useAuth0();
+
   return (
-    <section className="py-4">
-      <div className="container">
+    <section className="py-4 w-full">
+      <div className="max-w-full w-full px-4">
         {/* Desktop Menu */}
         <nav className="hidden items-center justify-between lg:flex">
           <div className="flex items-center gap-6">
             {/* Logo */}
-            <a href={logo.url} className="flex items-center gap-2">
-              <img
-                src={logo.src}
-                className="max-h-8 dark:invert"
-                alt={logo.alt}
-              />
-              <span className="text-lg font-semibold tracking-tighter">
-                {logo.title}
+            <a href="/home" className="flex items-center gap-2">
+              <span className="text-3xl font-semibold tracking-tighter">
+                YouPick
               </span>
             </a>
             <div className="flex items-center">
@@ -161,13 +159,26 @@ const Navbar1 = ({
             </div>
           </div>
           <div className="flex gap-2">
-            <Button asChild variant="outline" size="sm">
-              <a href={auth.login.url}>{auth.login.title}</a>
-            </Button>
-            <Button asChild size="sm">
-              <a href={auth.signup.url}>{auth.signup.title}</a>
-            </Button>
+            {isAuthenticated ? (
+              <Button asChild size="sm">
+                <a href="/profile" className="flex items-center gap-2">
+                  <User className="size-4" />
+                  Profile
+                </a>
+              </Button>
+            ) : (
+              <>
+                <Button asChild variant="outline" size="sm">
+                  <a href={auth.login.url}>{auth.login.title}</a>
+                </Button>
+                <Button asChild size="sm">
+                  <a href={auth.signup.url}>{auth.signup.title}</a>
+                </Button>
+              </>
+            )}
           </div>
+         
+
         </nav>
 
         {/* Mobile Menu */}
@@ -209,12 +220,23 @@ const Navbar1 = ({
                   </Accordion>
 
                   <div className="flex flex-col gap-3">
-                    <Button asChild variant="outline">
-                      <a href={auth.login.url}>{auth.login.title}</a>
-                    </Button>
-                    <Button asChild>
-                      <a href={auth.signup.url}>{auth.signup.title}</a>
-                    </Button>
+                    {isAuthenticated ? (
+                      <Button asChild>
+                        <a href="/profile" className="flex items-center justify-center gap-2">
+                          <User className="size-4" />
+                          Profile
+                        </a>
+                      </Button>
+                    ) : (
+                      <>
+                        <Button asChild variant="outline">
+                          <a href={auth.login.url}>{auth.login.title}</a>
+                        </Button>
+                        <Button asChild>
+                          <a href={auth.signup.url}>{auth.signup.title}</a>
+                        </Button>
+                      </>
+                    )}
                   </div>
                 </div>
               </SheetContent>

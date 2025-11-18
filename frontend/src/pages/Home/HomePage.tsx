@@ -1,16 +1,22 @@
-
 import { Hero1 } from "@/components/hero1";
-// import { Navbar1 } from "@/components/navbar1";
-// import { Button } from "@/components/ui/button";
-import { Avatar } from "@/components/ui/avatar";
+import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import Card from "@/components/card";
 import React from 'react';
 
 export default function HomePage() {
   return (
-    <div>
+    <div className="relative min-h-screen bg-background">
       
-      <div className="flex justify-center ">
+      {/* Avatar positioned top-right */}
+      <div className="absolute top-4 right-6">
+        <Avatar>
+          <AvatarImage src="https://avatars.githubusercontent.com/u/00000000?v=4" alt="User avatar" />
+          <AvatarFallback>RL</AvatarFallback>
+        </Avatar>
+      </div>
+
+      {/* Hero section */}
+      <div className="flex justify-center mt-10">
         <Hero1
           heading="YouPick"
           description="Easily schedule hangouts and connect with friends. Plan, join, and manage events effortlessly — all in one place."
@@ -21,7 +27,7 @@ export default function HomePage() {
             },
             secondary: {
               text: "Join Hangout",
-              url: "/join-hangout", 
+              url: "/join-hangout",
             },
           }}
           image={{
@@ -30,19 +36,20 @@ export default function HomePage() {
           }}
         />
       </div>
-      
-      <div className="flex justify-center gap-10">
-        <Card 
-        imgURL="https://americanbehavioralclinics.com/wp-content/uploads/2023/06/Depositphotos_252922046_L.jpg"
-        title="View All Hangouts"
-        body="Click here to create a calender of your availability."
-        path="/profile"
+
+      {/* Cards section */}
+      <div className="flex justify-center gap-10 mt-10 mb-20">
+        <Card
+          imgURL="https://americanbehavioralclinics.com/wp-content/uploads/2023/06/Depositphotos_252922046_L.jpg"
+          title="View All Hangouts"
+          body="Click here to see all your upcoming hangouts."
+          path="/all-hangouts"
         />
-        <Card 
-        imgURL="https://t4.ftcdn.net/jpg/02/66/93/65/360_F_266936504_3w1DXsWwy3CZqCL162jEDdfTPPi6vGlp.jpg"
-        title="View Calender"
-        body="Click here to create a calender of your availability."  
-        path="/profile"
+        <Card
+          imgURL="https://t4.ftcdn.net/jpg/02/66/93/65/360_F_266936504_3w1DXsWwy3CZqCL162jEDdfTPPi6vGlp.jpg"
+          title="View Calendar"
+          body="Click here to view your availability calendar."
+          path="/calendar"
         />
       </div>
     </div>

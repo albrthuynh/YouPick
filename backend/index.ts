@@ -1,6 +1,7 @@
 import cors from 'cors';
 import express from 'express';
 import dotenv from 'dotenv';
+import { ObjectId } from 'mongodb';
 import { connectToMongoDB, disconnectFromMongoDB } from './mongodb';
 
 dotenv.config({ path: '../.env' });
@@ -25,11 +26,11 @@ app.post('/api/create-user', async (req, res) => {
         const { auth0Id, name, email } = req.body
 
         // Log the incoming request for debugging
-        console.log('📝 Create user request:', { auth0Id, name, email });
+        console.log('Create user request:', { auth0Id, name, email });
 
         // Validate the fields
         if (!auth0Id || !email) {
-            console.error('❌ Validation failed:', { auth0Id, email });
+            console.error('Validation failed:', { auth0Id, email });
             return res.status(400).json({
                 success: false,
                 message: 'auth0Id and email are required'
@@ -64,21 +65,21 @@ app.post('/api/create-user', async (req, res) => {
 
         // Verify that the user got inserted
         if (result.insertedId) {
-            console.log('✅ User created successfully:', result.insertedId);
+            console.log('User created successfully:', result.insertedId);
             res.json({
                 success: true,
                 message: 'User created successfully!',
                 user: { ...newUser, _id: result.insertedId }
             })
         } else {
-            console.error('❌ Failed to insert user');
+            console.error('Failed to insert user');
             res.status(500).json({
                 success: false,
                 message: 'Failed to create user'
             })
         }
     } catch (error) {
-        console.error('❌ MongoDB error creating user:', error);
+        console.error('MongoDB error creating user:', error);
         res.status(500).json({
             error: 'Database query failed',
             details: error instanceof Error ? error.message : 'Unknown error'
@@ -377,8 +378,96 @@ app.get('/api/get-hangout:generatedCode', async (req, res) => {
         //     }))
         // });
     } catch (error) {
-        console.error('MongoDB fetch error:', error);
-        res.status(500).json({ error: 'Failed to fetch hangouts' });
+        console.error("Error fetching hangouts:", error);
+        res.status(500).json({ success: false, error: "Failed to fetch hangouts" });
+    }
+});
+
+
+
+
+// app.get("/api/user/hangouts/:email", async (req, res) => {
+//     const userEmail = req.params.email;
+
+//     console.log(`/api/user/hangouts called for email: ${userEmail}`);
+
+//     try {
+//         const client = await connectToMongoDB();
+//         const db = client.db("users");
+
+//         const allowedStatuses = ["Pending", "Finalized"];
+
+//         const userHangouts = await db.collection("hangouts").find({
+//             voteStatus: { $in: allowedStatuses },
+//             $or: [
+//                 { orgEmail: userEmail },                  // user created it
+//                 { emailParticipants: userEmail }          // user invited
+//             ]
+//         }).toArray();
+
+//         console.log(`Found ${userHangouts.length} total hangouts for user.`);
+
+//         // Format for frontend HangoutCard
+//         const formatted = userHangouts.map(h => ({
+//             _id: h._id,
+//             title: h.title,
+//             date: h.date,
+//             location: h.location,
+//             invited: h.emailParticipants,
+//             organizer: {
+//                 name: h.organizerName || h.organizer?.name || "Unknown"
+//             },
+//             voteStatus: h.voteStatus
+//         }));
+
+//         res.json({
+//             success: true,
+//             email: userEmail,
+//             total: formatted.length,
+//             hangouts: formatted
+//         });
+
+//     } catch (err) {
+//         console.error("Error fetching user hangouts:", err);
+//         res.status(500).json({ error: "Failed to fetch hangouts" });
+//     }
+// });
+
+app.get("/api/user/hangouts/:email", async (req, res) => {
+    const userEmail = req.params.email;
+
+    console.log(`/api/user/hangouts called for email: ${userEmail}`);
+
+    try {
+        const client = await connectToMongoDB();
+        const db = client.db('users');
+
+        // Hangouts created by the user
+        console.log("Searching for hangouts created by the user...");
+        const createdHangouts = await db.collection("hangouts").find({
+            "organizer.email": userEmail
+        }).toArray();
+
+        // Hangouts the user is invited to
+        console.log("Searching for hangouts the user is invited to...");
+        const invitedHangouts = await db.collection("hangouts").find({
+            invited: { $elemMatch: { email: userEmail } }
+        }).toArray();
+
+        console.log(`Found ${invitedHangouts.length} invited hangouts`);
+
+        res.json({
+            success: true,
+            email: userEmail,
+            createdCount: createdHangouts.length,
+            invitedCount: invitedHangouts.length,
+            createdHangouts,
+            invitedHangouts
+        });
+
+    } catch (err) {
+        console.error("Error fetching user hangouts:", err);
+        res.status(500).json({ error: "Failed to fetch hangouts" });
     }
 });
 

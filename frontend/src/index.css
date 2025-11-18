@@ -515,3 +515,52 @@
     -ms-overflow-style: none; /* IE and Edge */
     scrollbar-width: none; /* Firefox */
 }
+/* Make the card width shrink on smaller screens */
+.hangout-card {
+    width: 100%;
+    max-width: 24rem;/* same as w-96 */
+}
+
+/* Image resizing */
+.hangout-card img {
+    width: 100%;
+    height: auto;
+    object-fit: cover;
+}
+
+/* Mobile adjustments */
+@media (max-width: 640px) {  /* Smaller than Tailwind's 'sm' breakpoint */
+    .hangout-card {
+        max-width: 100%;
+        margin-left: auto;
+        margin-right: auto;
+    }
+
+    .hangout-card .card-text {
+        padding: 1rem;
+    }
+
+    /* Reduce spacing slightly for mobile */
+    .hangout-card h6 {
+        font-size: 1.1rem;
+    }
+
+    .hangout-card p {
+        font-size: 0.9rem;
+    }
+
+    .hangout-card button {
+        width: 100%;
+    }
+}
+
+
+@media (max-width: 400px) {
+    .hangout-card {
+        border-radius: 0.75rem;
+    }
+
+    .hangout-card h6 {
+        font-size: 1rem;
+    }
+}
