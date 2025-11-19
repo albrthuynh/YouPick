@@ -528,6 +528,39 @@ app.get("/api/user/hangouts/:email", async (req, res) => {
 //     }
 // });
 
+// Grabs the times associated with the group id
+app.get('/api/get-timeslots/:generatedCode', async (req, res) => {
+    try {
+        const { generatedCode } = req.params;
+
+        // Create connection to MongoDB
+        const client = await connectToMongoDB();
+        const user_db = client.db('users');
+        const collection = user_db.collection('hangouts');
+
+        // Find the hangout document and return the array of time slots
+        const hangoutDocument = await collection.findOne({ generatedCode })
+
+        if (!hangoutDocument) { return res.status(400).json({ error: "hangout document cannot be found "});}
+
+        // return the array of time slots
+        return res.status(200).json({
+            "date1" : hangoutDocument.date1,
+            "date2" : hangoutDocument.date2,
+            "date3" : hangoutDocument.date3,
+            "time1" : hangoutDocument.time1, 
+            "time2" : hangoutDocument.time2, 
+            "time3" : hangoutDocument.time3, 
+        });
+
+    } catch (error) {
+        console.error('MongoDB error: ', error);
+        return res.status(401).json({
+            success: false,
+            error: 'Database query failed'
+        });
+    }
+});
 
 // The port that the backend is listening to
 app.listen(PORT, () => {

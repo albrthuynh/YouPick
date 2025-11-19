@@ -77,16 +77,6 @@ export default function CreateHangout() {
     
     const { user, isAuthenticated } = useAuth0();
 
-    // create hangout document in mongoDB
-    // useEffect(() =>{
-    //     console.log("IN USE EFFECT")
-    //     if (createDatabase == true){
-    //         console.log("CREATE DATABASE SET TO TRUE")
-    //         createHangoutDB()
-    //     }
-    // }, [createDatabase]);
-    
-
     const createHangoutDB = async () => {
         console.log("BEFORE RETURN")
 
