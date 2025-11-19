@@ -369,7 +369,7 @@ app.put('/api/update-hangout', async (req, res) => {
             finalDate, 
             finalActivity, 
             votedNum, 
-            votedStatus, 
+            voteStatus, 
             idParticipants, 
             emailParticipants
         } = req.body
@@ -404,7 +404,7 @@ app.put('/api/update-hangout', async (req, res) => {
         if (finalDate !== undefined) updateFields.finalDate = finalDate
         if (finalActivity !== undefined) updateFields.finalActivity = finalActivity
         if (votedNum !== undefined) updateFields.votedNum = votedNum
-        if (votedStatus !== undefined) updateFields.votedStatus = votedStatus
+        if (voteStatus !== undefined) updateFields.voteStatus = voteStatus
         if (idParticipants !== undefined) updateFields.idParticipants = idParticipants
         if (emailParticipants !== undefined) updateFields.emailParticipants = emailParticipants
     

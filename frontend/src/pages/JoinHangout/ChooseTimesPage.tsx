@@ -23,7 +23,6 @@ export default function ChooseTimesPage() {
         const getTimeSlots = async () => {
             const response = await axios.get(`/api/get-timeslots/${generatedCode}`);
 
-            console.log('API Response:', response.data);
 
             // Helper function to format date and time
             const formatDateTime = (dateStr: string, timeStr: any) => {
@@ -116,7 +115,6 @@ export default function ChooseTimesPage() {
             }
 
             setTimeSlots(slots);
-            console.log('Formatted slots:', slots)
         }
 
         getTimeSlots();
@@ -135,7 +133,6 @@ export default function ChooseTimesPage() {
     };
 
     const handleContinue = async () => {
-        console.log(selectedSlots);
 
         // DO THE UPDATE DOCUMENT LOGIC HERE! 
         const response = await axios.get(`/api/get-hangout/${generatedCode}`);
@@ -165,14 +162,12 @@ export default function ChooseTimesPage() {
                     time2: hangoutData.time2,
                     time3: hangoutData.time3
                 });
-                console.log("Successfully updated hangouts time and date info: ", updateResponse.data.message)
             }catch(error){
                 console.error('Error updating time/date info for hangout:', error);
                 alert('Failed to save updating time/date info for hangout. Please try again.');
             }
         }
 
-        console.log("BEFORE NAVIGATE")
         navigate('/swiping')
     };
 

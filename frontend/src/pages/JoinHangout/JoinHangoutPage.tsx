@@ -19,19 +19,15 @@ export default function JoinHangoutPage() {
         // Check if the Group Even Exists if they click accept
         // use this code in other pages
         generatedCode = code
-        console.log("start of handle accept")
         
         try {
             if (!user) return;
 
-            console.log('before get users')
             // grabbing user who created hangout
             const responseUser = await axios.get(`/api/get-user/${user.sub}`);
             const userData = responseUser.data.user;
             
-            console.log('after get-users')
 
-            console.log('before get-hangout')
             // grab this current hangout
             const response = await axios.get(`/api/get-hangout/${code}`);
             const hangoutData = response.data.hangout;
@@ -47,7 +43,6 @@ export default function JoinHangoutPage() {
                 alert('Unable to join hangout, the hangout is full!')
                 return;
             }else{
-                console.log('after get-hangout')
 
                 // update corresponding variables for user after joining hangout
                 hangoutData.idParticipants.push(user.sub)
@@ -55,16 +50,13 @@ export default function JoinHangoutPage() {
 
                 // add hangout to users hangoutIds list
                 userData.hangoutIds.push(hangoutData._id)
-                console.log("added hangoutID: ", userData.hangoutIds)
 
-                console.log('before update-user')
                 // update user's hangoutIds list
                 const updateResponse = await axios.put('/api/update-user', {
                     auth0Id: user.sub,
                     hangoutIds: userData.hangoutIds
                 });
 
-                console.log('before updateHangout')
                 // update hangout information based on user that joins
                 const updateHangout = await axios.put('/api/update-hangout', {
                     hangoutCode: generatedCode,
@@ -72,7 +64,6 @@ export default function JoinHangoutPage() {
                     emailParticipants: hangoutData.emailParticipants
                 });
 
-                console.log('Hangout Id and user emails/ids saved:', updateResponse.data.message, updateHangout.data.message);
 
                 navigate('/choose-times');
             }
@@ -104,7 +95,6 @@ export default function JoinHangoutPage() {
                 numParticipants: hangoutData.numParticipants
             });
 
-            console.log('Hangout saved:', response.data.message);
 
         } catch (error) {
             console.error('Error saving hangout details:', error);

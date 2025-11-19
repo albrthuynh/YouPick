@@ -31,19 +31,13 @@ function App() {
     const createUserIfNeeded = async () => {
       console.log('🔍 Auth state:', { isAuthenticated, authLoading, hasUser: !!user });
 
-      if (authLoading) {
-        console.log('⏳ Auth still loading...');
-        return;
-      }
-
-      if (!isAuthenticated || !user) {
+      if (!user) {
         console.log('❌ Not authenticated or no user');
         return;
       }
 
       try {
         setIsCreatingUser(true);
-        console.log('🔍 Checking if user exists in database...');
 
         // First check if user exists in MongoDB
         try {

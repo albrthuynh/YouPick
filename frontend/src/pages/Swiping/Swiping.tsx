@@ -19,6 +19,7 @@ interface ActivityOption {
 }
 
 export default function SwipingPage() {
+    console.log("printing: ", generatedCode)
     const { user, isAuthenticated } = useAuth0();
 
     const navigate = useNavigate();
@@ -157,14 +158,16 @@ export default function SwipingPage() {
         hangoutData.finalDate = findMax(hangoutData.date1, hangoutData.date2, hangoutData.date3)
         hangoutData.finalTime = findMax(hangoutData.time1, hangoutData.time2, hangoutData.time3)
 
+        console.log("vote status: ", hangoutData.voteStatus);
+
         //converting activities json to Map
         const activities = new Map<string, number>(
           Object.entries(hangoutData.activities)
-        )
+        );
 
         let maxHangoutVote: number = Math.max(...Array.from(activities.values()))
 
-        for (const [key, value] of hangoutData.activites.entries()) {
+        for (const [key, value] of activities) {
           if (value === maxHangoutVote) {
             hangoutData.finalActivity = key;
           }
@@ -180,7 +183,7 @@ export default function SwipingPage() {
           finalDate: hangoutData.finalDate,
           finalActivity: hangoutData.finalActivity,
           votedNum: hangoutData.votedNum,
-          voteStatus: hangoutData.votedStatus,
+          voteStatus: hangoutData.voteStatus,
         });
   
         console.log('Hangout saved:', response.data.message);
@@ -189,8 +192,8 @@ export default function SwipingPage() {
         console.error('Error saving Hangout:', error);
         alert('Failed to save Hangout. Please try again.');
       }      
-      
     }
+
     return (
 
       fixIndexIssue < activitiesChosen.length?(

@@ -78,23 +78,19 @@ export default function CreateHangout() {
     const { user, isAuthenticated } = useAuth0();
 
     const createHangoutDB = async () => {
-        console.log("BEFORE RETURN")
 
         if (!isAuthenticated || !user) return;
 
-        console.log("AFTER RETURN")
         // create activities into a dictionary
         let activitiesDict: Map<string, number> = new Map();
 
         // create dictionary for hangouts and their votes
         for (const activity of selectedActivities){
-            console.log(activity.value + " and " + activity.label)
             activitiesDict.set(activity.value, 0)
         }
 
         // create new hangout
         try {
-            console.log('Creating hangout in database...');
             await axios.post('/api/create-hangout', {
               auth0Id: user.sub,
               orgName: user.name,
@@ -148,7 +144,6 @@ export default function CreateHangout() {
                 auth0Id: user.sub,
                 hangoutIds: userData.hangoutIds
             });
-            console.log('Hangout Id saved:', updateResponse.data.message);
         } catch (error) {
             console.error('Error saving hangout id:', error);
             alert('Failed to save hangout id. Please try again.');
@@ -226,9 +221,7 @@ export default function CreateHangout() {
         }             
     }
     useEffect(() => {
-        console.log("IN USE EFFECT")
         if (createDatabase) {
-            console.log("CREATE DATABASE SET TO TRUE")
             createHangoutDB();
         }
     }, [createDatabase]);

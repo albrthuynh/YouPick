@@ -76,7 +76,6 @@ export default function ProfilePage() {
         bio: profile.bio,
       });
 
-      console.log('✅ Profile saved:', response.data.message);
       setIsEditing(false);
     } catch (error) {
       console.error('❌ Error saving profile:', error);
