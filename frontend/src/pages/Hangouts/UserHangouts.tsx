@@ -4,21 +4,24 @@ import { useAuth0 } from "@auth0/auth0-react";
 
 function UserHangouts() {
     const { user, isAuthenticated } = useAuth0();
-    const [createdHangouts, setCreatedHangouts] = useState([]);
-    const [invitedHangouts, setInvitedHangouts] = useState([]);
+    const [finalizedHangouts, setFinalizedHangouts] = useState([]);
+    const [pendingHangouts, setPendingHangouts] = useState([]);
     const [loading, setLoading] = useState(true);
 
 
-    
+
     useEffect(() => {
         if (!isAuthenticated || !user?.email) return;
-
+    
         fetch(`http://localhost:3000/api/user/hangouts/${user.email}`)
             .then(res => res.json())
             .then(data => {
                 if (data.success) {
-                    setCreatedHangouts(data.createdHangouts);
-                    setInvitedHangouts(data.invitedHangouts);
+                    setFinalizedHangouts(data.finalizedHangouts); // Example: show finalized as "Created"
+                    setPendingHangouts(data.pendingHangouts);   // Example: show pending as "Invited"
+                } else {
+                    setFinalizedHangouts([]);
+                    setPendingHangouts([]);
                 }
                 setLoading(false);
             })
@@ -53,24 +56,25 @@ function UserHangouts() {
 
                 <div className="flex flex-col lg:flex-row justify-center items-start gap-10 ">
 
-                    {/* ------------------ CREATED HANGOUTS ------------------ */}
+                    {/* ------------------ FINALIZED HANGOUTS ------------------ */}
                     <div className="flex flex-col items-center text-center max-w-2xl mx-auto ">
                         <h2 className="text-2xl font-semibold text-slate-700 mb-4">
-                            Hangouts You Created
+                            Finalized Hangouts
                         </h2>
 
-                        {createdHangouts.length === 0 ? (
-                            <p className="text-slate-500">You haven't created any hangouts yet.</p>
+                        {finalizedHangouts.length === 0 ? (
+                            <p className="text-slate-500">You don't have any hangouts finalized.</p>
                         ) : (
                             <div className="grid grid-cols-1 md:grid-cols-1 gap-6">
-                                {createdHangouts.map(h => (
+                                
+                                {finalizedHangouts.map(h => (
                                     <HangoutCard
                                         key={h._id}
-                                        title={h.title}
-                                        date={h.date}
-                                        location={h.location}
-                                        invited={h.invited}
-                                        organizer={h.organizer.name}
+                                        title={h.hangoutName}           // was h.title
+                                        date={h.finalDate || "TBD"}     // pick finalDate if exists
+                                        location={h.finalLocation || "TBD"} // if you have location
+                                        invited={h.emailParticipants || []} 
+                                        organizer={h.orgName}            // was h.organizer.name
                                         voteStatus={h.voteStatus}
                                     />
                                 ))}
@@ -80,24 +84,24 @@ function UserHangouts() {
 
                     <div className="hidden lg:block w-[2px] bg-slate-300 rounded-full "></div>
 
-                    {/* ------------------ INVITED HANGOUTS ------------------ */}
+                    {/* ------------------ PENDING HANGOUTS ------------------ */}
                     <div className="flex flex-col items-center text-center max-w-2xl mx-auto ">
                         <h2 className="text-2xl font-semibold text-slate-700 mb-4">
-                            Hangouts You're Invited To
+                            Pending Hangouts
                         </h2>
 
-                        {invitedHangouts.length === 0 ? (
-                            <p className="text-slate-500">You are not invited to any hangouts yet.</p>
+                        {pendingHangouts.length === 0 ? (
+                            <p className="text-slate-500">You don't have any hangouts pending.</p>
                         ) : (
                             <div className="grid grid-cols-1 md:grid-cols-1 gap-6">
-                                {invitedHangouts.map(h => (
+                                {pendingHangouts.map(h => ( 
                                     <HangoutCard
                                         key={h._id}
-                                        title={h.title}
-                                        date={h.date}
-                                        location={h.location}
-                                        invited={h.invited}
-                                        organizer={h.organizer.name}
+                                        title={h.hangoutName}          
+                                        date={h.finalDate || "TBD"}    
+                                        location={h.finalLocation || "TBD"} 
+                                        invited={h.emailParticipants || []} 
+                                        organizer={h.orgName}           
                                         voteStatus={h.voteStatus}
                                     />
                                 ))}
