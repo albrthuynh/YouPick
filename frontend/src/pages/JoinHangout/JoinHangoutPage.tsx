@@ -1,7 +1,7 @@
-import React, { useState } from 'react'
+import { useState } from 'react'
+import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button'
-
-import axios from 'axios';
+import axios from 'axios'
 import { useAuth0 } from '@auth0/auth0-react';
 
 export let generatedCode: number | null;
@@ -9,7 +9,9 @@ export let generatedCode: number | null;
 export default function JoinHangoutPage() {
     // Variables
     const [code, setCode] = useState<number | null>(null);
-    const { user, isAuthenticated } = useAuth0();
+    const { user } = useAuth0();
+
+    const navigate = useNavigate();
 
 
     // Form Validation and Updating group when Accepted
@@ -38,13 +40,12 @@ export default function JoinHangoutPage() {
                 hangoutIds: userData.hangoutIds
             });
             console.log('Hangout Id saved:', updateResponse.data.message);
+
+            navigate('/choose-times');
         } catch (error) {
             console.error('Error saving hangout id:', error);
             alert('Failed to save hangout id. Please try again.');
         } 
-
-
-    };
 
     // Form Validation and Updating group when Accepted
     const handleReject = async() => {
