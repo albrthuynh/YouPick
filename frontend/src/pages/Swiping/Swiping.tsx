@@ -10,16 +10,15 @@ import { useAuth0 } from '@auth0/auth0-react';
 
 import {CircleUserRound, Sparkles, BookHeart, X, Heart, NotebookText} from "lucide-react"
 
-
 import { exportedActivitiesChosen } from '../CreateHangout/Create';
 import { exportedHangoutName } from '../CreateHangout/Create';
-// import { generatedCode } from '../join-hangout/Create';
-let generatedCode = 12345
+import { generatedCode } from '../JoinHangout/JoinHangoutPage';
+// let generatedCode = 12345
 
 interface ActivityOption {
-    value: string;
-    label: string;
-  }
+  value: string;
+  label: string;
+}
 
 export default function SwipingPage() {
     const { user, isAuthenticated, logout } = useAuth0();
@@ -87,7 +86,9 @@ export default function SwipingPage() {
     }
 
     const doneButtonLogic = async () =>{
-      
+      // navigate to home page
+      navigate('/home')
+
       if (!isAuthenticated || !user) return;
 
       const response = await axios.get(`/api/get-hangout/${generatedCode}`);
@@ -136,14 +137,11 @@ export default function SwipingPage() {
         });
   
         console.log('✅ Profile saved:', response.data.message);
+        
       } catch (error) {
         console.error('❌ Error saving profile:', error);
         alert('Failed to save profile. Please try again.');
-      }
-      // check if this is the last user who voted
-      
-      // navigate to home page
-      navigate('/home')
+      }      
       
     }
     return (

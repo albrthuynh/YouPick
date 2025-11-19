@@ -1,20 +1,53 @@
 import React, { useState } from 'react'
 import { Button } from '@/components/ui/button'
 
+import axios from 'axios';
+import { useAuth0 } from '@auth0/auth0-react';
+
+export let generatedCode: number | null;
 
 export default function JoinHangoutPage() {
     // Variables
     const [code, setCode] = useState<number | null>(null);
+    const { user, isAuthenticated } = useAuth0();
+
 
     // Form Validation and Updating group when Accepted
-    const handleAccept = () => {
+    const handleAccept = async() => {
         // Check if the Group Even Exists if they click accept
+        // use this code in other pages
+        generatedCode = code
+        
+        try {
+            if (!user) return;
+
+            // grabbing user who created hangout
+            const responseUser = await axios.get(`/api/get-users/${user.sub}`);
+            const userData = responseUser.data.user;
+
+            // grab this current hangout
+            const response = await axios.get(`/api/get-hangout/${code}`);
+            const hangoutData = response.data.hangout;
+
+            // add hangout to users hangoutIds list
+            userData.hangoutIds.append(hangoutData._id)
+            
+            // update user's hangoutIds list
+            const updateResponse = await axios.put('/api/update-user', {
+                auth0Id: user.sub,
+                hangoutIds: userData.hangoutIds
+            });
+            console.log('Hangout Id saved:', updateResponse.data.message);
+        } catch (error) {
+            console.error('Error saving hangout id:', error);
+            alert('Failed to save hangout id. Please try again.');
+        } 
 
 
     };
 
     // Form Validation and Updating group when Accepted
-    const handleReject = () => {
+    const handleReject = async() => {
 
     }
 
