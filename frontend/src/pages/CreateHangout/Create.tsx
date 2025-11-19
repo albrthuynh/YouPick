@@ -53,7 +53,6 @@ export default function CreateHangout() {
     const [dateTimeError, setDateTimeError]= useState("");
 
     const [hangoutError, setHangoutError]= useState("");
-
     
     const [date1Chosen, setDate1Chosen] = React.useState(true)
     const [date2Chosen, setDate2Chosen] = React.useState(true)
@@ -76,7 +75,7 @@ export default function CreateHangout() {
 
     const navigate = useNavigate();
     
-    const { user, isAuthenticated, isLoading } = useAuth0();
+    const { user, isAuthenticated } = useAuth0();
 
     // create hangout document in mongoDB
     // useEffect(() =>{
@@ -135,6 +134,32 @@ export default function CreateHangout() {
               });
             }
           }
+    
+        try {
+            if (!user) return;
+
+            // grabbing user who created hangout
+            const responseUser = await axios.get(`/api/get-users/${user.sub}`);
+            const userData = responseUser.data.user;
+
+            // grab this current hangout
+            const response = await axios.get(`/api/get-hangout/${generatedCode}`);
+            const hangoutData = response.data.hangout;
+
+            // add hangout to users hangoutIds list
+            userData.hangoutIds.append(hangoutData._id)
+            
+            // update user's hangoutIds list
+            const updateResponse = await axios.put('/api/update-user', {
+                auth0Id: user.sub,
+                hangoutIds: userData.hangoutIds
+            });
+            console.log('Hangout Id saved:', updateResponse.data.message);
+        } catch (error) {
+            console.error('Error saving hangout id:', error);
+            alert('Failed to save hangout id. Please try again.');
+        } 
+
     }
 
     const createHangout = async () => {
