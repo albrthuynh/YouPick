@@ -168,7 +168,7 @@ export default function SwipingPage() {
             
             {/* Add image to card */}
               <img
-                  src={`/images/${currImage}`}
+                  src={`/images/${currImage}`} alt = ""
                   className="w-[600px] h-[350px] object-cover"
               />
               

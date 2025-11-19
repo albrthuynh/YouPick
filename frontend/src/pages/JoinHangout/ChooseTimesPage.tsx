@@ -1,6 +1,7 @@
-import React, { useState, useEffect } from 'react'
+import { useState, useEffect } from 'react'
 import { Button } from '@/components/ui/button'
 import { generatedCode } from '../JoinHangout/JoinHangoutPage';
+import axios from 'axios';
 
 interface TimeSlot {
     id: string;
@@ -15,14 +16,24 @@ export default function ChooseTimesPage() {
     
     // Use Effect hook to grab the time slots
     useEffect(() => {
-        // Fetch time slots from your API
-        // For now, using mock data
-        const mockSlots: TimeSlot[] = [
-            { id: '1', date: 'Monday, November 17, 2025', time: '10:00 AM', timezone: 'EST (UTC-5)' },
-            { id: '2', date: 'Tuesday, November 18, 2025', time: '2:00 PM', timezone: 'EST (UTC-5)' },
-            { id: '3', date: 'Wednesday, November 19, 2025', time: '9:00 AM', timezone: 'EST (UTC-5)' },
-        ];
-        setTimeSlots(mockSlots);
+        const getTimeSlots = async () => {
+            const response = await axios.get(`/api/get-timeslots/:${generatedCode}`);
+
+            // Transforming the response data, to the TimeSlot interface
+            const slots: TimeSlot[] = [];
+
+            if (response.data.date1 && response.data.time1) {
+
+            }
+
+            if (response.data.date2 && response.data.time2) {
+
+            }
+
+            setTimeSlots(timeSlots);
+        }
+
+        return getTimeSlots();
     }, []);
 
     const toggleSlot = (id: string) => {

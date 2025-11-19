@@ -31,6 +31,10 @@ export default function JoinHangoutPage() {
             const response = await axios.get(`/api/get-hangout/${code}`);
             const hangoutData = response.data.hangout;
 
+            // update corresponding variables for user after joining hangout
+            hangoutData.idParticipants.append(user.sub)
+            hangoutData.emailParticipants.append(user.email)
+
             // add hangout to users hangoutIds list
             userData.hangoutIds.append(hangoutData._id)
             
@@ -39,17 +43,50 @@ export default function JoinHangoutPage() {
                 auth0Id: user.sub,
                 hangoutIds: userData.hangoutIds
             });
-            console.log('Hangout Id saved:', updateResponse.data.message);
+
+            // update hangout information based on user that joins
+            const updateHangout = await axios.put('/api/update-user', {
+                idParticipants: hangoutData.idParticipants,
+                emailParticipants:hangoutData.emailParticipants
+            });            
+            
+            console.log('Hangout Id and user emails/ids saved:', updateResponse.data.message. updateHangout.data.message);
 
             navigate('/choose-times');
         } catch (error) {
-            console.error('Error saving hangout id:', error);
+            console.error('Error saving hangout id or save user emails/ids:', error);
             alert('Failed to save hangout id. Please try again.');
-        } 
-
+        }
+        
+    }
     // Form Validation and Updating group when Accepted
     const handleReject = async() => {
 
+        //validating if the user exists
+        if (!user) return;
+
+        //getting the hangout document
+        const response = await axios.get(`/api/get-hangout/${generatedCode}`);
+        const hangoutData = response.data.hangout;
+        
+        //decreasing the number of participants
+        hangoutData.numParticipants -= 1
+
+        try {
+            //updating the hangout
+            const response = await axios.put('/api/update-hangout', {
+              auth0Id: user.sub,
+              numParticipants: hangoutData.numParticipants
+            });
+      
+            console.log('Hangout saved:', response.data.message);
+            
+          } catch (error) {
+            console.error('Error saving hangout details:', error);
+            alert('Failed to save hangout details. Please try again.');
+          }   
+
+        
     }
 
     return (
