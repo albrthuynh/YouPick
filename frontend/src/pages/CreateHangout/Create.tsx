@@ -134,31 +134,35 @@ export default function CreateHangout() {
               });
             }
           }
+
+        // ---------was able to add hangoutId through /api/create-hangout in index.tsx, so this might not be necessary anymore?-------
+        //-------------------------------------------ERASE ME-------------------------------------------------------------------------
+        //----------------------------------------------------------------------------------------------------------------------------
     
-        try {
-            if (!user) return;
+        // try {
+        //     if (!user) return;
 
-            // grabbing user who created hangout
-            const responseUser = await axios.get(`/api/get-users/${user.sub}`);
-            const userData = responseUser.data.user;
+        //     // grabbing user who created hangout
+        //     const responseUser = await axios.get(`/api/get-users/${user.sub}`);
+        //     const userData = responseUser.data.user;
 
-            // grab this current hangout
-            const response = await axios.get(`/api/get-hangout/${generatedCode}`);
-            const hangoutData = response.data.hangout;
+        //     // grab this current hangout
+        //     const response = await axios.get(`/api/get-hangout/${generatedCode}`);
+        //     const hangoutData = response.data.hangout;
 
-            // add hangout to users hangoutIds list
-            userData.hangoutIds.append(hangoutData._id)
+        //     // add hangout to users hangoutIds list
+        //     userData.hangoutIds.append(hangoutData._id)
             
-            // update user's hangoutIds list
-            const updateResponse = await axios.put('/api/update-user', {
-                auth0Id: user.sub,
-                hangoutIds: userData.hangoutIds
-            });
-            console.log('Hangout Id saved:', updateResponse.data.message);
-        } catch (error) {
-            console.error('Error saving hangout id:', error);
-            alert('Failed to save hangout id. Please try again.');
-        } 
+        //     // update user's hangoutIds list
+        //     const updateResponse = await axios.put('/api/update-user', {
+        //         auth0Id: user.sub,
+        //         hangoutIds: userData.hangoutIds
+        //     });
+        //     console.log('Hangout Id saved:', updateResponse.data.message);
+        // } catch (error) {
+        //     console.error('Error saving hangout id:', error);
+        //     alert('Failed to save hangout id. Please try again.');
+        // } 
 
     }
 

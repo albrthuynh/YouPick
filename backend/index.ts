@@ -206,6 +206,7 @@ app.post('/api/create-hangout', async (req, res) => {
         const client = await connectToMongoDB();
         const db = client.db('users');
         const collection = db.collection('hangouts');
+        const usersCollection = db.collection('user_documents');
 
         // create Hangout document
         const newHangout = {
@@ -234,22 +235,39 @@ app.post('/api/create-hangout', async (req, res) => {
        
         // insert hangout into database
         const result = await collection.insertOne(newHangout);
+        const newHangoutId = result.insertedId; // capture the newly generated ObjectID
 
-        // Verify that the user got inserted
-        if (result.insertedId) {
-            console.log('✅ Hangout created successfully:', result.insertedId);
+       
+        if (newHangoutId){
+
+            console.log('Hangout created successfully:', result.insertedId);
+
+            const userUpdateResult = await usersCollection.updateOne(
+                { auth0Id: auth0Id }, // find the user by their Auth0 ID
+                { $push: { hangoutIds: newHangoutId } } // push the new ID into the hangoutIds array
+            );
+
+            if (userUpdateResult.modifiedCount === 1) {
+                console.log('User document updated with new hangoutId:', newHangoutId);
+            } else {
+                console.warn('Could not find user to update hangoutIds for auth0Id:', auth0Id);
+            }
+
+
             res.json({
                 success: true,
-                message: 'Hangout created successfully!',
-                hangout: { ...newHangout, _id: result.insertedId }
+                message: 'Hangout created and user updated successfully!',
+                hangout: { ...newHangout, _id: newHangoutId }
             });
+
         } else {
-            console.error('❌ Failed to insert hangout');
+            console.error('Failed to insert hangout');
             res.status(500).json({
                 success: false,
                 message: 'Failed to create hangout'
             });
         }
+
     }catch (error){
         console.error('MongoDB fetch error:', error);
         res.status(500).json({ error: 'Failed to create hangout' });
@@ -385,45 +403,6 @@ app.get('/api/get-hangout:generatedCode', async (req, res) => {
 
 
 
-
-// app.get("/api/user/hangouts/:email", async (req, res) => {
-//     const userEmail = req.params.email;
-
-//     console.log(`/api/user/hangouts called for email: ${userEmail}`);
-
-//     try {
-//         const client = await connectToMongoDB();
-//         const db = client.db('users');
-
-//         // Hangouts created by the user
-//         console.log("Searching for hangouts created by the user...");
-//         const createdHangouts = await db.collection("hangouts").find({
-//             "orgEmail": userEmail
-//         }).toArray();
-
-//         // Hangouts the user is invited to
-//         console.log("Searching for hangouts the user is invited to...");
-//         const invitedHangouts = await db.collection("hangouts").find({
-//             invited: { $elemMatch: { email: userEmail } }
-//         }).toArray();
-
-//         console.log(`Found ${invitedHangouts.length} invited hangouts`);
-
-//         res.json({
-//             success: true,
-//             email: userEmail,
-//             createdCount: createdHangouts.length,
-//             invitedCount: invitedHangouts.length,
-//             createdHangouts,
-//             invitedHangouts
-//         });
-
-//     } catch (err) {
-//         console.error("Error fetching user hangouts:", err);
-//         res.status(500).json({ error: "Failed to fetch hangouts" });
-//     }
-// });
-
 app.get("/api/user/hangouts/:email", async (req, res) => {
     const userEmail = req.params.email;
 
@@ -454,7 +433,6 @@ app.get("/api/user/hangouts/:email", async (req, res) => {
             });
         }
 
-        // --- Use the efficient $in query here ---
 
         // Map the string IDs to actual MongoDB ObjectId instances using 'new ObjectId(id)'
         const objectIds = hangoutIds.map(id => new ObjectId(id));
