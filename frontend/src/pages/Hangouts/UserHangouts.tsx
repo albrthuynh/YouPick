@@ -49,8 +49,8 @@ function UserHangouts() {
 
     return (
         <div className=" p-6">
-            <div>
-                <h1 className="text-3xl font-bold text-slate-800 mb-6">
+            <div style={{ fontFamily: "American Typewriter, serif" }}>
+                <h1 className="text-6xl font-light text-primary mb-3 text-balance centered-header">
                     Your Hangouts
                 </h1>
 
