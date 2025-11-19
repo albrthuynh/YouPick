@@ -1,7 +1,9 @@
 import { useState, useEffect } from 'react'
 import { Button } from '@/components/ui/button'
 import { generatedCode } from '../JoinHangout/JoinHangoutPage';
+import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import { Slash } from 'lucide-react';
 
 interface TimeSlot {
     id: string;
@@ -14,49 +16,107 @@ export default function ChooseTimesPage() {
     const [timeSlots, setTimeSlots] = useState<TimeSlot[]>([]);
     const [selectedSlots, setSelectedSlots] = useState<Set<string>>(new Set());
 
+    const navigate = useNavigate();
+
     // Use Effect hook to grab the time slots
     useEffect(() => {
         const getTimeSlots = async () => {
-            const response = await axios.get(`/api/get-timeslots/:${generatedCode}`);
+            const response = await axios.get(`/api/get-timeslots/${generatedCode}`);
+
+            console.log('API Response:', response.data);
+
+            // Helper function to format date and time
+            const formatDateTime = (dateStr: string, timeStr: any) => {
+                // Parse the ISO date string
+                const date = new Date(dateStr);
+
+                // Convert timeStr to string and parse it (handles formats like "23:330" or numbers)
+                const timeString = String(timeStr);
+
+                // If time is in format like "23:330", split it properly
+                let hours, minutes;
+                if (timeString.includes(':')) {
+                    const parts = timeString.split(':');
+                    hours = parseInt(parts[0]);
+                    minutes = parseInt(parts[1]);
+                } else {
+                    // If it's a number like 23330, parse it differently
+                    hours = Math.floor(parseInt(timeString) / 100);
+                    minutes = parseInt(timeString) % 100;
+                }
+
+                date.setHours(hours, minutes, 0, 0);
+
+                // Format date (e.g., "November 26, 2025")
+                const formattedDate = date.toLocaleDateString('en-US', {
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric'
+                });
+
+                // Format time to 12-hour with AM/PM
+                const formattedTime = date.toLocaleTimeString('en-US', {
+                    hour: 'numeric',
+                    minute: '2-digit',
+                    hour12: true
+                });
+
+                // Get timezone
+                const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+
+                return { formattedDate, formattedTime, timezone };
+            };
 
             // Transforming the response data, to the TimeSlot interface
             const slots: TimeSlot[] = [];
 
             if (response.data.date1 && response.data.time1) {
+                const { formattedDate, formattedTime, timezone } = formatDateTime(
+                    response.data.date1[0],
+                    response.data.time1[0]
+                );
                 const slot = {
-                    id: '1',
-                    date: response.data.date1,
-                    time: response.data.time1,
-                    timezone: Intl.DateTimeFormat().resolvedOptions().timeZone
+                    id: 'date1',
+                    date: formattedDate,
+                    time: formattedTime,
+                    timezone: timezone
                 }
 
                 slots.push(slot)
             }
 
             if (response.data.date2 && response.data.time2) {
+                const { formattedDate, formattedTime, timezone } = formatDateTime(
+                    response.data.date2[0],
+                    response.data.time2[0]
+                );
                 const slot = {
-                    id: '2',
-                    date: response.data.date2,
-                    time: response.data.time2,
-                    timezone: Intl.DateTimeFormat().resolvedOptions().timeZone
+                    id: 'date2',
+                    date: formattedDate,
+                    time: formattedTime,
+                    timezone: timezone
                 }
 
                 slots.push(slot)
             }
 
             if (response.data.date3 && response.data.time3) {
+                const { formattedDate, formattedTime, timezone } = formatDateTime(
+                    response.data.date3[0],
+                    response.data.time3[0]
+                );
                 const slot = {
-                    id: '3',
-                    date: response.data.date3,
-                    time: response.data.time3,
-                    timezone: Intl.DateTimeFormat().resolvedOptions().timeZone
+                    id: 'date3',
+                    date: formattedDate,
+                    time: formattedTime,
+                    timezone: timezone
                 }
 
                 slots.push(slot)
             }
 
-            setTimeSlots(timeSlots);
-            console.log(timeSlots)
+            setTimeSlots(slots);
+            console.log('Formatted slots:', slots)
         }
 
         getTimeSlots();
@@ -74,9 +134,46 @@ export default function ChooseTimesPage() {
         });
     };
 
-    const handleContinue = () => {
-        // Handle continue logic - e.g., submit selected slots, navigate to next page
-        console.log('Selected slots:', Array.from(selectedSlots));
+    const handleContinue = async () => {
+        console.log(selectedSlots);
+
+        // DO THE UPDATE DOCUMENT LOGIC HERE! 
+        const response = await axios.get(`/api/get-hangout/${generatedCode}`);
+
+        const hangoutData = response.data.hangout;
+
+        // update dates and times that user chose in hangout document
+        for (const selectSlot of selectedSlots) {
+            if (selectSlot === "date1") {
+                hangoutData.date1[1] += 1
+                hangoutData.time1[1] += 1
+            } else if (selectSlot === "date2") {
+                hangoutData.date2[1] += 1
+                hangoutData.time2[1] += 1
+            } else if (selectSlot === "date3") {
+                hangoutData.date3[1] += 1
+                hangoutData.time3[1] += 1
+            }
+
+            try{
+                const updateResponse = await axios.put('/api/update-hangout', {
+                    hangoutCode: generatedCode,
+                    date1: hangoutData.date1,
+                    date2: hangoutData.date2,
+                    date3: hangoutData.date3,
+                    time1: hangoutData.time1,
+                    time2: hangoutData.time2,
+                    time3: hangoutData.time3
+                });
+                console.log("Successfully updated hangouts time and date info: ", updateResponse.data.message)
+            }catch(error){
+                console.error('Error updating time/date info for hangout:', error);
+                alert('Failed to save updating time/date info for hangout. Please try again.');
+            }
+        }
+
+        console.log("BEFORE NAVIGATE")
+        navigate('/swiping')
     };
 
     return (
@@ -96,8 +193,8 @@ export default function ChooseTimesPage() {
                         onClick={() => toggleSlot(slot.id)}
                         aria-pressed={selectedSlots.has(slot.id)}
                         className={`w-full text-left border-2 rounded-lg p-6 transition-all focus:outline-none ${selectedSlots.has(slot.id)
-                                ? 'border-black bg-gray-50'
-                                : 'border-gray-300 bg-white hover:border-gray-400'
+                            ? 'border-black bg-gray-50'
+                            : 'border-gray-300 bg-white hover:border-gray-400'
                             }`}
                     >
                         <div className="flex justify-between items-center">
@@ -107,8 +204,8 @@ export default function ChooseTimesPage() {
                                 <p className="text-gray-500 mt-1">{slot.timezone}</p>
                             </div>
                             <div className={`w-6 h-6 rounded-full border-2 ${selectedSlots.has(slot.id)
-                                    ? 'border-black bg-black'
-                                    : 'border-gray-400'
+                                ? 'border-black bg-black'
+                                : 'border-gray-400'
                                 }`} />
                         </div>
                     </button>

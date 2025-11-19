@@ -3,14 +3,9 @@ import { useNavigate } from 'react-router-dom';
 
 import { Button } from "@/components/ui/button"
 import { exportedNumParticipants } from './Create';
-import { generatedCode } from './Create'
+import { generatedCode } from '../CreateHangout/Create';
 
-// just for testing purposes
-// let exportedNumParticipants = 2
 import emailjs from "@emailjs/browser";
-
-// // generate random 5 digit code
-// const hangoutCode = Math.floor(Math.random() * (100000 - 10000 + 1)) + 10000
 
 export default function FinalizePage() {
 

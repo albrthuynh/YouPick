@@ -180,6 +180,101 @@ app.put('/api/update-user', async (req, res) => {
 
 
 // create hangout document
+// app.post('/api/create-hangout', async (req, res) => {
+//     try{
+
+//         // variables to set when hangout is first created
+//         const {
+//             auth0Id,
+//             orgName,
+//             orgEmail,
+//             hangoutName,
+//             activities, 
+//             numParticipants, 
+//             date1, 
+//             date2, 
+//             date3, 
+//             time1, 
+//             time2, 
+//             time3, 
+//             hangoutCode
+//         } = req.body;
+
+//         console.log("Activities received:", activities);
+        
+//         // connect to MongoDB
+//         const client = await connectToMongoDB();
+//         const db = client.db('users');
+//         const collection = db.collection('hangouts');
+        
+//         const usersCollection = db.collection('user_documents');
+
+//         // create Hangout document
+//         const newHangout = {
+//             auth0Id,
+//             orgName,
+//             orgEmail, 
+//             hangoutName, 
+//             activities, 
+//             numParticipants, 
+//             date1,
+//             date2,
+//             date3,
+//             time1,
+//             time2,
+//             time3,
+//             hangoutCode,
+//             createdAt: new Date(),
+//             finalTime: "",
+//             finalDate: "",
+//             finalActivity: "",
+//             votedNum: 0,
+//             voteStatus: "Pending",
+//             idParticipants: [],
+//             emailParticipants: []
+//         };
+       
+//         // insert hangout into database
+//         const result = await collection.insertOne(newHangout);
+//         const newHangoutId = result.insertedId; // capture the newly generated ObjectID
+
+       
+//         if (newHangoutId){
+
+//             console.log('Hangout created successfully:', result.insertedId);
+
+//             const userUpdateResult = await usersCollection.updateOne(
+//                 { auth0Id: auth0Id }, // find the user by their Auth0 ID
+//                 { push: { hangoutIds: newHangoutId } } // push the new ID into the hangoutIds array
+//             );
+
+//             if (userUpdateResult.modifiedCount === 1) {
+//                 console.log('User document updated with new hangoutId:', newHangoutId);
+//             } else {
+//                 console.warn('Could not find user to update hangoutIds for auth0Id:', auth0Id);
+//             }
+
+
+//             res.json({
+//                 success: true,
+//                 message: 'Hangout created and user updated successfully!',
+//                 hangout: { ...newHangout, _id: newHangoutId }
+//             });
+
+//         } else {
+//             console.error('Failed to insert hangout');
+//             res.status(500).json({
+//                 success: false,
+//                 message: 'Failed to create hangout'
+//             });
+//         }
+
+//     }catch (error){
+//         console.error('MongoDB fetch error:', error);
+//         res.status(500).json({ error: 'Failed to create hangout' });
+//     }
+
+// });
 app.post('/api/create-hangout', async (req, res) => {
     try{
 
@@ -206,7 +301,6 @@ app.post('/api/create-hangout', async (req, res) => {
         const client = await connectToMongoDB();
         const db = client.db('users');
         const collection = db.collection('hangouts');
-        const usersCollection = db.collection('user_documents');
 
         // create Hangout document
         const newHangout = {
@@ -235,39 +329,22 @@ app.post('/api/create-hangout', async (req, res) => {
        
         // insert hangout into database
         const result = await collection.insertOne(newHangout);
-        const newHangoutId = result.insertedId; // capture the newly generated ObjectID
 
-       
-        if (newHangoutId){
-
-            console.log('Hangout created successfully:', result.insertedId);
-
-            const userUpdateResult = await usersCollection.updateOne(
-                { auth0Id: auth0Id }, // find the user by their Auth0 ID
-                { $push: { hangoutIds: newHangoutId } } // push the new ID into the hangoutIds array
-            );
-
-            if (userUpdateResult.modifiedCount === 1) {
-                console.log('User document updated with new hangoutId:', newHangoutId);
-            } else {
-                console.warn('Could not find user to update hangoutIds for auth0Id:', auth0Id);
-            }
-
-
+        // Verify that the user got inserted
+        if (result.insertedId) {
+            console.log('✅ Hangout created successfully:', result.insertedId);
             res.json({
                 success: true,
-                message: 'Hangout created and user updated successfully!',
-                hangout: { ...newHangout, _id: newHangoutId }
+                message: 'Hangout created successfully!',
+                hangout: { ...newHangout, _id: result.insertedId }
             });
-
         } else {
-            console.error('Failed to insert hangout');
+            console.error('❌ Failed to insert hangout');
             res.status(500).json({
                 success: false,
                 message: 'Failed to create hangout'
             });
         }
-
     }catch (error){
         console.error('MongoDB fetch error:', error);
         res.status(500).json({ error: 'Failed to create hangout' });
@@ -275,25 +352,41 @@ app.post('/api/create-hangout', async (req, res) => {
 
 });
 
+
 //update hangout document
 app.put('/api/update-hangout', async (req, res) => {
     try{
-        const { auth0Id, activites, date1, date2, date3, time1, time2, time3, finalTime, finalDate, finalActivity, 
-            votedNum, votedStatus, idParticipants, emailParticipants} = req.body
+        const { 
+            hangoutCode,
+            activites, 
+            date1, 
+            date2, 
+            date3, 
+            time1, 
+            time2, 
+            time3, 
+            finalTime, 
+            finalDate, 
+            finalActivity, 
+            votedNum, 
+            votedStatus, 
+            idParticipants, 
+            emailParticipants
+        } = req.body
     
         const client = await connectToMongoDB();
         const db = client.db('users');
-        const collection = db.collection('user_documents');
+        const collection = db.collection('hangouts');
     
         // Validate the fields
-        if (!auth0Id) {
+        if (!hangoutCode) {
             return res.status(400).json({
                 success: false,
-                message: 'auth0Id is required'
+                message: 'hangout code is required'
             })
         }
     
-        const user = await collection.findOne({ auth0Id })
+        const user = await collection.findOne({ hangoutCode })
     
         // Build update object with only provided fields
         const updateFields: any = {
@@ -316,30 +409,32 @@ app.put('/api/update-hangout', async (req, res) => {
         if (emailParticipants !== undefined) updateFields.emailParticipants = emailParticipants
     
     
-        // Update the user document
+        // Update the hangout document
         const result = await collection.updateOne(
-            { auth0Id },
+            { hangoutCode },
             { $set: updateFields }
         )
+
+        console.log(result);
     
-         if (result.matchedCount === 0) {
-                return res.status(404).json({
-                    success: false,
-                    message: 'User not found'
-                })
-            }
+        if (result.matchedCount === 0) {
+            return res.status(404).json({
+                success: false,
+                message: 'Hangout not found'
+            })
+        }
     
-            if (result.modifiedCount > 0) {
-                res.json({
-                    success: true,
-                    message: 'Profile updated successfully!'
-                })
-            } else {
-                res.json({
-                    success: true,
-                    message: 'No changes made'
-                })
-            }
+        if (result.modifiedCount > 0) {
+            res.json({
+                success: true,
+                message: 'Hangout updated successfully!'
+            })
+        } else {
+            res.json({
+                success: true,
+                message: 'No changes made'
+            })
+        }
     }catch (error) {
         console.error('MongoDB error:', error);
         res.status(500).json({ error: 'Database query failed' });
@@ -348,7 +443,7 @@ app.put('/api/update-hangout', async (req, res) => {
 
 
 // get hangout document
-app.get('/api/get-hangout:generatedCode', async (req, res) => {
+app.get('/api/get-hangout/:generatedCode', async (req, res) => {
     try {
         const { generatedCode } = req.params
 
@@ -364,9 +459,11 @@ app.get('/api/get-hangout:generatedCode', async (req, res) => {
         const db = client.db('users');
         const collection = db.collection('hangouts');
 
-        //const hangouts = await collection.find({}).toArray();
+        console.log("generated code ", generatedCode)
 
-        const hangout = await collection.findOne({ generatedCode })
+        const hangout = await collection.findOne({ hangoutCode : Number(generatedCode) })
+
+        console.log("hangout object", hangout)
 
         //if hangout does not exist, throw an error message
         if (!hangout) {
@@ -401,8 +498,6 @@ app.get('/api/get-hangout:generatedCode', async (req, res) => {
     }
 });
 
-
-
 app.get("/api/user/hangouts/:email", async (req, res) => {
     const userEmail = req.params.email;
 
@@ -435,7 +530,7 @@ app.get("/api/user/hangouts/:email", async (req, res) => {
 
 
         // Map the string IDs to actual MongoDB ObjectId instances using 'new ObjectId(id)'
-        const objectIds = hangoutIds.map(id => new ObjectId(id));
+        const objectIds = hangoutIds.map((id: number) => new ObjectId(id));
         console.log(`[DB QUERY] Searching for hangouts with IDs: ${JSON.stringify(objectIds)}`);
 
 
@@ -539,7 +634,7 @@ app.get('/api/get-timeslots/:generatedCode', async (req, res) => {
         const collection = user_db.collection('hangouts');
 
         // Find the hangout document and return the array of time slots
-        const hangoutDocument = await collection.findOne({ generatedCode })
+        const hangoutDocument = await collection.findOne({ hangoutCode : Number(generatedCode) })
 
         if (!hangoutDocument) { return res.status(400).json({ error: "hangout document cannot be found "});}
 

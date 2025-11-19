@@ -129,30 +129,30 @@ export default function CreateHangout() {
         //-------------------------------------------ERASE ME-------------------------------------------------------------------------
         //----------------------------------------------------------------------------------------------------------------------------
     
-        // try {
-        //     if (!user) return;
+        try {
+            if (!user) return;
 
-        //     // grabbing user who created hangout
-        //     const responseUser = await axios.get(`/api/get-users/${user.sub}`);
-        //     const userData = responseUser.data.user;
+            // grabbing user who created hangout
+            const responseUser = await axios.get(`/api/get-user/${user.sub}`);
+            const userData = responseUser.data.user;
 
-        //     // grab this current hangout
-        //     const response = await axios.get(`/api/get-hangout/${generatedCode}`);
-        //     const hangoutData = response.data.hangout;
+            // grab this current hangout
+            const response = await axios.get(`/api/get-hangout/${generatedCode}`);
+            const hangoutData = response.data.hangout;
 
-        //     // add hangout to users hangoutIds list
-        //     userData.hangoutIds.append(hangoutData._id)
+            // add hangout to users hangoutIds list
+            userData.hangoutIds.push(hangoutData._id)
             
-        //     // update user's hangoutIds list
-        //     const updateResponse = await axios.put('/api/update-user', {
-        //         auth0Id: user.sub,
-        //         hangoutIds: userData.hangoutIds
-        //     });
-        //     console.log('Hangout Id saved:', updateResponse.data.message);
-        // } catch (error) {
-        //     console.error('Error saving hangout id:', error);
-        //     alert('Failed to save hangout id. Please try again.');
-        // } 
+            // update user's hangoutIds list
+            const updateResponse = await axios.put('/api/update-user', {
+                auth0Id: user.sub,
+                hangoutIds: userData.hangoutIds
+            });
+            console.log('Hangout Id saved:', updateResponse.data.message);
+        } catch (error) {
+            console.error('Error saving hangout id:', error);
+            alert('Failed to save hangout id. Please try again.');
+        } 
 
     }
 
@@ -279,6 +279,7 @@ export default function CreateHangout() {
                         {/* Activities Multi-Select Dropdown */}
                         <div>
                             <h2 className="space-y-3 text-lg font-semibold mb-2">Select Activity Options for Hangout</h2>
+                            <h3 className="space-y-3 text-lg font-semibold mb-2">Choose 3 Activities!</h3>
                             <div className="w-72 ">
                                 <Select<ActivityOption, true>
                                     options={activityOptions}

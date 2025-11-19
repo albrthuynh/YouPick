@@ -20,47 +20,6 @@ export default function ProfilePage() {
     }
   });
 
-  // Create user in MongoDB only if they don't exist yet
-  useEffect(() => {
-    const createUser = async () => {
-      if (!isAuthenticated || !user) return;
-
-      // Check if we've already created this user (stored in localStorage)
-      const userCreatedKey = `user_created_${user.sub}`;
-      const alreadyCreated = localStorage.getItem(userCreatedKey);
-
-      if (alreadyCreated) {
-        return;
-      }
-
-      try {
-        console.log('Creating user in database...');
-        await axios.post('/api/create-user', {
-          auth0Id: user.sub,
-          name: user.name,
-          email: user.email,
-        });
-
-        // Mark this user as created in localStorage
-        localStorage.setItem(userCreatedKey, 'true');
-      } catch (error) {
-        console.error('Error creating user:', error);
-        // Log more details about the error
-        if (axios.isAxiosError(error)) {
-          console.error('Response data:', error.response?.data);
-          console.error('Response status:', error.response?.status);
-          console.error('User data being sent:', {
-            auth0Id: user.sub,
-            name: user.name,
-            email: user.email,
-          });
-        }
-      }
-    };
-
-    createUser();
-  }, [isAuthenticated, user]);
-
   // Fetch user profile from MongoDB
   useEffect(() => {
     const fetchUserProfile = async () => {

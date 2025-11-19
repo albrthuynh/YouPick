@@ -7,13 +7,11 @@ import Confetti from "react-confetti";
 
 import axios from 'axios';
 import { useAuth0 } from '@auth0/auth0-react';
+import { activityOptions } from '../activities';
 
 import {CircleUserRound, Sparkles, BookHeart, X, Heart, NotebookText} from "lucide-react"
 
-import { exportedActivitiesChosen } from '../CreateHangout/Create';
-import { exportedHangoutName } from '../CreateHangout/Create';
 import { generatedCode } from '../JoinHangout/JoinHangoutPage';
-// let generatedCode = 12345
 
 interface ActivityOption {
   value: string;
@@ -21,17 +19,57 @@ interface ActivityOption {
 }
 
 export default function SwipingPage() {
-    const { user, isAuthenticated, logout } = useAuth0();
+    const { user, isAuthenticated } = useAuth0();
 
     const navigate = useNavigate();
     
     const [currActivityIndex, setActivityIndex] = useState(0)
     const [fixIndexIssue, setfixIndexIssue] = useState(0)
     const [swipeDirection, setSwipeDirection] = useState<"left" | "right" | null>(null)
-    
+    const [activitiesChosen, setActivitiesChosen] = useState<ActivityOption[]>([])
+    const [hangoutName, setHangoutName] = useState("")
+    const [organizerName, setOrganizerName] = useState("")
+    const [isLoading, setIsLoading] = useState(true)
     let likedActivities: ActivityOption[] = [];
 
     const [showConfetti, setShowConfetti] = useState(false);
+
+
+    useEffect(()=> {
+      const getActivities = async () => {
+        try {
+          setIsLoading(true);
+          const response = await axios.get(`/api/get-hangout/${generatedCode}`);
+          const hangoutData = response.data.hangout;
+          let activityArr: ActivityOption[] = []
+
+          // populate the activity array with the hangout activities
+          // If activities is an object, get the keys; if it's an array, use it directly
+          const activitiesList = Array.isArray(hangoutData.activities) 
+            ? hangoutData.activities 
+            : Object.keys(hangoutData.activities);
+
+          for (const activity of activitiesList) {
+            const activityOption: ActivityOption = {
+              value: activity,
+              label: activityOptions.find(a => a.value === activity)?.label || ""
+            }
+            
+            activityArr.push(activityOption)
+          }
+
+          setActivitiesChosen(activityArr)
+          setHangoutName(hangoutData.hangoutName)
+          setOrganizerName(hangoutData.orgName)
+        } catch (error) {
+          console.error("There is something wrong with grabbing the hangout: ", error)
+        } finally {
+          setIsLoading(false);
+        }
+      }
+
+      getActivities();
+    }, []);
 
     // when user swipes/clicks one of the buttons, go to next activitiy
     const nextElement = (liked: boolean) => {
@@ -40,13 +78,13 @@ export default function SwipingPage() {
 
       // if element hearted, add to list of liked activities
       if(liked){
-        likedActivities.push(exportedActivitiesChosen[currActivityIndex])
+        likedActivities.push(activitiesChosen[currActivityIndex])
       }
       
       // timing allows it to show swipe going left or right
       setTimeout(() => {
         // go to next activity
-        setActivityIndex((curr)=>(curr+1) % exportedActivitiesChosen.length)
+        setActivityIndex((curr)=>(curr+1) % activitiesChosen.length)
         setfixIndexIssue((curr)=>(curr+1))
         setSwipeDirection(null)
       }, 300)
@@ -54,18 +92,18 @@ export default function SwipingPage() {
 
     // once user swiped through all activities, show confetti
     useEffect(() => {
-      if (fixIndexIssue >= exportedActivitiesChosen.length) {
+      if (fixIndexIssue >= activitiesChosen.length) {
         setShowConfetti(true);
   
-        //hide confetti after 5 seconds
-        const confettiTimer = setTimeout(() => setShowConfetti(false), 5000);
+        //hide confetti after 10 seconds
+        const confettiTimer = setTimeout(() => setShowConfetti(false), 10000);
         return () => clearTimeout(confettiTimer);
       }
-    }, [fixIndexIssue, exportedActivitiesChosen.length]);
+    }, [fixIndexIssue, activitiesChosen.length]);
 
     // set current event
-    const currEvent = exportedActivitiesChosen[currActivityIndex]
-    const currImage = currEvent.value + '.jpg'
+    const currEvent = activitiesChosen.length > 0 ? activitiesChosen[currActivityIndex] : null;
+    const currImage = currEvent ? currEvent.value + '.jpg' : "";
 
     // find max
     function findMax(a: [string, number], b: [string, number], c: [string, number]){
@@ -83,6 +121,15 @@ export default function SwipingPage() {
       }
       
       return maxDate
+    }
+
+    // Show loading state
+    if (isLoading) {
+      return (
+        <div className="flex items-center justify-center h-screen">
+          <p className="text-xl">Loading activities...</p>
+        </div>
+      )
     }
 
     const doneButtonLogic = async () =>{
@@ -127,7 +174,7 @@ export default function SwipingPage() {
       
       try {
         const response = await axios.put('/api/update-hangout', {
-          auth0Id: user.sub,
+          hangoutCode: generatedCode,
           activites: hangoutData.activities,
           finalTime: hangoutData.finalTime,
           finalDate: hangoutData.finalDate,
@@ -136,17 +183,17 @@ export default function SwipingPage() {
           voteStatus: hangoutData.votedStatus,
         });
   
-        console.log('✅ Profile saved:', response.data.message);
+        console.log('Hangout saved:', response.data.message);
         
       } catch (error) {
-        console.error('❌ Error saving profile:', error);
-        alert('Failed to save profile. Please try again.');
+        console.error('Error saving Hangout:', error);
+        alert('Failed to save Hangout. Please try again.');
       }      
       
     }
     return (
 
-      fixIndexIssue < exportedActivitiesChosen.length?(
+      fixIndexIssue < activitiesChosen.length?(
         <div className="max-w-lg mx-auto px-4 py-6 space-y-6 overflow-y-scroll no-scrollbar">
     
           <div className="mb-16">
@@ -176,19 +223,19 @@ export default function SwipingPage() {
                 {/* Activity Name */}
                   <div className="flex items-center gap-3 text-foreground">
                     <Sparkles className="h-5 w-5 text-primary" />
-                    <span className="font-medium">{currEvent.label}</span>
+                    <span className="font-medium">{currEvent?.label}</span>
                   </div>
                 {/* Name of Hangout Creator */}
                   <div className="flex items-center gap-3 text-foreground">
                     <CircleUserRound className="h-5 w-5 text-primary" />
-                    <span className="font-medium">Proposed by: {/*PUT USER*/}</span>
+                    <span className="font-medium">Proposed by: {organizerName}</span>
                   </div>
                 
       
                 {/* HangoutName */}
                 <div className="flex items-center gap-3 text-foreground">
                     <BookHeart className="h-5 w-5 text-primary" />
-                    <span className="font-medium">For Hangout: {exportedHangoutName} </span>
+                    <span className="font-medium">For Hangout: {hangoutName} </span>
                 </div>
 
                 {/* Display Current Card */}
@@ -196,7 +243,7 @@ export default function SwipingPage() {
                   <div className="flex items-center gap-2">
                     <NotebookText className="h-4 w-4 text-muted-foreground" />
                     <span className="text-sm text-muted-foreground">
-                      Activity {currActivityIndex+1} of {exportedActivitiesChosen.length}
+                      Activity {currActivityIndex+1} of {activitiesChosen.length}
                     </span>
                   </div>
                 </div>

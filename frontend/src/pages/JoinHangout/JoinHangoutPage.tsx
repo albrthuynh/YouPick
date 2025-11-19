@@ -15,52 +15,77 @@ export default function JoinHangoutPage() {
 
 
     // Form Validation and Updating group when Accepted
-    const handleAccept = async() => {
+    const handleAccept = async () => {
         // Check if the Group Even Exists if they click accept
         // use this code in other pages
         generatedCode = code
+        console.log("start of handle accept")
         
         try {
             if (!user) return;
 
+            console.log('before get users')
             // grabbing user who created hangout
-            const responseUser = await axios.get(`/api/get-users/${user.sub}`);
+            const responseUser = await axios.get(`/api/get-user/${user.sub}`);
             const userData = responseUser.data.user;
+            
+            console.log('after get-users')
 
+            console.log('before get-hangout')
             // grab this current hangout
             const response = await axios.get(`/api/get-hangout/${code}`);
             const hangoutData = response.data.hangout;
-
-            // update corresponding variables for user after joining hangout
-            hangoutData.idParticipants.append(user.sub)
-            hangoutData.emailParticipants.append(user.email)
-
-            // add hangout to users hangoutIds list
-            userData.hangoutIds.append(hangoutData._id)
             
-            // update user's hangoutIds list
-            const updateResponse = await axios.put('/api/update-user', {
-                auth0Id: user.sub,
-                hangoutIds: userData.hangoutIds
-            });
-
-            // update hangout information based on user that joins
-            const updateHangout = await axios.put('/api/update-user', {
-                idParticipants: hangoutData.idParticipants,
-                emailParticipants:hangoutData.emailParticipants
-            });            
+            // Logic for checking if the user is already in the group
+            if (hangoutData.idParticipants.includes(user.sub)) {
+                alert('You already joined this group!');
+                return;
+            }
             
-            console.log('Hangout Id and user emails/ids saved:', updateResponse.data.message. updateHangout.data.message);
+            if(hangoutData.numParticipants < (hangoutData.numVoted + 1)){
+                // display error message saying group is full!
+                alert('Unable to join hangout, the hangout is full!')
+                return;
+            }else{
+                console.log('after get-hangout')
 
-            navigate('/choose-times');
+                // update corresponding variables for user after joining hangout
+                hangoutData.idParticipants.push(user.sub)
+                hangoutData.emailParticipants.push(user.email)
+
+                // add hangout to users hangoutIds list
+                userData.hangoutIds.push(hangoutData._id)
+                console.log("added hangoutID: ", userData.hangoutIds)
+
+                console.log('before update-user')
+                // update user's hangoutIds list
+                const updateResponse = await axios.put('/api/update-user', {
+                    auth0Id: user.sub,
+                    hangoutIds: userData.hangoutIds
+                });
+
+                console.log('before updateHangout')
+                // update hangout information based on user that joins
+                const updateHangout = await axios.put('/api/update-hangout', {
+                    hangoutCode: generatedCode,
+                    idParticipants: hangoutData.idParticipants,
+                    emailParticipants: hangoutData.emailParticipants
+                });
+
+                console.log('Hangout Id and user emails/ids saved:', updateResponse.data.message, updateHangout.data.message);
+
+                navigate('/choose-times');
+            }
+
+           
         } catch (error) {
             console.error('Error saving hangout id or save user emails/ids:', error);
             alert('Failed to save hangout id. Please try again.');
         }
-        
+
     }
     // Form Validation and Updating group when Accepted
-    const handleReject = async() => {
+    const handleReject = async () => {
 
         //validating if the user exists
         if (!user) return;
@@ -68,29 +93,29 @@ export default function JoinHangoutPage() {
         //getting the hangout document
         const response = await axios.get(`/api/get-hangout/${generatedCode}`);
         const hangoutData = response.data.hangout;
-        
+
         //decreasing the number of participants
         hangoutData.numParticipants -= 1
 
         try {
             //updating the hangout
             const response = await axios.put('/api/update-hangout', {
-              auth0Id: user.sub,
-              numParticipants: hangoutData.numParticipants
+                hangoutCode: generatedCode,
+                numParticipants: hangoutData.numParticipants
             });
-      
+
             console.log('Hangout saved:', response.data.message);
-            
-          } catch (error) {
+
+        } catch (error) {
             console.error('Error saving hangout details:', error);
             alert('Failed to save hangout details. Please try again.');
-          }   
+        }
 
-        
+
     }
 
     return (
-        <div className = "flex flex-col items-center justify-center p-6 h-screen w-screen">
+        <div className="flex flex-col items-center justify-center p-6 h-screen w-screen">
             {/* Input Form for Entering the Code */}
             <div className="w-full max-w-xl flex flex-col items-center">
                 <h1 className="text-5xl font-bold text-brown-700 mb-2">Enter Group Code</h1>
