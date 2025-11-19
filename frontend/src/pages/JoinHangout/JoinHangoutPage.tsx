@@ -93,8 +93,8 @@ export default function JoinHangoutPage() {
         <div className = "flex flex-col items-center justify-center p-6 h-screen w-screen">
             {/* Input Form for Entering the Code */}
             <div className="w-full max-w-xl flex flex-col items-center">
-                <h1 className="text-5xl font-bold text-brown-700 mb-2">Verify Code</h1>
-                <h3 className="text-xl text-brown-600 mb-8">Enter the verification code below</h3>
+                <h1 className="text-5xl font-bold text-brown-700 mb-2">Enter Group Code</h1>
+                <h3 className="text-xl text-brown-600 mb-8">Enter the group code below</h3>
                 <input
                     className="border-2 rounded-lg w-full p-6 text-center text-xl shadow mb-12"
                     type="number"

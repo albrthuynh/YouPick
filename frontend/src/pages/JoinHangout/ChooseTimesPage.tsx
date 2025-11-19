@@ -13,7 +13,7 @@ interface TimeSlot {
 export default function ChooseTimesPage() {
     const [timeSlots, setTimeSlots] = useState<TimeSlot[]>([]);
     const [selectedSlots, setSelectedSlots] = useState<Set<string>>(new Set());
-    
+
     // Use Effect hook to grab the time slots
     useEffect(() => {
         const getTimeSlots = async () => {
@@ -23,17 +23,43 @@ export default function ChooseTimesPage() {
             const slots: TimeSlot[] = [];
 
             if (response.data.date1 && response.data.time1) {
+                const slot = {
+                    id: '1',
+                    date: response.data.date1,
+                    time: response.data.time1,
+                    timezone: Intl.DateTimeFormat().resolvedOptions().timeZone
+                }
 
+                slots.push(slot)
             }
 
             if (response.data.date2 && response.data.time2) {
+                const slot = {
+                    id: '2',
+                    date: response.data.date2,
+                    time: response.data.time2,
+                    timezone: Intl.DateTimeFormat().resolvedOptions().timeZone
+                }
 
+                slots.push(slot)
+            }
+
+            if (response.data.date3 && response.data.time3) {
+                const slot = {
+                    id: '3',
+                    date: response.data.date3,
+                    time: response.data.time3,
+                    timezone: Intl.DateTimeFormat().resolvedOptions().timeZone
+                }
+
+                slots.push(slot)
             }
 
             setTimeSlots(timeSlots);
+            console.log(timeSlots)
         }
 
-        return getTimeSlots();
+        getTimeSlots();
     }, []);
 
     const toggleSlot = (id: string) => {
@@ -69,11 +95,10 @@ export default function ChooseTimesPage() {
                         type="button"
                         onClick={() => toggleSlot(slot.id)}
                         aria-pressed={selectedSlots.has(slot.id)}
-                        className={`w-full text-left border-2 rounded-lg p-6 transition-all focus:outline-none ${
-                            selectedSlots.has(slot.id) 
-                                ? 'border-black bg-gray-50' 
+                        className={`w-full text-left border-2 rounded-lg p-6 transition-all focus:outline-none ${selectedSlots.has(slot.id)
+                                ? 'border-black bg-gray-50'
                                 : 'border-gray-300 bg-white hover:border-gray-400'
-                        }`}
+                            }`}
                     >
                         <div className="flex justify-between items-center">
                             <div>
@@ -81,16 +106,15 @@ export default function ChooseTimesPage() {
                                 <p className="text-3xl font-bold">{slot.time}</p>
                                 <p className="text-gray-500 mt-1">{slot.timezone}</p>
                             </div>
-                            <div className={`w-6 h-6 rounded-full border-2 ${
-                                selectedSlots.has(slot.id)
+                            <div className={`w-6 h-6 rounded-full border-2 ${selectedSlots.has(slot.id)
                                     ? 'border-black bg-black'
                                     : 'border-gray-400'
-                            }`} />
+                                }`} />
                         </div>
                     </button>
                 ))}
             </div>
-            
+
             {/* Continue Button */}
             <div className="w-full max-w-3xl mt-8">
                 <Button
