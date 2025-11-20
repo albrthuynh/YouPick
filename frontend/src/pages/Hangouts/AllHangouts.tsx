@@ -1,17 +1,37 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import HangoutCard from "@/components/HangoutCard";
+import axios from 'axios';
+import { useAuth0 } from "@auth0/auth0-react";
+
+
+
+type Hangout = {
+    title: string;
+    date: string;
+    invited: [];
+    location: string;
+};
 
 function AllHangouts() {
   const [hangouts, setHangouts] = useState([]);
+  const { user } = useAuth0();
 
   useEffect(() => {
-    fetch("http://localhost:3000/api/hangouts") 
-      .then(res => res.json())
-      .then(data => {
-        if (data.success) setHangouts(data.hangouts);
-      })
-      .catch(err => console.error("Error fetching hangouts:", err));
-  }, []);
+      const grabHangouts = async () => {
+        if (!user) return;
+
+        try{
+          const res = await axios.get(`/api/user/hangouts/${user.email}`);
+          if (res.data.success) {
+            setHangouts(res.data.hangouts);
+          }
+        }  catch (err){
+          console.error("Error fetching hangouts:", err)
+        }
+      }
+
+      grabHangouts();
+  }, [user]);
 
   return (
     <div>
@@ -23,7 +43,7 @@ function AllHangouts() {
         ) : (
             hangouts.map(h => (
 
-                <HangoutCard title={h.title} date={h.date} location={h.location} invited={h.invited} />
+              <HangoutCard title={h.title} date={h.date} location={h.location} invited={h.invited} />
 
             ))
         )}

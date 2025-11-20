@@ -3,7 +3,6 @@ import { Button } from '@/components/ui/button'
 import { generatedCode } from '../JoinHangout/JoinHangoutPage';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import { Slash } from 'lucide-react';
 
 interface TimeSlot {
     id: string;
@@ -153,7 +152,7 @@ export default function ChooseTimesPage() {
             }
 
             try{
-                const updateResponse = await axios.put('/api/update-hangout', {
+                await axios.put('/api/update-hangout', {
                     hangoutCode: generatedCode,
                     date1: hangoutData.date1,
                     date2: hangoutData.date2,

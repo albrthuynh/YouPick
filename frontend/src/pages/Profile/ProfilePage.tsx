@@ -1,5 +1,4 @@
 import { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
 import { useAuth0 } from '@auth0/auth0-react';
 import axios from 'axios';
 
@@ -70,7 +69,7 @@ export default function ProfilePage() {
 
     setIsSaving(true);
     try {
-      const response = await axios.put('/api/update-user', {
+      await axios.put('/api/update-user', {
         auth0Id: user.sub,
         name: profile.name,
         bio: profile.bio,

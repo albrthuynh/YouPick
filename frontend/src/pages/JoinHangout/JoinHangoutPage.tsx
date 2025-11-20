@@ -59,13 +59,13 @@ export default function JoinHangoutPage() {
                 userData.hangoutIds.push(hangoutData._id)
 
                 // update user's hangoutIds list
-                const updateResponse = await axios.put('/api/update-user', {
+                await axios.put('/api/update-user', {
                     auth0Id: user.sub,
                     hangoutIds: userData.hangoutIds
                 });
 
                 // update hangout information based on user that joins
-                const updateHangout = await axios.put('/api/update-hangout', {
+                await axios.put('/api/update-hangout', {
                     hangoutCode: generatedCode,
                     idParticipants: hangoutData.idParticipants,
                     emailParticipants: hangoutData.emailParticipants
@@ -97,7 +97,7 @@ export default function JoinHangoutPage() {
 
         try {
             //updating the hangout
-            const response = await axios.put('/api/update-hangout', {
+            await axios.put('/api/update-hangout', {
                 hangoutCode: generatedCode,
                 numParticipants: hangoutData.numParticipants
             });

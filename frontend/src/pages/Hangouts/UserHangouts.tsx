@@ -1,34 +1,47 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import HangoutCard from "../../components/HangoutCard"; 
 import { useAuth0 } from "@auth0/auth0-react";
+import axios from 'axios';
+
+type Hangout = {
+    _id: string;
+    hangoutName: string;
+    finalDate?: string | null;
+    emailParticipants?: string[] | null;
+    orgName?: string | null;
+    voteStatus?: any;
+};
 
 function UserHangouts() {
     const { user, isAuthenticated } = useAuth0();
-    const [finalizedHangouts, setFinalizedHangouts] = useState([]);
-    const [pendingHangouts, setPendingHangouts] = useState([]);
+    const [finalizedHangouts, setFinalizedHangouts] = useState<Hangout[]>([]);
+    const [pendingHangouts, setPendingHangouts] = useState<Hangout[]>([]);
     const [loading, setLoading] = useState(true);
-
-
 
     useEffect(() => {
         if (!isAuthenticated || !user?.email) return;
-    
-        fetch(`http://localhost:3000/api/user/hangouts/${user.email}`)
-            .then(res => res.json())
-            .then(data => {
-                if (data.success) {
-                    setFinalizedHangouts(data.finalizedHangouts); // Example: show finalized as "Created"
-                    setPendingHangouts(data.pendingHangouts);   // Example: show pending as "Invited"
+
+        const fetchHangouts = async () => {
+            try {
+                const res = await axios.get(`/api/user/hangouts/${user.email}`);
+                
+                if (res.data.success) {
+                    setFinalizedHangouts(res.data.finalizedHangouts);
+                    setPendingHangouts(res.data.pendingHangouts);
                 } else {
                     setFinalizedHangouts([]);
                     setPendingHangouts([]);
                 }
-                setLoading(false);
-            })
-            .catch(err => {
+            } catch (err) {
                 console.error("Error fetching user hangouts:", err);
+                setFinalizedHangouts([]);
+                setPendingHangouts([]);
+            } finally {
                 setLoading(false);
-            });
+            }
+        };
+
+        fetchHangouts();
     }, [isAuthenticated, user]);
 
     if (!isAuthenticated) {
@@ -72,7 +85,7 @@ function UserHangouts() {
                                         key={h._id}
                                         title={h.hangoutName}           // was h.title
                                         date={h.finalDate || "TBD"}     // pick finalDate if exists
-                                        location={h.finalLocation || "TBD"} // if you have location
+                                        // location={h.finalLocation || "TBD"} // if you have location
                                         invited={h.emailParticipants || []} 
                                         organizer={h.orgName}            // was h.organizer.name
                                         voteStatus={h.voteStatus}
@@ -99,7 +112,7 @@ function UserHangouts() {
                                         key={h._id}
                                         title={h.hangoutName}          
                                         date={h.finalDate || "TBD"}    
-                                        location={h.finalLocation || "TBD"} 
+                                        // location={h.finalLocation || "TBD"} 
                                         invited={h.emailParticipants || []} 
                                         organizer={h.orgName}           
                                         voteStatus={h.voteStatus}
