@@ -19,7 +19,7 @@ import JoinHangoutPage from './pages/JoinHangout/JoinHangoutPage';
 import CalendarPage from './pages/Calendar/CalendarPage';
 import ChooseTimesPage from './pages/JoinHangout/ChooseTimesPage';
 
-axios.defaults.baseURL = import.meta.env.VITE_BACKEND_URL;
+axios.defaults.baseURL = import.meta.env.VITE_BACKEND_URL || 'http://localhost:3000';
 
 function App() {
   const { user, isAuthenticated, isLoading: authLoading } = useAuth0();
