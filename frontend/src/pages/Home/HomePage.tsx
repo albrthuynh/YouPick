@@ -5,14 +5,6 @@ import Card from "@/components/card";
 export default function HomePage() {
   return (
     <div className="relative min-h-screen bg-background">
-      
-      {/* Avatar positioned top-right */}
-      <div className="absolute top-4 right-6">
-        <Avatar>
-          <AvatarImage src="https://avatars.githubusercontent.com/u/00000000?v=4" alt="User avatar" />
-          <AvatarFallback>RL</AvatarFallback>
-        </Avatar>
-      </div>
 
       {/* Hero section */}
       <div className="flex justify-center mt-10">
