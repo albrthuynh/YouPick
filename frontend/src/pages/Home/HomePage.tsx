@@ -40,7 +40,7 @@ export default function HomePage() {
       <div className="flex justify-center gap-10 mt-10 mb-20">
         <Card
           imgURL="https://americanbehavioralclinics.com/wp-content/uploads/2023/06/Depositphotos_252922046_L.jpg"
-          title="View Your Hangouts"
+          title="View Your Current Hangouts"
           body="Click here to see all your upcoming hangouts."
           path="/user-hangouts"
         />
