@@ -112,8 +112,6 @@ function UserHangouts() {
                                         key={h._id}
                                         title={h.hangoutName}          
                                         date={h.finalDate || "TBD"}    
-                                        // location={h.finalLocation || "TBD"} 
-                                        invited={h.emailParticipants || []} 
                                         organizer={h.orgName}           
                                         voteStatus={h.voteStatus}
                                     />

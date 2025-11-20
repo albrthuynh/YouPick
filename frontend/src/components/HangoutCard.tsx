@@ -38,29 +38,13 @@ function HangoutCard(props: any) {
                         <span className="font-medium text-slate-700">Date:</span> {props.date}
                     </p>
 
-                    <p className="text-slate-600 text-lg font-light">
-                        <span className="font-medium text-slate-700">Location:</span> {props.location}
-                    </p>
 
                     <div className="mt-5">
                         <h4 className="text-slate-800 font-semibold mb-1 text-lg">Organizer</h4>
                         <p className="text-slate-600 font-light">{props.organizer}</p>
                     </div>
 
-                    {/* Invited List */}
-                    {props.invited && props.invited.length > 0 && (
-                        <div className="mt-5">
-                            <h4 className="text-slate-800 font-semibold mb-2 text-lg">Invited</h4>
-                            <ul className="list-none ml-0 text-slate-600 text-base">
-                                {props.invited.map((person: any, index: number) => (
-                                    <li key={index} className="mb-1">
-                                        <span className="font-medium">{person.name}</span> – 
-                                        <span className="ml-1 capitalize">{person.status}</span>
-                                    </li>
-                                ))}
-                            </ul>
-                        </div>
-                    )}
+                    
                 </div>
             </div>
         </div>
