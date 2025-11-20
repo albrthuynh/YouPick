@@ -358,7 +358,7 @@ app.put('/api/update-hangout', async (req, res) => {
     try{
         const { 
             hangoutCode,
-            activites, 
+            activities, 
             date1, 
             date2, 
             date3, 
@@ -393,7 +393,7 @@ app.put('/api/update-hangout', async (req, res) => {
             updatedAt: new Date()
         }
     
-        if (activites !== undefined) updateFields.activites = activites
+        if (activities !== undefined) updateFields.activities = activities
         if (date1 !== undefined) updateFields.date1 = date1
         if (date2 !== undefined) updateFields.date2 = date2
         if (date3 !== undefined) updateFields.date3 = date3
