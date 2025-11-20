@@ -7,6 +7,7 @@ type Hangout = {
     _id: string;
     hangoutName: string;
     finalDate?: string | null;
+    finalActivity?: string | null;
     emailParticipants?: string[] | null;
     orgName?: string | null;
     voteStatus?: string | null;
@@ -82,13 +83,12 @@ function UserHangouts() {
                                 
                                 {finalizedHangouts.map(h => (
                                     <HangoutCard
-                                        key={h._id}
-                                        title={h.hangoutName}           // was h.title
-                                        date={h.finalDate || "TBD"}     // pick finalDate if exists
-                                        // location={h.finalLocation || "TBD"} // if you have location
-                                        invited={h.emailParticipants || []} 
-                                        organizer={h.orgName}            // was h.organizer.name
-                                        voteStatus={h.voteStatus}
+                                    key={h._id}
+                                    title={h.hangoutName}          
+                                    date={h.finalDate || "TBD"}
+                                    activity={h.finalActivity}    
+                                    organizer={h.orgName}           
+                                    voteStatus={h.voteStatus}
                                     />
                                 ))}
                             </div>
@@ -111,7 +111,8 @@ function UserHangouts() {
                                     <HangoutCard
                                         key={h._id}
                                         title={h.hangoutName}          
-                                        date={h.finalDate || "TBD"}    
+                                        date={h.finalDate || "TBD"}
+                                        activity={h.finalActivity}    
                                         organizer={h.orgName}           
                                         voteStatus={h.voteStatus}
                                     />
