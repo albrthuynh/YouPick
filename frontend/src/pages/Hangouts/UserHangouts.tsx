@@ -112,7 +112,7 @@ function UserHangouts() {
                                         key={h._id}
                                         title={h.hangoutName}          
                                         date={h.finalDate || "TBD"}
-                                        activity={h.finalActivity}    
+                                        activity={h.finalActivity || "TBD"}    
                                         organizer={h.orgName}           
                                         voteStatus={h.voteStatus}
                                     />
