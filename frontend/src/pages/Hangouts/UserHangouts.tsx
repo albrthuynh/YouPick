@@ -28,8 +28,8 @@ function UserHangouts() {
                 const res = await axios.get(`/api/user/hangouts/${user.email}`);
                 
                 if (res.data.success) {
-                    setFinalizedHangouts(res.data.finalizedHangouts);
-                    setPendingHangouts(res.data.pendingHangouts);
+                    setFinalizedHangouts(res.data.finalizedHangouts.reverse());
+                    setPendingHangouts(res.data.pendingHangouts.reverse());
                 } else {
                     setFinalizedHangouts([]);
                     setPendingHangouts([]);
