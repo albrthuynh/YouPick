@@ -1,5 +1,4 @@
 import { Hero1 } from "@/components/hero1";
-import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import Card from "@/components/card";
 
 export default function HomePage() {
