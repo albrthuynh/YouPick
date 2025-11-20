@@ -77,7 +77,7 @@ export default function JoinHangoutPage() {
 
            
         } catch (error) {
-            console.error('Error saving hangout id or save user emails/ids: ', error);
+            console.error('Error saving hangout id or save user emails/ids:', error);
             alert('Failed to save hangout id. Please try again.');
         }
 
