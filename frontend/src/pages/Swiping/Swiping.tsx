@@ -19,7 +19,6 @@ interface ActivityOption {
 }
 
 export default function SwipingPage() {
-    console.log("printing: ", generatedCode)
     const { user, isAuthenticated } = useAuth0();
 
     const navigate = useNavigate();
@@ -145,10 +144,8 @@ export default function SwipingPage() {
       // add votes to hangout activites based on curr users picks
       for (const activity of likedActivities){
         // update count for specific activity
-        let activityVal = hangoutData.activities.get(activity.value)
-        hangoutData.activities.set(activity.value, activityVal+1)
+        hangoutData.activities[activity.value] = (hangoutData.activities[activity.value] || 0) + 1;
       }
-      console.log("activities AFTER INCREMENTING", hangoutData.activities)
       
       // updated num people voted
       hangoutData.votedNum += 1
@@ -159,14 +156,10 @@ export default function SwipingPage() {
         hangoutData.finalDate = findMax(hangoutData.date1, hangoutData.date2, hangoutData.date3)
         hangoutData.finalTime = findMax(hangoutData.time1, hangoutData.time2, hangoutData.time3)
 
-        console.log("vote status: ", hangoutData.voteStatus);
-
         //converting activities json to Map
         const activities = new Map<string, number>(
           Object.entries(hangoutData.activities)
         );
-        console.log("activities AFTER CONVERTING TO MAP ", hangoutData.activities)
-
 
         let maxHangoutVote: number = Math.max(...Array.from(activities.values()))
 
@@ -178,10 +171,9 @@ export default function SwipingPage() {
   
       }
       
-      console.log("activities BEFORE updating hangout", hangoutData.activities)
 
       try {
-        const response = await axios.put('/api/update-hangout', {
+        await axios.put('/api/update-hangout', {
           hangoutCode: generatedCode,
           activites: hangoutData.activities,
           finalTime: hangoutData.finalTime,
@@ -191,7 +183,6 @@ export default function SwipingPage() {
           voteStatus: hangoutData.voteStatus,
         });
   
-        console.log('Hangout saved:', response.data.message);
         
       } catch (error) {
         console.error('Error saving Hangout:', error);
