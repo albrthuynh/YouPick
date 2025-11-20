@@ -32,6 +32,12 @@ export default function JoinHangoutPage() {
             const response = await axios.get(`/api/get-hangout/${code}`);
             const hangoutData = response.data.hangout;
             
+            if (userData.auth0Id === hangoutData.auth0Id) {
+                alert('You created this group, check My Hangouts!');
+                return;
+            }
+
+            
             // Logic for checking if the user is already in the group
             if (hangoutData.idParticipants.includes(user.sub)) {
                 alert('You already joined this group!');
