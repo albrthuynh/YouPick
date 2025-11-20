@@ -1,6 +1,8 @@
+/** biome-ignore-all lint/suspicious/noExplicitAny: <> */
+
 import { Link } from 'react-router-dom'
 
-function Card(props) {
+function Card(props: any) {
   return (
     <div>
         <div className="relative flex flex-col my-6 bg-white shadow-sm border border-slate-200 rounded-lg w-96">
