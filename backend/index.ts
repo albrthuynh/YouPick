@@ -11,7 +11,7 @@ const PORT = process.env.BACKEND_PORT;
 
 // Setting up connection with the frontend
 app.use(cors({
-    origin: 'http://localhost:5173',
+    origin: 'https://you-pick-henna.vercel.app/',
     credentials: true
 }));
 app.use(express.json());
