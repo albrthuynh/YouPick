@@ -31,7 +31,7 @@ export default function SwipingPage() {
     const [hangoutName, setHangoutName] = useState("")
     const [organizerName, setOrganizerName] = useState("")
     const [isLoading, setIsLoading] = useState(true)
-    let likedActivities: ActivityOption[] = [];
+    const [likedActivities, setLikedActivities] = useState<ActivityOption[]>([])
 
     const [showConfetti, setShowConfetti] = useState(false);
 
@@ -79,7 +79,7 @@ export default function SwipingPage() {
 
       // if element hearted, add to list of liked activities
       if(liked){
-        likedActivities.push(activitiesChosen[currActivityIndex])
+        setLikedActivities(prev => [...prev, activitiesChosen[currActivityIndex]]);
       }
       
       // timing allows it to show swipe going left or right
