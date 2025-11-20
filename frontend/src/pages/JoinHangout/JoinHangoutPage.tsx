@@ -33,7 +33,7 @@ export default function JoinHangoutPage() {
             const hangoutData = response.data.hangout;
             
             if (userData.auth0Id === hangoutData.auth0Id) {
-                alert('You created this group, check My Hangouts!');
+                alert('You created this hangout, check My Hangouts!');
                 return;
             }
 
