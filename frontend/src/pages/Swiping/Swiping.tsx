@@ -148,6 +148,7 @@ export default function SwipingPage() {
         let activityVal = hangoutData.activities.get(activity.value)
         hangoutData.activities.set(activity.value, activityVal+1)
       }
+      console.log("activities AFTER INCREMENTING", hangoutData.activities)
       
       // updated num people voted
       hangoutData.votedNum += 1
@@ -164,6 +165,8 @@ export default function SwipingPage() {
         const activities = new Map<string, number>(
           Object.entries(hangoutData.activities)
         );
+        console.log("activities AFTER CONVERTING TO MAP", hangoutData.activities)
+
 
         let maxHangoutVote: number = Math.max(...Array.from(activities.values()))
 
@@ -175,6 +178,8 @@ export default function SwipingPage() {
   
       }
       
+      console.log("activities BEFORE updating hangout", hangoutData.activities)
+
       try {
         const response = await axios.put('/api/update-hangout', {
           hangoutCode: generatedCode,
