@@ -140,7 +140,7 @@ export default function CreateHangout() {
             userData.hangoutIds.push(hangoutData._id)
             
             // update user's hangoutIds list
-            const updateResponse = await axios.put('/api/update-user', {
+            await axios.put('/api/update-user', {
                 auth0Id: user.sub,
                 hangoutIds: userData.hangoutIds
             });

@@ -5,15 +5,16 @@ import { useAuth0 } from "@auth0/auth0-react";
 
 
 
-type Hangout = {
-    title: string;
-    date: string;
-    invited: [];
-    location: string;
-};
+interface Hangout {
+  _id: string;
+  title: string;
+  date: string;
+  location: string;
+  invited: number;
+}
 
 function AllHangouts() {
-  const [hangouts, setHangouts] = useState([]);
+  const [hangouts, setHangouts] = useState<Hangout[]>([]);
   const { user } = useAuth0();
 
   useEffect(() => {
@@ -43,7 +44,7 @@ function AllHangouts() {
         ) : (
             hangouts.map(h => (
 
-              <HangoutCard title={h.title} date={h.date} location={h.location} invited={h.invited} />
+              <HangoutCard key={h._id} title={h.title} date={h.date} location={h.location} invited={h.invited} />
 
             ))
         )}

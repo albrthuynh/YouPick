@@ -13,7 +13,6 @@ import CreateHangout from './pages/CreateHangout/Create';
 import FinalizePage from './pages/CreateHangout/Finalize';
 import SwipingPage from './pages/Swiping/Swiping';
 import ProtectedRoute from './components/ProtectedRoute';
-import AllHangouts from './pages/Hangouts/AllHangouts'; // shows all hangouts
 import UserHangouts from './pages/Hangouts/UserHangouts';
 import { Navbar1 } from './components/navbar1';
 import JoinHangoutPage from './pages/JoinHangout/JoinHangoutPage';
@@ -47,10 +46,10 @@ function App() {
           }
         } catch (error) {
           // User doesn't exist, continue to create
-          console.log('User not found, creating new user...');
+          console.log('User not found, creating new user...', error);
         }
 
-        const response = await axios.post('/api/create-user', {
+        await axios.post('/api/create-user', {
           auth0Id: user.sub,
           name: user.name,
           email: user.email,

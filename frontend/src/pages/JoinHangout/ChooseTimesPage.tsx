@@ -24,7 +24,7 @@ export default function ChooseTimesPage() {
 
 
             // Helper function to format date and time
-            const formatDateTime = (dateStr: string, timeStr: any) => {
+            const formatDateTime = (dateStr: string, timeStr: string | number) => {
                 // Parse the ISO date string
                 const date = new Date(dateStr);
 
@@ -32,7 +32,7 @@ export default function ChooseTimesPage() {
                 const timeString = String(timeStr);
 
                 // If time is in format like "23:330", split it properly
-                let hours, minutes;
+                let hours: number, minutes: number;
                 if (timeString.includes(':')) {
                     const parts = timeString.split(':');
                     hours = parseInt(parts[0]);

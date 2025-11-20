@@ -1,6 +1,7 @@
+/** biome-ignore-all lint/suspicious/noExplicitAny: <> */
 import '../index.css';
 
-function HangoutCard(props) {
+function HangoutCard(props: any) {
     const isFinalized = props.voteStatus === "Finalized";
 
     const borderColor = isFinalized 
@@ -51,7 +52,7 @@ function HangoutCard(props) {
                         <div className="mt-5">
                             <h4 className="text-slate-800 font-semibold mb-2 text-lg">Invited</h4>
                             <ul className="list-none ml-0 text-slate-600 text-base">
-                                {props.invited.map((person, index) => (
+                                {props.invited.map((person: any, index: number) => (
                                     <li key={index} className="mb-1">
                                         <span className="font-medium">{person.name}</span> – 
                                         <span className="ml-1 capitalize">{person.status}</span>

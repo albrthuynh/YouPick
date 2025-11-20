@@ -9,7 +9,7 @@ type Hangout = {
     finalDate?: string | null;
     emailParticipants?: string[] | null;
     orgName?: string | null;
-    voteStatus?: any;
+    voteStatus?: string | null;
 };
 
 function UserHangouts() {

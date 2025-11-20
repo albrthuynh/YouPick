@@ -200,7 +200,7 @@ export default function CalendarPage() {
                         {/* Empty cells for days before month starts */}
                         {Array.from({ length: startingDayOfWeek }).map((_, index) => (
                             <div
-                                key={`empty-${index}`}
+                                key={`day-${-(index + 1)}`}
                                 className="min-h-[120px] bg-muted/20 border-r border-b border-border/30 last:border-r-0"
                             />
                         ))}
