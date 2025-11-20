@@ -178,106 +178,8 @@ app.put('/api/update-user', async (req, res) => {
     }
 });
 
-
-// create hangout document
-// app.post('/api/create-hangout', async (req, res) => {
-//     try{
-
-//         // variables to set when hangout is first created
-//         const {
-//             auth0Id,
-//             orgName,
-//             orgEmail,
-//             hangoutName,
-//             activities, 
-//             numParticipants, 
-//             date1, 
-//             date2, 
-//             date3, 
-//             time1, 
-//             time2, 
-//             time3, 
-//             hangoutCode
-//         } = req.body;
-
-//         console.log("Activities received:", activities);
-        
-//         // connect to MongoDB
-//         const client = await connectToMongoDB();
-//         const db = client.db('users');
-//         const collection = db.collection('hangouts');
-        
-//         const usersCollection = db.collection('user_documents');
-
-//         // create Hangout document
-//         const newHangout = {
-//             auth0Id,
-//             orgName,
-//             orgEmail, 
-//             hangoutName, 
-//             activities, 
-//             numParticipants, 
-//             date1,
-//             date2,
-//             date3,
-//             time1,
-//             time2,
-//             time3,
-//             hangoutCode,
-//             createdAt: new Date(),
-//             finalTime: "",
-//             finalDate: "",
-//             finalActivity: "",
-//             votedNum: 0,
-//             voteStatus: "Pending",
-//             idParticipants: [],
-//             emailParticipants: []
-//         };
-       
-//         // insert hangout into database
-//         const result = await collection.insertOne(newHangout);
-//         const newHangoutId = result.insertedId; // capture the newly generated ObjectID
-
-       
-//         if (newHangoutId){
-
-//             console.log('Hangout created successfully:', result.insertedId);
-
-//             const userUpdateResult = await usersCollection.updateOne(
-//                 { auth0Id: auth0Id }, // find the user by their Auth0 ID
-//                 { push: { hangoutIds: newHangoutId } } // push the new ID into the hangoutIds array
-//             );
-
-//             if (userUpdateResult.modifiedCount === 1) {
-//                 console.log('User document updated with new hangoutId:', newHangoutId);
-//             } else {
-//                 console.warn('Could not find user to update hangoutIds for auth0Id:', auth0Id);
-//             }
-
-
-//             res.json({
-//                 success: true,
-//                 message: 'Hangout created and user updated successfully!',
-//                 hangout: { ...newHangout, _id: newHangoutId }
-//             });
-
-//         } else {
-//             console.error('Failed to insert hangout');
-//             res.status(500).json({
-//                 success: false,
-//                 message: 'Failed to create hangout'
-//             });
-//         }
-
-//     }catch (error){
-//         console.error('MongoDB fetch error:', error);
-//         res.status(500).json({ error: 'Failed to create hangout' });
-//     }
-
-// });
 app.post('/api/create-hangout', async (req, res) => {
     try{
-
         // variables to set when hangout is first created
         const {
             auth0Id,
@@ -349,16 +251,14 @@ app.post('/api/create-hangout', async (req, res) => {
         console.error('MongoDB fetch error:', error);
         res.status(500).json({ error: 'Failed to create hangout' });
     }
-
 });
-
 
 //update hangout document
 app.put('/api/update-hangout', async (req, res) => {
     try{
         const { 
             hangoutCode,
-            activites, 
+            activities, 
             date1, 
             date2, 
             date3, 
@@ -393,7 +293,7 @@ app.put('/api/update-hangout', async (req, res) => {
             updatedAt: new Date()
         }
     
-        if (activites !== undefined) updateFields.activites = activites
+        if (activities !== undefined) updateFields.activities = activities
         if (date1 !== undefined) updateFields.date1 = date1
         if (date2 !== undefined) updateFields.date2 = date2
         if (date3 !== undefined) updateFields.date3 = date3
@@ -568,60 +468,6 @@ app.get("/api/user/hangouts/:email", async (req, res) => {
         res.status(500).json({ error: "Failed to fetch hangouts" });
     }
 });
-
-// app.get("/api/user/hangouts/:email", async (req, res) => {
-//     // ... (previous code to find userDoc and extract hangoutIds) ...
-
-//     try {
-
-//         const userEmail = req.params.email;
-
-//         const client = await connectToMongoDB();
-//         const db = client.db('users');
-//         const userDoc = await db.collection("user_documents").findOne({ email: userEmail });
-
-//         if (!userDoc || !userDoc.hangoutIds || userDoc.hangoutIds.length === 0) {
-//             // ... (handle cases with no user or no hangouts) ...
-//         }
-
-//         const { hangoutIds } = userDoc;
-
-//         // --- Iterating with findOne() using Promise.all() ---
-
-//         // 1. Create an array of Promises, where each Promise calls findOne()
-//         const hangoutPromises = hangoutIds.map(async (idString) => {
-//             // Ensure you use 'new ObjectId(idString)' to avoid the previous TypeError
-//             const hangoutId = new ObjectId(idString);
-//             const hangout = await db.collection("hangouts").findOne({ _id: hangoutId });
-//             return hangout;
-//         });
-
-//         // 2. Wait for all promises to resolve concurrently
-//         const hangouts = await Promise.all(hangoutPromises);
-
-//         // 3. Filter out any null results (if a hangout was deleted but the ID remained in the user doc)
-//         const validHangouts = hangouts.filter(h => h !== null);
-
-//         // --- Rest of the logic ---
-
-//         // Step 3: Separate by voteStatus
-//         const pendingHangouts = validHangouts.filter(h => h.voteStatus === "Pending");
-//         const finalizedHangouts = validHangouts.filter(h => h.voteStatus === "Finalized");
-
-//         res.json({
-//             success: true,
-//             email: userEmail,
-//             pendingCount: pendingHangouts.length,
-//             finalizedCount: finalizedHangouts.length,
-//             pendingHangouts,
-//             finalizedHangouts
-//         });
-
-//     } catch (err) {
-//         console.error("Error fetching user hangouts:", err);
-//         res.status(500).json({ error: "Failed to fetch hangouts" });
-//     }
-// });
 
 // Grabs the times associated with the group id
 app.get('/api/get-timeslots/:generatedCode', async (req, res) => {

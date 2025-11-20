@@ -22,16 +22,13 @@ import ChooseTimesPage from './pages/JoinHangout/ChooseTimesPage';
 axios.defaults.baseURL = import.meta.env.VITE_BACKEND_URL || 'http://localhost:3000';
 
 function App() {
-  const { user, isAuthenticated, isLoading: authLoading } = useAuth0();
+  const { user } = useAuth0();
   const [isCreatingUser, setIsCreatingUser] = useState(false);
 
   // Create user in MongoDB when they first authenticate
   useEffect(() => {
     const createUserIfNeeded = async () => {
-      console.log('🔍 Auth state:', { isAuthenticated, authLoading, hasUser: !!user });
-
       if (!user) {
-        console.log('❌ Not authenticated or no user');
         return;
       }
 
@@ -44,9 +41,8 @@ function App() {
           if (checkResponse.data.success) {
             return;
           }
-        } catch (error) {
+        } catch {
           // User doesn't exist, continue to create
-          console.log('User not found, creating new user...', error);
         }
 
         await axios.post('/api/create-user', {
@@ -57,8 +53,7 @@ function App() {
 
       } catch (error) {
         if (axios.isAxiosError(error)) {
-          console.error('Response:', error.response?.data);
-          console.error('Status:', error.response?.status);
+          // Handle axios error silently
         }
       } finally {
         setIsCreatingUser(false);
@@ -66,7 +61,7 @@ function App() {
     };
 
     createUserIfNeeded();
-  }, [isAuthenticated, user, authLoading]);  // Show loading screen while creating user
+  }, [user]);  // Show loading screen while creating user
   if (isCreatingUser) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">

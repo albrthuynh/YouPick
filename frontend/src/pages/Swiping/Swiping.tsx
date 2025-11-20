@@ -175,7 +175,7 @@ export default function SwipingPage() {
       try {
         await axios.put('/api/update-hangout', {
           hangoutCode: generatedCode,
-          activites: hangoutData.activities,
+          activities: hangoutData.activities,
           finalTime: hangoutData.finalTime,
           finalDate: hangoutData.finalDate,
           finalActivity: hangoutData.finalActivity,
