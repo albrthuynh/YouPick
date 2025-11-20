@@ -1,5 +1,7 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Button } from '@/components/ui/button'
+import { useAuth0 } from '@auth0/auth0-react'
+import axios from 'axios'
 
 interface Event {
     id: string;
@@ -8,13 +10,73 @@ interface Event {
     color: string;
 }
 
+interface Hangout {
+    _id: string;
+    hangoutName: string;
+    finalDate?: string;
+    finalTime?: string;
+    finalActivity?: string;
+}
+
 export default function CalendarPage() {
+    const { user, isAuthenticated } = useAuth0();
     const [currentDate, setCurrentDate] = useState(new Date());
-    const [events] = useState<Event[]>([
-        { id: '1', title: 'Team Dinner', date: new Date(2025, 10, 20), color: 'bg-blue-500' },
-        { id: '2', title: 'Movie Night', date: new Date(2025, 10, 25), color: 'bg-green-500' },
-        { id: '3', title: 'Game Session', date: new Date(2025, 10, 17), color: 'bg-purple-500' },
-    ]);
+    const [events, setEvents] = useState<Event[]>([]);
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        if (!isAuthenticated || !user?.email) {
+            setLoading(false);
+            return;
+        }
+
+        const fetchHangouts = async () => {
+            try {
+                const response = await axios.get(`/api/user/hangouts/${user.email}`);
+                
+                if (response.data.success && response.data.finalizedHangouts) {
+                    // Convert finalized hangouts to calendar events
+                    const calendarEvents: Event[] = response.data.finalizedHangouts
+                        .filter((hangout: Hangout) => hangout.finalDate) // Only include hangouts with a finalized date
+                        .map((hangout: Hangout) => {
+                            // Parse the date string (assuming format like "MM/DD/YYYY" or similar)
+                            const dateString = hangout.finalDate || '';
+                            const dateParts = dateString.split('/');
+                            let eventDate: Date;
+                            
+                            if (dateParts.length === 3) {
+                                // Assuming MM/DD/YYYY format
+                                const month = parseInt(dateParts[0]) - 1; // Month is 0-indexed
+                                const day = parseInt(dateParts[1]);
+                                const year = parseInt(dateParts[2]);
+                                eventDate = new Date(year, month, day);
+                            } else {
+                                // Fallback: try to parse the date directly
+                                eventDate = new Date(dateString);
+                            }
+
+                            return {
+                                id: hangout._id,
+                                title: hangout.hangoutName,
+                                date: eventDate,
+                                color: 'bg-blue-500'
+                            };
+                        });
+                    
+                    setEvents(calendarEvents);
+                } else {
+                    setEvents([]);
+                }
+            } catch (err) {
+                console.error("Error fetching hangouts for calendar:", err);
+                setEvents([]);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchHangouts();
+    }, [isAuthenticated, user]);
 
     const monthNames = ['January', 'February', 'March', 'April', 'May', 'June',
         'July', 'August', 'September', 'October', 'November', 'December'];
@@ -60,6 +122,30 @@ export default function CalendarPage() {
             month === today.getMonth() &&
             year === today.getFullYear();
     };
+
+    if (!isAuthenticated) {
+        return (
+            <div className="min-h-screen bg-background flex items-center justify-center">
+                <div className="text-center">
+                    <h2 className="text-2xl font-semibold text-foreground mb-2">
+                        Please log in to view your calendar
+                    </h2>
+                </div>
+            </div>
+        );
+    }
+
+    if (loading) {
+        return (
+            <div className="min-h-screen bg-background flex items-center justify-center">
+                <div className="text-center">
+                    <h2 className="text-2xl font-semibold text-foreground">
+                        Loading your Calendar 
+                    </h2>
+                </div>
+            </div>
+        );
+    }
 
     return (
         <div className="min-h-screen bg-background p-6">

@@ -20,7 +20,7 @@ import JoinHangoutPage from './pages/JoinHangout/JoinHangoutPage';
 import CalendarPage from './pages/Calendar/CalendarPage';
 import ChooseTimesPage from './pages/JoinHangout/ChooseTimesPage';
 
-axios.defaults.baseURL = "http://localhost:3000";
+axios.defaults.baseURL = import.meta.env.VITE_BACKEND_URL;
 
 function App() {
   const { user, isAuthenticated, isLoading: authLoading } = useAuth0();
@@ -43,16 +43,12 @@ function App() {
         try {
           const checkResponse = await axios.get(`/api/get-user/${user.sub}`);
           if (checkResponse.data.success) {
-            console.log('✅ User already exists in database');
             return;
           }
         } catch (error) {
           // User doesn't exist, continue to create
-          console.log('📝 User not found, creating new user...');
+          console.log('User not found, creating new user...');
         }
-
-        console.log('🚀 Creating user in database...');
-        console.log('User data:', { auth0Id: user.sub, name: user.name, email: user.email });
 
         const response = await axios.post('/api/create-user', {
           auth0Id: user.sub,
@@ -60,10 +56,7 @@ function App() {
           email: user.email,
         });
 
-        console.log('📦 Response:', response.data);
-        console.log('✅ User created successfully');
       } catch (error) {
-        console.error('❌ Error creating user:', error);
         if (axios.isAxiosError(error)) {
           console.error('Response:', error.response?.data);
           console.error('Status:', error.response?.status);
