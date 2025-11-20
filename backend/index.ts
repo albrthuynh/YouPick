@@ -251,9 +251,7 @@ app.post('/api/create-hangout', async (req, res) => {
         console.error('MongoDB fetch error:', error);
         res.status(500).json({ error: 'Failed to create hangout' });
     }
-
 });
-
 
 //update hangout document
 app.put('/api/update-hangout', async (req, res) => {
@@ -470,60 +468,6 @@ app.get("/api/user/hangouts/:email", async (req, res) => {
         res.status(500).json({ error: "Failed to fetch hangouts" });
     }
 });
-
-// app.get("/api/user/hangouts/:email", async (req, res) => {
-//     // ... (previous code to find userDoc and extract hangoutIds) ...
-
-//     try {
-
-//         const userEmail = req.params.email;
-
-//         const client = await connectToMongoDB();
-//         const db = client.db('users');
-//         const userDoc = await db.collection("user_documents").findOne({ email: userEmail });
-
-//         if (!userDoc || !userDoc.hangoutIds || userDoc.hangoutIds.length === 0) {
-//             // ... (handle cases with no user or no hangouts) ...
-//         }
-
-//         const { hangoutIds } = userDoc;
-
-//         // --- Iterating with findOne() using Promise.all() ---
-
-//         // 1. Create an array of Promises, where each Promise calls findOne()
-//         const hangoutPromises = hangoutIds.map(async (idString) => {
-//             // Ensure you use 'new ObjectId(idString)' to avoid the previous TypeError
-//             const hangoutId = new ObjectId(idString);
-//             const hangout = await db.collection("hangouts").findOne({ _id: hangoutId });
-//             return hangout;
-//         });
-
-//         // 2. Wait for all promises to resolve concurrently
-//         const hangouts = await Promise.all(hangoutPromises);
-
-//         // 3. Filter out any null results (if a hangout was deleted but the ID remained in the user doc)
-//         const validHangouts = hangouts.filter(h => h !== null);
-
-//         // --- Rest of the logic ---
-
-//         // Step 3: Separate by voteStatus
-//         const pendingHangouts = validHangouts.filter(h => h.voteStatus === "Pending");
-//         const finalizedHangouts = validHangouts.filter(h => h.voteStatus === "Finalized");
-
-//         res.json({
-//             success: true,
-//             email: userEmail,
-//             pendingCount: pendingHangouts.length,
-//             finalizedCount: finalizedHangouts.length,
-//             pendingHangouts,
-//             finalizedHangouts
-//         });
-
-//     } catch (err) {
-//         console.error("Error fetching user hangouts:", err);
-//         res.status(500).json({ error: "Failed to fetch hangouts" });
-//     }
-// });
 
 // Grabs the times associated with the group id
 app.get('/api/get-timeslots/:generatedCode', async (req, res) => {
