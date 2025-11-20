@@ -200,7 +200,7 @@ export default function LandingPage() {
             </div>
             <h3 className="font-poppins text-xl font-semibold text-foreground mb-3">Instant Calendar</h3>
             <p className="text-muted-foreground text-sm leading-relaxed">
-              QR code to add the final plan to everyone's calendar
+              Easily access your hangouts on our calendar
             </p>
           </div>
         </div>
