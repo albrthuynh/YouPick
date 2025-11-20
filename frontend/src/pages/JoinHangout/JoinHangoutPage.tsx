@@ -32,6 +32,7 @@ export default function JoinHangoutPage() {
             const response = await axios.get(`/api/get-hangout/${code}`);
             const hangoutData = response.data.hangout;
             
+            // will not allow the user to join a group they created
             if (userData.auth0Id === hangoutData.auth0Id) {
                 alert('You created this hangout, check My Hangouts!');
                 return;

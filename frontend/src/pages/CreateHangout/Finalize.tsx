@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { Button } from "@/components/ui/button"
 import { exportedNumParticipants } from './Create';
 import { generatedCode } from '../CreateHangout/Create';
+const emailJSKey = import.meta.env.VITE_EMAILJS_KEY
 
 import emailjs from "@emailjs/browser";
 
@@ -39,7 +40,7 @@ export default function FinalizePage() {
             email: email, 
             hangoutCode: generatedCode 
           },
-          "5S6JLoJfXML-TAxeI"
+          emailJSKey
         );
       }
       navigate("/home")
