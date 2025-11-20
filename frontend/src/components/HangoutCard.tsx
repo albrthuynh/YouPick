@@ -38,6 +38,10 @@ function HangoutCard(props: any) {
                         <span className="font-medium text-slate-700">Date:</span> {props.date}
                     </p>
 
+                    <p className="text-slate-600 text-lg font-light">
+                        <span className="font-medium text-slate-700">Time:</span> {props.time}
+                    </p>
+
                     <p className="text-slate-600 text-lg font-light mt-5">
                         <span className="font-medium text-slate-700">Activity:</span> {props.activity}
                     </p>
