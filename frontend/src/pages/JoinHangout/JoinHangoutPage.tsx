@@ -1,5 +1,5 @@
-import { useState } from 'react'
-import { useNavigate } from 'react-router-dom';
+import { useState, useEffect } from 'react'
+import { useNavigate, useParams } from 'react-router-dom';
 import { Button } from '@/components/ui/button'
 import axios from 'axios'
 import { useAuth0 } from '@auth0/auth0-react';
@@ -10,9 +10,18 @@ export default function JoinHangoutPage() {
     // Variables
     const [code, setCode] = useState<number | null>(null);
     const { user } = useAuth0();
+    // if user used QR code, grab hangoutCode from url
+    const { hangoutCode } = useParams<{ hangoutCode : string }>();
 
     const navigate = useNavigate();
 
+    useEffect(() => {
+        if (hangoutCode) {
+            if (!Number.isNaN(Number(hangoutCode))) {
+                setCode(Number(hangoutCode))
+            }
+        } 
+    }, [hangoutCode])
 
     // Form Validation and Updating group when Accepted
     const handleAccept = async () => {

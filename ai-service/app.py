@@ -18,12 +18,12 @@ async def get_activities(user_prompt: str):
     SYSTEM_PROMPT = """
         You are an activity recommendation assistant. Suggest 3-5 fun activities based on user preferences.
         
-        IMPORTANT: Return ONLY a valid JSON array of strings. No additional text, explanations, or formatting.
-        Each activity should be a concise name (2-4 words maximum).
+        IMPORTANT: Return ONLY a valid JSON array of objects. No additional text, explanations, or formatting.
+        Each object should have "activity" and "location" fields.
         
-        Format: ["activity1", "activity2", "activity3"]
+        Format: [{"activity": "activity name", "location": "specific location"}, {"activity": "activity name", "location": "specific location"}]
         
-        Example: ["Kayaking", "Bike Riding", "Zoo Visit", "Outdoor Concert"]
+        Example: [{"activity": "Kayaking", "location": "Lake Michigan"}, {"activity": "Bike Riding", "location": "Lakefront Trail"}, {"activity": "Zoo Visit", "location": "Lincoln Park Zoo"}]
     """
 
     full_prompt = f"{SYSTEM_PROMPT}\n\nUser Request: {user_prompt}"

@@ -4,9 +4,9 @@ import { useNavigate } from 'react-router-dom';
 import { Button } from "@/components/ui/button"
 import { exportedNumParticipants } from './Create';
 import { generatedCode } from '../CreateHangout/Create';
-const emailJSKey = import.meta.env.VITE_EMAILJS_KEY
-
+const emailJSKey = import.meta.env.VITE_EMAILJS_KEY;
 import emailjs from "@emailjs/browser";
+import {QRCodeSVG} from 'qrcode.react';
 
 export default function FinalizePage() {
 
@@ -16,10 +16,14 @@ export default function FinalizePage() {
   let listEmails: string[] = []
   
   const navigate = useNavigate();
+
+  //generate qr code
+  const baseURL = window.location.origin;
+  const qrCodeURL = `${baseURL}/join-hangout/${generatedCode}`;
+  
   
   const finalizeHangout = async () => {
     //send emails
-    
     listEmails = emails.split(",").map((e) => e.trim());
 
     
@@ -57,11 +61,20 @@ export default function FinalizePage() {
       </div>
 
       {/* Generate Code */}
-      <div className="flex flex-col justify-center items-center gap-20">
+      <div className="flex flex-col justify-center items-center gap-10">
         
+        {/* Generated Code */}
         <div>
-          <h2 className="space-y-10 text-2xl font-semibold mb-2 text-center">Your Generated Hangout Code</h2>
+          <h2 className="space-y-6 text-2xl font-semibold mb-2 text-center">Your Generated Hangout Code</h2>
           <p className = "text-center text-4xl" >{generatedCode}</p>
+        </div>
+
+        {/* QR Code */}
+        <div>
+          <QRCodeSVG 
+            value={qrCodeURL}
+            size={150}
+          />,
         </div>
 
         {/* Add friends emails */}

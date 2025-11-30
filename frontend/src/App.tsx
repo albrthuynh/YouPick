@@ -106,7 +106,7 @@ function App() {
           <Route path="/createhangout" element={<ProtectedRoute><CreateHangout /></ProtectedRoute>} />
           <Route path="/home" element={<ProtectedRoute><HomePage /></ProtectedRoute>} />
           <Route path="/finalize" element={<ProtectedRoute><FinalizePage /></ProtectedRoute>} />
-          <Route path="/join-hangout" element={<ProtectedRoute><JoinHangoutPage /></ProtectedRoute>} />
+          <Route path="/join-hangout/:hangoutCode?" element={<ProtectedRoute><JoinHangoutPage /></ProtectedRoute>} />
           <Route path="/calendar" element={<ProtectedRoute><CalendarPage /></ProtectedRoute>} />
           <Route path="/choose-times" element={<ProtectedRoute><ChooseTimesPage /></ProtectedRoute>} />
           <Route path="/user-hangouts" element={<ProtectedRoute><UserHangouts /></ProtectedRoute>} />
