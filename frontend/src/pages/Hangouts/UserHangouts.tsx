@@ -10,6 +10,7 @@ type Hangout = {
     finalTime: string;
     finalActivity?: string | null;
     emailParticipants?: string[] | null;
+    location?: string | null;
     orgName?: string | null;
     voteStatus?: string | null;
 };
@@ -135,6 +136,7 @@ function UserHangouts() {
                                     title={h.hangoutName}          
                                     date={formatDate(h.finalDate) || "TBD"}
                                     time={formatTime(h.finalTime,h.finalDate) || "TBD"}
+                                    location = {h.location}
                                     activity={h.finalActivity}    
                                     organizer={h.orgName}           
                                     voteStatus={h.voteStatus}
@@ -162,7 +164,8 @@ function UserHangouts() {
                                         title={h.hangoutName}     
                                         date={h.finalDate || "TBD"}     
                                         time={h.finalTime|| "TBD"}
-                                        activity={h.finalActivity || "TBD"}    
+                                        activity={h.finalActivity || "TBD"}  
+                                        location={h.location}  
                                         organizer={h.orgName}           
                                         voteStatus={h.voteStatus}
                                     />

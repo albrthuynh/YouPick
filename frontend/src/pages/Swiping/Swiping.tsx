@@ -9,7 +9,7 @@ import axios from 'axios';
 import { useAuth0 } from '@auth0/auth0-react';
 import { activityOptions } from '../activities';
 
-import {CircleUserRound, Sparkles, BookHeart, X, Heart, NotebookText} from "lucide-react"
+import {CircleUserRound, Sparkles, BookHeart, X, Heart, NotebookText, MapPin} from "lucide-react"
 
 import { generatedCode } from '../JoinHangout/JoinHangoutPage';
 
@@ -31,7 +31,7 @@ export default function SwipingPage() {
     const [organizerName, setOrganizerName] = useState("")
     const [isLoading, setIsLoading] = useState(true)
     const [likedActivities, setLikedActivities] = useState<ActivityOption[]>([])
-
+    const [location, setLocation] = useState("")
     const [showConfetti, setShowConfetti] = useState(false);
 
 
@@ -61,6 +61,7 @@ export default function SwipingPage() {
           setActivitiesChosen(activityArr)
           setHangoutName(hangoutData.hangoutName)
           setOrganizerName(hangoutData.orgName)
+          setLocation(hangoutData.location)
         } catch (error) {
           console.error("There is something wrong with grabbing the hangout: ", error)
         } finally {
@@ -224,6 +225,12 @@ export default function SwipingPage() {
                     <Sparkles className="h-5 w-5 text-primary" />
                     <span className="font-medium">{currEvent?.label}</span>
                   </div>
+                {/* Location */}
+                  <div className="flex items-center gap-3 text-foreground">
+                    <MapPin className="h-5 w-5 text-primary" />
+                    <span className="font-medium">Location: {location}</span>
+                  </div>
+
                 {/* Name of Hangout Creator */}
                   <div className="flex items-center gap-3 text-foreground">
                     <CircleUserRound className="h-5 w-5 text-primary" />

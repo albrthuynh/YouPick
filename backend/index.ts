@@ -11,7 +11,7 @@ const PORT = process.env.BACKEND_PORT;
 
 // Setting up connection with the frontend
 app.use(cors({
-    origin: ['https://you-pick-henna.vercel.app', 'http://localhost:5173'],
+    origin: ['http://localhost:5173'],
     credentials: true
 }));
 app.use(express.json());
@@ -194,6 +194,7 @@ app.post('/api/create-hangout', async (req, res) => {
             time1, 
             time2, 
             time3, 
+            location,
             hangoutCode
         } = req.body;
 
@@ -218,6 +219,7 @@ app.post('/api/create-hangout', async (req, res) => {
             time1,
             time2,
             time3,
+            location,
             hangoutCode,
             createdAt: new Date(),
             finalTime: "",
@@ -264,7 +266,7 @@ app.put('/api/update-hangout', async (req, res) => {
             date3, 
             time1, 
             time2, 
-            time3, 
+            time3,
             finalTime, 
             finalDate, 
             finalActivity, 

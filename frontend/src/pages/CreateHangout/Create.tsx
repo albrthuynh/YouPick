@@ -1,9 +1,9 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import Select, { type MultiValue } from "react-select";
 import { Label } from "@/components/ui/label"
-import { ChevronDownIcon } from "lucide-react"
+import { ChevronDownIcon, Send } from "lucide-react"
 import { DayPicker } from "react-day-picker";
 import "react-day-picker/style.css";
 import { useNavigate } from 'react-router-dom';
@@ -22,6 +22,19 @@ interface ActivityOption {
     value: string;
     label: string;
   }
+
+  
+// interface AiActivityChatProps {
+//   selectedActivities: string[]
+//   onActivitiesChange: (activities: string[]) => void
+// }
+
+
+interface Message {
+  role: "user" | "assistant"
+  content: string
+  suggestions?: string[]
+}
 
 // variable to be used in another file
 export let exportedNumParticipants: number;
@@ -45,6 +58,7 @@ export default function CreateHangout() {
     const [time3, setTime3] = React.useState("")
 
     const [hangoutName, setHangoutName] = useState<string>('');
+    const [location, setLocation] = useState<string>('');
 
     const [participants, setParticipants]= useState<number>(1);
 
@@ -53,6 +67,7 @@ export default function CreateHangout() {
     const [dateTimeError, setDateTimeError]= useState("");
 
     const [hangoutError, setHangoutError]= useState("");
+    const [locationError, setLocationError]= useState("");
     
     const [date1Chosen, setDate1Chosen] = React.useState(true)
     const [date2Chosen, setDate2Chosen] = React.useState(true)
@@ -65,8 +80,29 @@ export default function CreateHangout() {
     const [createDatabase, setCreateDatabase] = React.useState(false) 
 
     const [hangoutNameChosen, setHangoutNameChosen] = React.useState(true)
+    const [locationChosen, setLocationChosen] = React.useState(true)
 
     const [activitiesChosen, setActivitiesChosen] = React.useState(true)
+
+
+    // ADDED AI STUFF
+    // const [aiInput, setAiInput]= useState("");
+    // const messagesEndRef = useRef<HTMLDivElement>(null)
+    // const [isTyping, setIsTyping] = useState(false)
+    // const [messages, setMessages] = useState<Message[]>([])
+    
+//     const addActivity = (activity: string) => {
+//         if (!selectedActivities.includes(activity)) {
+//         onActivitiesChange([...selectedActivities, activity])
+//     }
+//   }
+    // const scrollToBottom = () => {
+    //     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" })
+    // }
+
+    // const handleSend = async () => {
+     
+    // }
 
 
     useEffect(() =>{
@@ -91,6 +127,7 @@ export default function CreateHangout() {
 
         // create new hangout
         try {
+            console.log("LOCATION: ", location)
             await axios.post('/api/create-hangout', {
               auth0Id: user.sub,
               orgName: user.name,
@@ -104,6 +141,7 @@ export default function CreateHangout() {
               time1: [time1, 0], 
               time2: [time2, 0], 
               time3: [time3, 0], 
+              location: location,
               hangoutCode: generatedCode
             });
            
@@ -160,6 +198,14 @@ export default function CreateHangout() {
             navigateToFinal = false
             setHangoutNameChosen(false)
             setHangoutError("Type in a fun hangout name!");
+
+        }
+        if(location === ""){
+            //error message
+            //choose hangout name
+            navigateToFinal = false
+            setLocationChosen(false)
+            setLocationError("Type in a location for the hangout!");
 
         }
         if(selectedActivities.length  < 3){
@@ -268,11 +314,25 @@ export default function CreateHangout() {
                             
                         </div>
 
+                        {/* Choose Location */}
+                        <div className="space-y-3">
+                            <Label htmlFor="hangout-name" className=" text-lg font-semibold mb-2">
+                                Location
+                            </Label>
+                            {/* Location Input*/}
+                            <div className="flex-1 space-y-8 max-w-sm" >
+                                <Input type="location" value={location} onChange={(e) => {setLocation(e.target.value); setLocationChosen(true)}} placeholder="Insert Location of Hangout" 
+                                className={`bg-background border ${
+                                    !locationChosen ? "border-red-500" : "border-border"
+                                } text-foreground placeholder:text-muted-foreground text-base py-3 px-2 h-auto rounded-md`} />
+                            </div> 
+                            {!locationChosen && <p className="text-red-500 text-sm">{locationError}</p>}
+                        </div>
+                       
 
-                        {/* Activities Multi-Select Dropdown */}
-                        <div>
-                            <h2 className="space-y-3 text-lg font-semibold mb-2">Select Activity Options for Hangout</h2>
-                            <h3 className="space-y-3 text-lg font-semibold mb-2">Choose 3 Activities!</h3>
+                        {/* Activities Multi-Select Dropdown */} 
+                         <div>
+                            <h2 className="space-y-3 text-lg font-semibold mb-2">Select 3 Activity Options for Hangout</h2>
                             <div className="w-72 ">
                                 <Select<ActivityOption, true>
                                     options={activityOptions}
@@ -291,6 +351,115 @@ export default function CreateHangout() {
                             {!activitiesChosen && <p className="text-red-500 text-sm">{activityError}</p>}
                         </div>
 
+                        {/* AI suggestions */}
+                       {/* <div className="space-y-3"> */}
+                            {/* <div className="flex items-center justify-between"> */}
+                                {/* <label className="space-y-3 text-lg font-semibold mb-2"> */}
+                                {/* <Sparkles className="h-4 w-4 text-primary" /> */}
+                                {/* AI Activity Suggestions */}
+                                {/* </label> */}
+                            {/* </div> */}
+
+                            {/* Selected Activities
+                            {selectedActivities.length > 0 && (
+                                <div className="flex flex-wrap gap-2 pb-4 border-b border-border">
+                                {selectedActivities.map((activity) => (
+                                    <Badge
+                                    key={activity}
+                                    className="bg-primary text-primary-foreground cursor-pointer hover:opacity-80 rounded-full text-xs px-3 py-1.5"
+                                    onClick={() => removeActivity(activity)}
+                                    >
+                                    {activity}
+                                    <X className="h-3 w-3 ml-2" />
+                                    </Badge>
+                                ))}
+                                </div>
+                            )} */}
+
+                            {/* Chat Interface */}
+                            {/* <div className="border border-border rounded-lg bg-card overflow-hidden"> */}
+                                {/* Messages Area */}
+                                {/* <div className="h-[200px] overflow-y-auto p-4 space-y-4">
+                                {messages.map((message, index) => (
+                                    <div key={index} className={`flex ${message.role === "user" ? "justify-end" : "justify-start"}`}>
+                                        <div
+                                            className={`max-w-[85%] ${message.role === "user" ? "items-end" : "items-start"} flex flex-col gap-2`}
+                                        >
+                                        <div
+                                            className={`px-4 py-2.5 rounded-2xl ${
+                                                message.role === "user"
+                                                ? "bg-primary text-primary-foreground rounded-br-sm"
+                                                : "bg-muted text-foreground rounded-bl-sm"
+                                            }`}
+                                            >
+                                            <p className="text-sm leading-relaxed">{message.content}</p>
+                                            </div> */}
+
+                                            {/* Activity Suggestions */}
+                                            {/* {message.suggestions && (
+                                            <div className="flex flex-wrap gap-2 mt-1">
+                                                {message.suggestions.map((suggestion) => (
+                                                <button
+                                                    key={suggestion}
+                                                    onClick={() => addActivity(suggestion)}
+                                                    disabled={selectedActivities.includes(suggestion)}
+                                                    className={`px-3 py-1.5 rounded-full text-xs font-medium transition-colors ${
+                                                    selectedActivities.includes(suggestion)
+                                                        ? "bg-primary/20 text-primary cursor-default"
+                                                        : "bg-accent text-accent-foreground hover:bg-accent/80"
+                                                    }`}
+                                                >
+                                                    {selectedActivities.includes(suggestion) ? "✓ " : "+ "}
+                                                    {suggestion}
+                                                </button>
+                                                ))}
+                                            </div>
+                                            )} */}
+                                        {/* </div> */}
+                                    {/* </div> */}
+                                {/* ))} */}
+
+                                {/* Typing Indicator */}
+                                {/* {isTyping && (
+                                    <div className="flex justify-start">
+                                    <div className="bg-muted text-foreground px-4 py-2.5 rounded-2xl rounded-bl-sm">
+                                        <div className="flex gap-1">
+                                        <span className="w-2 h-2 bg-foreground/40 rounded-full animate-bounce [animation-delay:-0.3s]"></span>
+                                        <span className="w-2 h-2 bg-foreground/40 rounded-full animate-bounce [animation-delay:-0.15s]"></span>
+                                        <span className="w-2 h-2 bg-foreground/40 rounded-full animate-bounce"></span>
+                                        </div>
+                                    </div>
+                                    </div>
+                                )}
+
+                                <div ref={messagesEndRef} />
+                                </div> */}
+
+                                {/* Input Area */}
+                                {/* <div className="border-t border-border p-3 bg-background">
+                                    <div className="flex gap-2">
+                                        <input
+                                        type="text"
+                                        value={aiInput}
+                                        onChange={(e) => setAiInput(e.target.value)}
+                                        onKeyDown={(e) => e.key === "Enter" && handleSend()}
+                                        placeholder="Tell me your preferences..."
+                                        className="flex-1 px-3 py-2 rounded-md border border-border bg-background text-foreground text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/20"
+                                        />
+                                        <Button
+                                        onClick={handleSend}
+                                        disabled={!aiInput.trim() || isTyping}
+                                        size="sm"
+                                        className="bg-primary hover:bg-accent text-primary-foreground rounded-md px-4"
+                                        >
+                                        <Send className="h-4 w-4" />
+                                        </Button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <p className="text-xs text-muted-foreground"></p>
+                        </div> */}
 
                     </div>
 
@@ -524,6 +693,11 @@ export default function CreateHangout() {
                                         <span className="font-medium text-foreground">
                                             {(date1  && date2 && date3 && time1 && time2 && time3)? 'All dates/times selected' : 'Not all dates/times selected'}</span>
                                     </div>
+                                    <div className="flex justify-between items-start">
+                                        <span className="text-muted-foreground">Location:</span>
+                                        <span className="font-medium text-foreground">
+                                            {location || "Not set"}</span>
+                                    </div>
                                     </div>
                                 </div>
 
@@ -544,4 +718,8 @@ export default function CreateHangout() {
         </div>
         
     )
+}
+
+function onActivitiesChange(arg0: (string | ActivityOption)[]) {
+    throw new Error("Function not implemented.");
 }
