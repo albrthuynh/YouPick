@@ -40,12 +40,13 @@ const Hero1 = ({
   },
 }: Hero1Props) => {
   return (
-    <section className="py-32">
-      <div className="container  min-w-350">
+    <section className="py-12 lg:py-32">
+      {/* <div className="container  min-w-350"> */}
+      <div className="container px-4 md:px-6">
         <div className="grid items-center gap-5 lg:grid-cols-2">
           <div className="flex flex-col items-center text-center lg:items-start lg:text-left">
            
-            <h1 className="my-6 text-pretty text-4xl font-bold lg:text-6xl">
+            <h1 className="my-6 text-pretty text-3xl font-bold sm:text-4xl lg:text-6xl">
               {heading}
             </h1>
             <p className="text-muted-foreground mb-8 max-w-xl lg:text-xl">

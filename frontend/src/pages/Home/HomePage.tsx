@@ -6,7 +6,7 @@ export default function HomePage() {
     <div className="relative min-h-screen bg-background">
 
       {/* Hero section */}
-      <div className="flex justify-center mt-10">
+      <div className="flex justify-center mt-10 px-4 md:px-0">
         <Hero1
           heading="YouPick"
           description="Easily schedule hangouts and connect with friends. Plan, join, and manage events effortlessly — all in one place."
@@ -28,7 +28,7 @@ export default function HomePage() {
       </div>
 
       {/* Cards section */}
-      <div className="flex justify-center gap-10 mt-10 mb-20">
+      <div className="flex flex-col md:flex-row items-center justify-center gap-6 md:gap-10 mt-10 mb-20 px-4">
         <Card
           imgURL="https://americanbehavioralclinics.com/wp-content/uploads/2023/06/Depositphotos_252922046_L.jpg"
           title="View Your Current Hangouts"
