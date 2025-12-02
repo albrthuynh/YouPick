@@ -162,10 +162,10 @@ function UserHangouts() {
                                     <HangoutCard
                                         key={h._id}
                                         title={h.hangoutName}     
-                                        date={formatDate(h.finalDate) || "TBD"}     
-                                        time={formatTime(h.finalTime, h.finalDate) || "TBD"}
+                                        date={h.finalDate || "TBD"}     
+                                        time={h.finalTime || "TBD"}
                                         activity={h.finalActivity || "TBD"}  
-                                        finalLocation={h.finalLocation}  
+                                        finalLocation={h.finalLocation || "TBD"}  
                                         organizer={h.orgName}           
                                         voteStatus={h.voteStatus}
                                     />

@@ -26,12 +26,16 @@ export default function SwipingPage() {
     const [currActivityIndex, setActivityIndex] = useState(0)
     const [fixIndexIssue, setfixIndexIssue] = useState(0)
     const [swipeDirection, setSwipeDirection] = useState<"left" | "right" | null>(null)
-    const [activitiesChosen, setActivitiesChosen] = useState<ActivityOption[]>([])
+    // const [activitiesChosen, setActivitiesChosen] = useState<ActivityOption[]>([])
+    const [activitiesChosen, setActivitiesChosen] = useState<string[]>([])
+    const [locationsChosen, setLocationsChosen] = useState<string[]>([])
+
     const [hangoutName, setHangoutName] = useState("")
     const [organizerName, setOrganizerName] = useState("")
     const [isLoading, setIsLoading] = useState(true)
-    const [likedActivities, setLikedActivities] = useState<ActivityOption[]>([])
-    const [location, setLocation] = useState("")
+    // const [likedActivities, setLikedActivities] = useState<ActivityOption[]>([])
+    const [likedActivities, setLikedActivities] = useState<string[]>([])
+    // const [location, setLocation] = useState("")
     const [showConfetti, setShowConfetti] = useState(false);
 
 
@@ -41,7 +45,7 @@ export default function SwipingPage() {
           setIsLoading(true);
           const response = await axios.get(`/api/get-hangout/${generatedCode}`);
           const hangoutData = response.data.hangout;
-          let activityArr: ActivityOption[] = []
+          let activityArr: string[] = []
 
           // populate the activity array with the hangout activities
           // If activities is an object, get the keys; if it's an array, use it directly
@@ -50,18 +54,19 @@ export default function SwipingPage() {
             : Object.keys(hangoutData.activities);
 
           for (const activity of activitiesList) {
-            const activityOption: ActivityOption = {
-              value: activity,
-              label: activityOptions.find(a => a.value === activity)?.label || ""
-            }
+            // const activityOption: ActivityOption = {
+            //   value: activity,
+            //   label: activityOptions.find(a => a.value === activity)?.label || ""
+            // }
             
-            activityArr.push(activityOption)
+            activityArr.push(activity)
           }
 
           setActivitiesChosen(activityArr)
+          setLocationsChosen(hangoutData.locations)
           setHangoutName(hangoutData.hangoutName)
           setOrganizerName(hangoutData.orgName)
-          setLocation(hangoutData.location)
+          // setLocation(hangoutData.location)
         } catch (error) {
           console.error("There is something wrong with grabbing the hangout: ", error)
         } finally {
@@ -104,8 +109,10 @@ export default function SwipingPage() {
 
     // set current event
     const currEvent = activitiesChosen.length > 0 ? activitiesChosen[currActivityIndex] : null;
-    const currImage = currEvent ? currEvent.value + '.jpg' : "";
-
+    const currLocation = locationsChosen.length > 0 ? locationsChosen[currActivityIndex] : null;
+    // const currImage = currEvent ? currEvent.value + '.jpg' : "";
+    const currImage = 'house.jpg';
+  
     // find max
     function findMax(a: [string, number], b: [string, number], c: [string, number]){
       let maxNum = a[1]
@@ -145,7 +152,9 @@ export default function SwipingPage() {
       // add votes to hangout activites based on curr users picks
       for (const activity of likedActivities){
         // update count for specific activity
-        hangoutData.activities[activity.value] = (hangoutData.activities[activity.value] || 0) + 1;
+        // hangoutData.activities[activity.value] = (hangoutData.activities[activity.value] || 0) + 1;
+        hangoutData.activities[activity] = (hangoutData.activities[activity] || 0) + 1;
+
       }
       
       // updated num people voted
@@ -164,12 +173,14 @@ export default function SwipingPage() {
 
         let maxHangoutVote: number = Math.max(...Array.from(activities.values()))
 
+        let count = 0
         for (const [key, value] of activities) {
           if (value === maxHangoutVote) {
             hangoutData.finalActivity = key;
+            hangoutData.finalLoctation = hangoutData.locations[count]
           }
+          count += 1;
         }
-  
       }
       
 
@@ -180,11 +191,11 @@ export default function SwipingPage() {
           finalTime: hangoutData.finalTime,
           finalDate: hangoutData.finalDate,
           finalActivity: hangoutData.finalActivity,
+          finalLocation: hangoutData.finalLocation,
           votedNum: hangoutData.votedNum,
           voteStatus: hangoutData.voteStatus,
         });
   
-        
       } catch (error) {
         console.error('Error saving Hangout:', error);
         alert('Failed to save Hangout. Please try again.');
@@ -223,12 +234,12 @@ export default function SwipingPage() {
                 {/* Activity Name */}
                   <div className="flex items-center gap-3 text-foreground">
                     <Sparkles className="h-5 w-5 text-primary" />
-                    <span className="font-medium">{currEvent?.label}</span>
+                    <span className="font-medium">{currEvent}</span>
                   </div>
                 {/* Location */}
                   <div className="flex items-center gap-3 text-foreground">
                     <MapPin className="h-5 w-5 text-primary" />
-                    <span className="font-medium">Location: {location}</span>
+                    <span className="font-medium">Location: {currLocation}</span>
                   </div>
 
                 {/* Name of Hangout Creator */}
@@ -292,7 +303,7 @@ export default function SwipingPage() {
           <div className="space-y-3 mt-8 flex justify-center items-center"> 
             <Button
               onClick={doneButtonLogic}
-              className="px-6 py-3 text-lg w-80 h-12 bg-primary hover:bg-accent text-primary-foreground font-medium rounded-md transition-colors font-poppins font-bold py-6 rounded-2xl text-xl shadow-2xl transition-all duration-300 hover:scale-105 spring-bounce disabled:opacity-50 disabled:cursor-not-allowed relative overflow-hidden"
+              className="px-6 w-80 h-12 bg-primary hover:bg-accent text-primary-foreground font-poppins font-bold py-6 rounded-2xl text-xl shadow-2xl transition-all duration-300 hover:scale-105 spring-bounce disabled:opacity-50 disabled:cursor-not-allowed relative overflow-hidden"
             >
             Done
             </Button>

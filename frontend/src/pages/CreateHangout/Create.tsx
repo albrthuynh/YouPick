@@ -79,6 +79,9 @@ export default function CreateHangout() {
 
     const [activitiesChosen, setActivitiesChosen] = React.useState(true)
 
+    const [finalLocationList, setFinalLocationList] = useState<string[]>([])
+    const [finalActivitiesList, setFinalActivitiesList] = useState<string[]>([])
+
     // ADDED AI STUFF
     const [aiInput, setAiInput] = useState("");
     const messagesEndRef = useRef<HTMLDivElement>(null)
@@ -92,7 +95,6 @@ export default function CreateHangout() {
         );
         if (!exists) {
             setActivityOptions([...selectedActivities, activity]);
-            setActivitiesChosen(true);
         }
     }
 
@@ -101,7 +103,7 @@ export default function CreateHangout() {
         if (!aiInput.trim()) return;
 
         // adding the user message
-        setMessages((prev) => [...prev, {role: "user", content: aiInput}]);
+        setMessages((prev) => [...prev, { role: "user", content: aiInput }]);
         setAiInput("");
 
         // send to our node backend
@@ -119,34 +121,30 @@ export default function CreateHangout() {
             // Parse the JSON string from response.data.activities
             const activitiesArray = JSON.parse(response.data.activities);
 
-            // Extract activities and locations as strings
-            const generated_activities: string[] = [];
-            const generated_locations: string[] = [];
+            // Extract locations and activities into separate arrays
+            const locations = activitiesArray.map((item: any) => item.location);
+            const activities = activitiesArray.map((item: any) => item.activity);
 
-            for (const item of activitiesArray) {
-                generated_activities.push(item.activity);
-                generated_locations.push(item.location);
-            }
+            setFinalLocationList(locations);
+            setFinalActivitiesList(activities);
 
             const combinedSuggestions = activitiesArray.map((item: any) => ({
                 activity: item.activity,
                 location: item.location
             }));
 
+            setMessages((prev) => [...prev, { role: "assistant", content: "Here are some ideas!", suggestions: combinedSuggestions }])
 
-            setMessages((prev) => [...prev, {role: "assistant", content: "Here are some ideas!", suggestions: combinedSuggestions}])
         } catch (error) {
             console.error("Error getting AI activities:", error);
         } finally {
             setIsTyping(false);
         }
-
     }
-
 
     useEffect(() => {
         participantNumberCheck();
-        setMessages((prev) => [...prev, {role: "assistant", content: "To get started enter a location, and type out what type of activity or mood you're in and I'll give you some options!", suggestions: [] }])
+        setMessages((prev) => [...prev, { role: "assistant", content: "To get started enter a location, and type out what type of activity or mood you're in and I'll give you some options!", suggestions: [] }])
     }, [participants]);
 
     const navigate = useNavigate();
@@ -157,12 +155,14 @@ export default function CreateHangout() {
 
         if (!isAuthenticated || !user) return;
 
+
+
         // create activities into a dictionary
         let activitiesDict: Map<string, number> = new Map();
 
         // create dictionary for hangouts and their votes
-        for (const activity of selectedActivities) {
-            activitiesDict.set(activity.label, 0)
+        for (const activity of finalActivitiesList) {
+            activitiesDict.set(activity, 0)
         }
 
         // create new hangout
@@ -181,10 +181,9 @@ export default function CreateHangout() {
                 time1: [time1, 0],
                 time2: [time2, 0],
                 time3: [time3, 0],
-                locations: location,
+                locations: finalLocationList,
                 hangoutCode: generatedCode
             });
-
         } catch (error) {
             console.error('Error creating user:', error);
             // Log more details about the error
@@ -225,7 +224,6 @@ export default function CreateHangout() {
     }
 
     const createHangout = async () => {
-
         let navigateToFinal = true
         if (hangoutName === "") {
             //error message
@@ -243,6 +241,7 @@ export default function CreateHangout() {
             setLocationError("Type in a location for the hangout!");
 
         }
+
         if (selectedActivities.length < 3) {
             //error message
             //select at least 3 activities
@@ -250,6 +249,10 @@ export default function CreateHangout() {
             setActivitiesChosen(false)
             setActivityError("Select at least 3 activities!");
         }
+        else {
+            setActivitiesChosen(true)
+        }
+
         if (date1 === undefined) {
             //error message
             navigateToFinal = false
@@ -389,18 +392,18 @@ export default function CreateHangout() {
                                                 {message.suggestions && (
                                                     <div className="flex flex-wrap gap-2 mt-1">
                                                         {message.suggestions.map((s) => (
-                                                        <Badge
-                                                            onClick={() => {
-                                                                const newActivity: ActivityOption = {
-                                                                    location: s.location,
-                                                                    label: s.activity
-                                                                };
-                                                                addActivity(newActivity);
-                                                            }}
-                                                            className="cursor-pointer hover:opacity-80 rounded-full px-3 py-1.5"
-                                                        >
-                                                            + {s.activity} ({s.location})
-                                                        </Badge>
+                                                            <Badge
+                                                                onClick={() => {
+                                                                    const newActivity: ActivityOption = {
+                                                                        location: s.location,
+                                                                        label: s.activity
+                                                                    };
+                                                                    addActivity(newActivity);
+                                                                }}
+                                                                className="cursor-pointer hover:opacity-80 rounded-full px-3 py-1.5"
+                                                            >
+                                                                + {s.activity} ({s.location})
+                                                            </Badge>
                                                         ))}
                                                     </div>
                                                 )}
@@ -485,9 +488,7 @@ export default function CreateHangout() {
                                 )}
                             </div>
                         )}
-
                     </div>
-
 
                     {/* Middle Section */}
                     <div className="flex-1 space-y-8">
@@ -511,7 +512,7 @@ export default function CreateHangout() {
 
                         {/* Choose Days*/}
                         <div className="space-y-3">
-                            <Label className="font-medium text-foreground text-lg font-semibold mb-2"> Choose Proposed Times</Label>
+                            <Label className="text-foreground text-lg font-semibold mb-2"> Choose Proposed Times</Label>
 
                             <div className="space-y-3">
 
@@ -718,10 +719,16 @@ export default function CreateHangout() {
                             </div>
 
                             {/* Create Hangout Button */}
-                            <div className="space-y-3 mt-14">
+                            <div className="space-y-3 mt-14 text-center">
+                                {
+                                    activitiesChosen ?
+                                        <p></p> :
+                                        <p className="text-sm text-red-500 ">{activityError}</p>
+                                }
+
                                 <Button
                                     onClick={createHangout}
-                                    className="w-full h-11 bg-primary hover:bg-accent text-primary-foreground font-medium rounded-md transition-colors font-poppins font-bold py-6 rounded-2xl text-xl shadow-2xl transition-all duration-300 hover:scale-105 spring-bounce disabled:opacity-50 disabled:cursor-not-allowed relative overflow-hidden"
+                                    className="w-full h-11 bg-primary hover:bg-accent text-primary-foreground font-poppins font-bold py-6 rounded-2xl text-xl shadow-2xl transition-all duration-300 hover:scale-105 spring-bounce disabled:opacity-50 disabled:cursor-not-allowed relative overflow-hidden"
                                 >
                                     Create Hangout
                                 </Button>
