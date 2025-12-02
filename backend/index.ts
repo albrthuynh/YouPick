@@ -1,6 +1,7 @@
 import cors from 'cors';
 import express from 'express';
 import dotenv from 'dotenv';
+import axios from 'axios';
 import { ObjectId } from 'mongodb';
 import { connectToMongoDB, disconnectFromMongoDB } from './mongodb';
 
@@ -9,11 +10,17 @@ dotenv.config({ path: '../.env' });
 const app = express();
 const PORT = process.env.BACKEND_PORT;
 
+// specifying the ai service url
+const aiServiceClient = axios.create({
+    baseURL: "http://localhost:8000"
+});
+
 // Setting up connection with the frontend
 app.use(cors({
     origin: ['http://localhost:5173'],
     credentials: true
 }));
+
 app.use(express.json());
 
 app.get('/', (req, res) => {
@@ -194,7 +201,7 @@ app.post('/api/create-hangout', async (req, res) => {
             time1, 
             time2, 
             time3, 
-            location,
+            locations,
             hangoutCode
         } = req.body;
 
@@ -219,12 +226,13 @@ app.post('/api/create-hangout', async (req, res) => {
             time1,
             time2,
             time3,
-            location,
+            locations,
             hangoutCode,
             createdAt: new Date(),
             finalTime: "",
             finalDate: "",
             finalActivity: "",
+            finalLocation: "",
             votedNum: 0,
             voteStatus: "Pending",
             idParticipants: [],
@@ -270,6 +278,7 @@ app.put('/api/update-hangout', async (req, res) => {
             finalTime, 
             finalDate, 
             finalActivity, 
+            finalLocation,
             votedNum, 
             voteStatus, 
             idParticipants, 
@@ -305,6 +314,7 @@ app.put('/api/update-hangout', async (req, res) => {
         if (finalTime !== undefined) updateFields.finalTime = finalTime
         if (finalDate !== undefined) updateFields.finalDate = finalDate
         if (finalActivity !== undefined) updateFields.finalActivity = finalActivity
+        if (finalLocation !== undefined) updateFields.finalLocation = finalLocation
         if (votedNum !== undefined) updateFields.votedNum = votedNum
         if (voteStatus !== undefined) updateFields.voteStatus = voteStatus
         if (idParticipants !== undefined) updateFields.idParticipants = idParticipants
@@ -501,6 +511,39 @@ app.get('/api/get-timeslots/:generatedCode', async (req, res) => {
         return res.status(401).json({
             success: false,
             error: 'Database query failed'
+        });
+    }
+});
+
+// AI activity suggestions
+app.get('/api/ai/get-activities', async (req, res) => {
+    try {
+        // grab from front end
+        const { userPrompt, location } = req.query;
+
+        console.log("from the frontend, ", userPrompt)
+        console.log("and the location is", location)
+
+        // Call the AI service
+        const response = await aiServiceClient.get('/get-activities', {
+            params: {
+                user_prompt: userPrompt || 'give me activities on the beach',
+                location: location || ''
+            }
+        });
+
+        console.log("Here is the output: ", response)
+
+        return res.json({
+            success: true,
+            activities: response.data.activities
+        });
+    }
+    catch (e) {
+        console.error(`Error in backend, ${e}`)
+        res.status(500).json({
+            success: false,
+            error: "Failed to get AI Suggestions"
         });
     }
 });

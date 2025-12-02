@@ -24,10 +24,10 @@ interface ActivityOption {
   }
 
   
-// interface AiActivityChatProps {
-//   selectedActivities: string[]
-//   onActivitiesChange: (activities: string[]) => void
-// }
+interface AiActivityChatProps {
+  selectedActivities: string[]
+  onActivitiesChange: (activities: string[]) => void
+}
 
 
 interface Message {
@@ -83,26 +83,64 @@ export default function CreateHangout() {
     const [locationChosen, setLocationChosen] = React.useState(true)
 
     const [activitiesChosen, setActivitiesChosen] = React.useState(true)
+    
+    const[aiActivities, setAiActivities] = React.useState<string[]>([]);
+    const[aiLocations, setAiLocations] = React.useState<string[]>([]);
 
 
     // ADDED AI STUFF
-    // const [aiInput, setAiInput]= useState("");
-    // const messagesEndRef = useRef<HTMLDivElement>(null)
-    // const [isTyping, setIsTyping] = useState(false)
-    // const [messages, setMessages] = useState<Message[]>([])
-    
-//     const addActivity = (activity: string) => {
-//         if (!selectedActivities.includes(activity)) {
-//         onActivitiesChange([...selectedActivities, activity])
-//     }
-//   }
-    // const scrollToBottom = () => {
-    //     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" })
-    // }
+    const [aiInput, setAiInput]= useState("");
+    const messagesEndRef = useRef<HTMLDivElement>(null)
+    const [isTyping, setIsTyping] = useState(false)
+    const [messages, setMessages] = useState<Message[]>([])
 
-    // const handleSend = async () => {
-     
+    
+    // const addActivity = (activity: string) => {
+    //     if (!selectedActivities.includes(activity)) {
+    //     onActivitiesChange([...selectedActivities, activity])
     // }
+    // }
+    const scrollToBottom = () => {
+        messagesEndRef.current?.scrollIntoView({ behavior: "smooth" })
+    }
+
+    const handleSend = async () => {
+        console.log("aiInput is", aiInput);
+
+        if (!aiInput.trim()) return;
+
+        // send to our node backend
+        try {
+            const response = await axios.get('/api/ai/get-activities', {
+                params: {
+                    userPrompt: aiInput,
+                    location: location
+                }
+            });
+
+            console.log("Response:", response.data);
+
+            // Parse the JSON string from response.data.activities
+            const activitiesArray = JSON.parse(response.data.activities);
+            
+            // Extract activities and locations as strings
+            const generated_activities: string[] = [];
+            const generated_locations: string[] = [];
+
+            for (const item of activitiesArray) {
+                generated_activities.push(item.activity);
+                generated_locations.push(item.location);
+            }
+
+            setAiActivities(generated_activities);
+            setAiLocations(generated_locations);
+
+            console.log("AI activities:", generated_activities);
+            console.log("AI locations:", generated_locations);
+        } catch (error) {
+            console.error("Error getting AI activities:", error);
+        }
+    }
 
 
     useEffect(() =>{
@@ -141,7 +179,7 @@ export default function CreateHangout() {
               time1: [time1, 0], 
               time2: [time2, 0], 
               time3: [time3, 0], 
-              location: location,
+              locations: location,
               hangoutCode: generatedCode
             });
            
@@ -331,7 +369,7 @@ export default function CreateHangout() {
                        
 
                         {/* Activities Multi-Select Dropdown */} 
-                         <div>
+                        <div>
                             <h2 className="space-y-3 text-lg font-semibold mb-2">Select 3 Activity Options for Hangout</h2>
                             <div className="w-72 ">
                                 <Select<ActivityOption, true>
@@ -349,19 +387,18 @@ export default function CreateHangout() {
                                 />
                             </div>
                             {!activitiesChosen && <p className="text-red-500 text-sm">{activityError}</p>}
-                        </div>
-
+                        </div> 
+                        
                         {/* AI suggestions */}
-                       {/* <div className="space-y-3"> */}
-                            {/* <div className="flex items-center justify-between"> */}
-                                {/* <label className="space-y-3 text-lg font-semibold mb-2"> */}
+                       <div className="space-y-3"> 
+                            <div className="flex items-center justify-between">
+                                <label className="space-y-3 text-lg font-semibold mb-2">
                                 {/* <Sparkles className="h-4 w-4 text-primary" /> */}
-                                {/* AI Activity Suggestions */}
-                                {/* </label> */}
-                            {/* </div> */}
+                                    AI Activity Suggestions
+                                </label> 
+                            </div> 
 
-                            {/* Selected Activities
-                            {selectedActivities.length > 0 && (
+                            { /* {selectedActivities.length > 0 && (
                                 <div className="flex flex-wrap gap-2 pb-4 border-b border-border">
                                 {selectedActivities.map((activity) => (
                                     <Badge
@@ -372,14 +409,14 @@ export default function CreateHangout() {
                                     {activity}
                                     <X className="h-3 w-3 ml-2" />
                                     </Badge>
-                                ))}
+                                ))} 
                                 </div>
-                            )} */}
+                            )} */ }
 
                             {/* Chat Interface */}
-                            {/* <div className="border border-border rounded-lg bg-card overflow-hidden"> */}
+                            <div className="border border-border rounded-lg bg-card overflow-hidden">
                                 {/* Messages Area */}
-                                {/* <div className="h-[200px] overflow-y-auto p-4 space-y-4">
+                                <div className="h-[200px] overflow-y-auto p-4 space-y-4">
                                 {messages.map((message, index) => (
                                     <div key={index} className={`flex ${message.role === "user" ? "justify-end" : "justify-start"}`}>
                                         <div
@@ -393,10 +430,10 @@ export default function CreateHangout() {
                                             }`}
                                             >
                                             <p className="text-sm leading-relaxed">{message.content}</p>
-                                            </div> */}
+                                            </div>
 
                                             {/* Activity Suggestions */}
-                                            {/* {message.suggestions && (
+                                            { /* {message.suggestions && (
                                             <div className="flex flex-wrap gap-2 mt-1">
                                                 {message.suggestions.map((suggestion) => (
                                                 <button
@@ -414,13 +451,13 @@ export default function CreateHangout() {
                                                 </button>
                                                 ))}
                                             </div>
-                                            )} */}
-                                        {/* </div> */}
-                                    {/* </div> */}
-                                {/* ))} */}
+                                            )}] */ }
+                                        </div>
+                                    </div>
+                                ))}
 
                                 {/* Typing Indicator */}
-                                {/* {isTyping && (
+                                {isTyping && (
                                     <div className="flex justify-start">
                                     <div className="bg-muted text-foreground px-4 py-2.5 rounded-2xl rounded-bl-sm">
                                         <div className="flex gap-1">
@@ -433,10 +470,10 @@ export default function CreateHangout() {
                                 )}
 
                                 <div ref={messagesEndRef} />
-                                </div> */}
+                                </div>
 
                                 {/* Input Area */}
-                                {/* <div className="border-t border-border p-3 bg-background">
+                                <div className="border-t border-border p-3 bg-background">
                                     <div className="flex gap-2">
                                         <input
                                         type="text"
@@ -459,7 +496,7 @@ export default function CreateHangout() {
                             </div>
 
                             <p className="text-xs text-muted-foreground"></p>
-                        </div> */}
+                        </div>
 
                     </div>
 

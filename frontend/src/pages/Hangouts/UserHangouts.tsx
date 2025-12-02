@@ -10,7 +10,7 @@ type Hangout = {
     finalTime: string;
     finalActivity?: string | null;
     emailParticipants?: string[] | null;
-    location?: string | null;
+    finalLocation?: string | null;
     orgName?: string | null;
     voteStatus?: string | null;
 };
@@ -136,7 +136,7 @@ function UserHangouts() {
                                     title={h.hangoutName}          
                                     date={formatDate(h.finalDate) || "TBD"}
                                     time={formatTime(h.finalTime,h.finalDate) || "TBD"}
-                                    location = {h.location}
+                                    finalLocation = {h.finalLocation}
                                     activity={h.finalActivity}    
                                     organizer={h.orgName}           
                                     voteStatus={h.voteStatus}
@@ -162,10 +162,10 @@ function UserHangouts() {
                                     <HangoutCard
                                         key={h._id}
                                         title={h.hangoutName}     
-                                        date={h.finalDate || "TBD"}     
-                                        time={h.finalTime|| "TBD"}
+                                        date={formatDate(h.finalDate) || "TBD"}     
+                                        time={formatTime(h.finalTime, h.finalDate) || "TBD"}
                                         activity={h.finalActivity || "TBD"}  
-                                        location={h.location}  
+                                        finalLocation={h.finalLocation}  
                                         organizer={h.orgName}           
                                         voteStatus={h.voteStatus}
                                     />
