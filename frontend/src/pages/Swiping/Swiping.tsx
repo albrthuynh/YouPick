@@ -176,12 +176,15 @@ export default function SwipingPage() {
         let count = 0
         for (const [key, value] of activities) {
           if (value === maxHangoutVote) {
+            console.log(hangoutData.locations[count])
             hangoutData.finalActivity = key;
-            hangoutData.finalLoctation = hangoutData.locations[count]
+            hangoutData.finalLocation = hangoutData.locations[count]
           }
           count += 1;
         }
       }
+
+      console.log(hangoutData.finalLocation);
       
 
       try {
