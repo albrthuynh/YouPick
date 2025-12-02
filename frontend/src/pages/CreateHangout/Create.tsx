@@ -22,12 +22,6 @@ interface ActivityOption {
     label: string;
 }
 
-interface AiActivityChatProps {
-    selectedActivities: string[]
-    onActivitiesChange: (activities: string[]) => void
-}
-
-
 interface Message {
     role: "user" | "assistant"
     content: string
@@ -85,10 +79,6 @@ export default function CreateHangout() {
 
     const [activitiesChosen, setActivitiesChosen] = React.useState(true)
 
-    const [aiActivities, setAiActivities] = React.useState<string[]>([]);
-    const [aiLocations, setAiLocations] = React.useState<string[]>([]);
-
-
     // ADDED AI STUFF
     const [aiInput, setAiInput] = useState("");
     const messagesEndRef = useRef<HTMLDivElement>(null)
@@ -96,13 +86,14 @@ export default function CreateHangout() {
     const [messages, setMessages] = useState<Message[]>([])
 
     const addActivity = (activity: ActivityOption) => {
-        if (!selectedActivities.includes(activity)) {
-            onActivitiesChange([...selectedActivities, activity])
+        // Check if activity already exists (by comparing both label and location)
+        const exists = selectedActivities.some(
+            a => a.label === activity.label && a.location === activity.location
+        );
+        if (!exists) {
+            setActivityOptions([...selectedActivities, activity]);
+            setActivitiesChosen(true);
         }
-    }
-
-    const scrollToBottom = () => {
-        messagesEndRef.current?.scrollIntoView({ behavior: "smooth" })
     }
 
     // Handling the chat output here
@@ -137,9 +128,6 @@ export default function CreateHangout() {
                 generated_locations.push(item.location);
             }
 
-            setAiActivities(generated_activities);
-            setAiLocations(generated_locations);
-
             const combinedSuggestions = activitiesArray.map((item: any) => ({
                 activity: item.activity,
                 location: item.location
@@ -158,6 +146,7 @@ export default function CreateHangout() {
 
     useEffect(() => {
         participantNumberCheck();
+        setMessages((prev) => [...prev, {role: "assistant", content: "To get started enter a location, and type out what type of activity or mood you're in and I'll give you some options!", suggestions: [] }])
     }, [participants]);
 
     const navigate = useNavigate();
@@ -173,7 +162,7 @@ export default function CreateHangout() {
 
         // create dictionary for hangouts and their votes
         for (const activity of selectedActivities) {
-            activitiesDict.set(activity.value, 0)
+            activitiesDict.set(activity.label, 0)
         }
 
         // create new hangout
@@ -369,28 +358,6 @@ export default function CreateHangout() {
                             locationError={locationError}
                         />
 
-
-                        {/* Activities Multi-Select Dropdown */}
-                        { /* <div>
-                            <h2 className="space-y-3 text-lg font-semibold mb-2">Select 3 Activity Options for Hangout</h2>
-                            <div className="w-72 ">
-                                <Select<ActivityOption, true>
-                                    options={activityOptions}
-                                    isMulti
-                                    isSearchable
-                                    placeholder="Select one or more activities!"
-                                    value={selectedActivities}
-                                    onChange={(selected: MultiValue<ActivityOption>) =>
-                                        {setActivityOptions(selected as ActivityOption[]); setActivitiesChosen(true)}
-                                    }
-                                    className={`bg-background border ${
-                                        !activitiesChosen ? "border-red-500" : "border-border"
-                                    } text-foreground placeholder:text-muted-foreground text-base py-3 px-2 h-auto rounded-md`}
-                                />
-                            </div>
-                            {!activitiesChosen && <p className="text-red-500 text-sm">{activityError}</p>}
-                        </div> */ }
-
                         {/* AI suggestions */}
                         <div className="space-y-3">
                             <div className="flex items-center justify-between">
@@ -399,21 +366,6 @@ export default function CreateHangout() {
                                     AI Activity Suggestions
                                 </label>
                             </div>
-
-                            { /* {selectedActivities.length > 0 && (
-                                <div className="flex flex-wrap gap-2 pb-4 border-b border-border">
-                                {selectedActivities.map((activity) => (
-                                    <Badge
-                                    key={activity}
-                                    className="bg-primary text-primary-foreground cursor-pointer hover:opacity-80 rounded-full text-xs px-3 py-1.5"
-                                    onClick={() => removeActivity(activity)}
-                                    >
-                                    {activity}
-                                    <X className="h-3 w-3 ml-2" />
-                                    </Badge>
-                                ))} 
-                                </div>
-                            )} */ }
 
                             {/* Chat Interface */}
                             <div className="border border-border rounded-lg bg-card overflow-hidden">
@@ -496,10 +448,43 @@ export default function CreateHangout() {
                                 </div>
                             </div>
 
-                            <p className="text-xs text-muted-foreground">
-                                {!location && "Please select a location before getting AI suggestions"}
+                            <p className="text-s text-muted-foreground">
+                                {!location && "** Please select a location before getting AI suggestions"}
                             </p>
                         </div>
+
+                        {/* Selected Activities Display */}
+                        {selectedActivities.length > 0 && (
+                            <div className="space-y-3">
+                                <div className="flex items-center justify-between">
+                                    <Label className="text-lg font-semibold">
+                                        Selected Activities ({selectedActivities.length})
+                                    </Label>
+                                </div>
+                                <div className="border border-border rounded-lg bg-card p-4">
+                                    <div className="flex flex-wrap gap-2">
+                                        {selectedActivities.map((activity, index) => (
+                                            <Badge
+                                                key={index}
+                                                className="bg-primary text-primary-foreground rounded-full px-3 py-1.5 cursor-pointer hover:opacity-80"
+                                                onClick={() => {
+                                                    // Remove activity when clicked
+                                                    setActivityOptions(selectedActivities.filter((_, i) => i !== index));
+                                                }}
+                                            >
+                                                {activity.label} @ {activity.location}
+                                                <span className="ml-2">×</span>
+                                            </Badge>
+                                        ))}
+                                    </div>
+                                </div>
+                                {selectedActivities.length < 3 && (
+                                    <p className="text-xs text-muted-foreground">
+                                        Select at least {3 - selectedActivities.length} more activity/activities
+                                    </p>
+                                )}
+                            </div>
+                        )}
 
                     </div>
 
@@ -749,8 +734,4 @@ export default function CreateHangout() {
         </div>
 
     )
-}
-
-function onActivitiesChange(arg0: (string | ActivityOption)[]) {
-    throw new Error("Function not implemented.");
 }
