@@ -3,7 +3,7 @@ import axios from 'axios';
 import { useAuth0 } from "@auth0/auth0-react";
 import { useEffect, useState } from 'react';
 
-// IMPORTED PAGES
+// IMPORTED PAGES testing if this works
 import LandingPage from './pages/Home/LandingPage'
 import LoginPage from './pages/Auth/LoginPage'
 import SignupPage from './pages/Auth/SignupPage'
