@@ -33,6 +33,10 @@ app = FastAPI(title="Generative AI Service", version="1.0.0")
 async def get_root():
     return {"message": "AI Service Running"}
 
+@app.get("/health")
+async def health():
+    return {"status": "ok"}
+
 @app.get("/get-images")
 async def get_images(activities: str):
     try:
