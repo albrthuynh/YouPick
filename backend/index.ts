@@ -11,6 +11,8 @@ const app = express();
 const PORT = process.env.BACKEND_PORT;
 const aiServiceUrl = process.env.AI_SERVICE 
 
+console.log(aiServiceUrl)
+
 // specifying the ai service url
 const aiServiceClient = axios.create({
     baseURL: aiServiceUrl
@@ -18,7 +20,7 @@ const aiServiceClient = axios.create({
 
 // Setting up connection with the frontend
 app.use(cors({
-    origin: ['https://you-pick-henna.vercel.app/', 'http://localhost:5173'],
+    origin: ['https://you-pick-henna.vercel.app', 'http://localhost:5173'],
     credentials: true
 }));
 
