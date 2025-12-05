@@ -33,7 +33,8 @@ app = FastAPI(title="Generative AI Service", version="1.0.0")
 async def get_root():
     return {"message": "AI Service Running"}
 
-@app.get("/health")
+@app.get("/health", include_in_schema=False)
+@app.head("/health", include_in_schema=False)
 async def health():
     return {"status": "ok"}
 
