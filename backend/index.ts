@@ -9,10 +9,11 @@ dotenv.config({ path: '../.env' });
 
 const app = express();
 const PORT = process.env.BACKEND_PORT;
+const aiServiceUrl = process.env.AI_SERVICE 
 
 // specifying the ai service url
 const aiServiceClient = axios.create({
-    baseURL: "http://localhost:8000"
+    baseURL: aiServiceUrl
 });
 
 // Setting up connection with the frontend
