@@ -6,9 +6,10 @@ export default function HomePage() {
     <div className="relative min-h-screen bg-background">
 
       {/* Hero section */}
-      <div className="flex justify-center mt-10 px-4 md:px-0">
+      <div className="flex justify-center mt-4 px-4 md:px-0">
         <Hero1
           heading="YouPick"
+          
           description="Easily schedule hangouts and connect with friends. Plan, join, and manage events effortlessly — all in one place."
           buttons={{
             primary: {
@@ -20,11 +21,9 @@ export default function HomePage() {
               url: "/join-hangout",
             },
           }}
-          image={{
-            src: "https://media.istockphoto.com/id/643137108/photo/ecstatic-group-enjoying-the-party.jpg?s=612x612&w=0&k=20&c=saW_oIf8jjuJ_rPjCrQkKHLcJqYxvYEA7_CiwbTktcs=",
-            alt: "Friends scheduling hangouts illustration",
-          }}
+
         />
+          
       </div>
 
       {/* Cards section */}

@@ -11,8 +11,6 @@ const app = express();
 const PORT = process.env.BACKEND_PORT;
 const aiServiceUrl = process.env.AI_SERVICE 
 
-console.log(aiServiceUrl)
-
 // specifying the ai service url
 const aiServiceClient = axios.create({
     baseURL: aiServiceUrl
@@ -507,13 +505,24 @@ app.get('/api/ai/get-activities', async (req, res) => {
         // grab from front end
         const { userPrompt, location } = req.query;
 
-        // Call the AI service
-        const response = await aiServiceClient.get('/get-activities', {
+        console.log('🔍 Calling AI service:', {
+            url: `${aiServiceUrl}/get-activities`,
             params: {
                 user_prompt: userPrompt || 'give me activities on the beach',
                 location: location || ''
             }
         });
+
+        // Call the AI service
+        const response = await aiServiceClient.get('/get-activities', {
+            params: {
+                user_prompt: userPrompt || 'give me activities on the beach',
+                location: location || ''
+            },
+            timeout: 60000 // 60 second timeout for AI processing
+        });
+
+        console.log('✅ AI service responded successfully');
 
         return res.json({
             success: true,
@@ -521,11 +530,28 @@ app.get('/api/ai/get-activities', async (req, res) => {
         });
     }
     catch (e) {
-        console.error(`Error in backend, ${e}`)
-        res.status(500).json({
-            success: false,
-            error: "Failed to get AI Suggestions"
-        });
+        if (axios.isAxiosError(e)) {
+            console.error('❌ AI Service Error:', {
+                status: e.response?.status,
+                statusText: e.response?.statusText,
+                errorData: e.response?.data,
+                message: e.message,
+                code: e.code
+            });
+            
+            return res.status(500).json({
+                success: false,
+                error: "Failed to get AI Suggestions",
+                details: e.response?.data || e.message
+            });
+        } else {
+            console.error('❌ Unknown error:', e);
+            return res.status(500).json({
+                success: false,
+                error: "Failed to get AI Suggestions",
+                details: e instanceof Error ? e.message : 'Unknown error'
+            });
+        }
     }
 });
 
@@ -533,24 +559,48 @@ app.get('/api/ai/get-images', async (req, res) => {
     try {
         const { activities } = req.query;
         
+        console.log('🔍 Calling AI service for images:', {
+            url: `${aiServiceUrl}/get-images`,
+            activities
+        });
+
         // Call the AI service
         const response = await aiServiceClient.get('/get-images', {
             params: {
                 activities: activities
-            }
+            },
+            timeout: 60000 // 60 second timeout for AI processing
         });
 
+        console.log('✅ AI image service responded successfully');
 
         return res.json({
             success: true,
             activity_images: response.data.activity_images
         });
     } catch (e) {
-        console.error(`Error getting images, ${e}`)
-        res.status(500).json({
-            success: false,
-            error: "Failed to get associated images"
-        })
+        if (axios.isAxiosError(e)) {
+            console.error('❌ AI Image Service Error:', {
+                status: e.response?.status,
+                statusText: e.response?.statusText,
+                errorData: e.response?.data,
+                message: e.message,
+                code: e.code
+            });
+            
+            return res.status(500).json({
+                success: false,
+                error: "Failed to get associated images",
+                details: e.response?.data || e.message
+            });
+        } else {
+            console.error('❌ Unknown error:', e);
+            return res.status(500).json({
+                success: false,
+                error: "Failed to get associated images",
+                details: e instanceof Error ? e.message : 'Unknown error'
+            });
+        }
     }
 });
 
