@@ -15,10 +15,7 @@ interface Hero1Props {
       url: string;
     };
   };
-  image: {
-    src: string;
-    alt: string;
-  };
+
 }
 
 const Hero1 = ({
@@ -34,25 +31,38 @@ const Hero1 = ({
       url: "https://www.shadcnblocks.com",
     },
   },
-  image = {
-    src: "https://deifkwefumgah.cloudfront.net/shadcnblocks/block/placeholder-1.svg",
-    alt: "Hero section demo image showing interface components",
-  },
+ 
 }: Hero1Props) => {
   return (
     <section className="py-12 lg:py-32">
       {/* <div className="container  min-w-350"> */}
       <div className="container px-4 md:px-6">
-        <div className="grid items-center gap-5 lg:grid-cols-2">
-          <div className="flex flex-col items-center text-center lg:items-start lg:text-left">
+        {/* <div className="grid items-center gap-5 lg:grid-cols-2"> */}
+          <div className="flex flex-col items-center text-center lg:items-center">
            
             <h1 className="my-6 text-pretty text-3xl font-bold sm:text-4xl lg:text-6xl">
               {heading}
             </h1>
+
+             {/** biome-ignore lint/a11y/noSvgWithoutTitle: <explanation> */}
+            <svg
+                className=" left-0 w-full h-3 text-accent"
+                viewBox="0 0 300 12"
+                preserveAspectRatio="none"
+              >
+                <path
+                  d="M10,25 Q40,10 70,25 T130,25 Q160,10 190,25"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="6"
+                  strokeLinecap="round"
+                />
+            </svg>
+           
             <p className="text-muted-foreground mb-8 max-w-xl lg:text-xl">
               {description}
             </p>
-            <div className="flex w-full flex-col justify-center gap-2 sm:flex-row lg:justify-start">
+            <div className="flex w-full flex-col justify-center gap-2 sm:flex-row lg:justify-center lg:items-center">
               {buttons.primary && (
                 <Button asChild className="w-full sm:w-auto glow-effect ">
                   <a href={buttons.primary.url}>{buttons.primary.text}</a>
@@ -68,12 +78,7 @@ const Hero1 = ({
               )}
             </div>
           </div>
-          <img
-            src={image.src}
-            alt={image.alt}
-            className="max-h-96 w-full rounded-md object-cover"
-          />
-        </div>
+        {/* </div> */}
       </div>
     </section>
   );

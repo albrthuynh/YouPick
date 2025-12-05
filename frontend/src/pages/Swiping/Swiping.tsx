@@ -187,6 +187,9 @@ export default function SwipingPage() {
         const emailParticipants = hangoutData.emailParticipants || [];
         const allEmails = [hangoutData.orgEmail, ...emailParticipants].filter(Boolean);
 
+        // add email of organizer of hangout
+        allEmails.push(hangoutData.orgEmail)
+
         for (const email of allEmails) {
           emailjs.send(
             "service_pqdgudr",
@@ -196,8 +199,8 @@ export default function SwipingPage() {
               hangoutName: hangoutData.hangoutName,
               finalActivity: hangoutData.finalActivity,
               finalLocation: hangoutData.finalLocation,
-              finalDate: hangoutData.finalDate[0],
-              finalTime: hangoutData.finalTime[0]
+              finalDate: hangoutData.finalDate,
+              finalTime: hangoutData.finalTime
             },
             emailJSKey
           );

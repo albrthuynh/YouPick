@@ -19,7 +19,18 @@ function Card(props: any) {
         </div>
         <div className="px-4 pb-4 pt-0 mt-2">
             <Link to={props.path}>
-                <button className="rounded-md bg-slate-800 py-2 px-4 border border-transparent text-center text-sm text-white transition-all shadow-md hover:shadow-lg focus:bg-slate-700 focus:shadow-none active:bg-slate-700 hover:bg-slate-700 active:shadow-none disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none" type="button">
+                {/* <button className="rounded-md bg-slate-800 py-2 px-4 border border-transparent text-center text-sm text-white transition-all shadow-md hover:shadow-lg focus:bg-slate-700 focus:shadow-none active:bg-slate-700 hover:bg-slate-700 active:shadow-none disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none" type="button"> */}
+                {/** biome-ignore lint/a11y/useButtonType: <explanation> */}
+                <button
+                    className="
+                        flex items-center justify-center
+                        rounded-md bg-slate-800 py-2 px-4 border border-transparent
+                        text-sm text-white transition-all shadow-md
+                        hover:shadow-lg focus:bg-slate-700 hover:bg-slate-700
+                        active:bg-slate-700 active:shadow-none
+                        disabled:pointer-events-none disabled:opacity-50 disabled:shadow-none
+                    "
+                >
                 Learn More
                 </button>
             </Link>
