@@ -17,7 +17,7 @@ const aiServiceClient = axios.create({
 
 // Setting up connection with the frontend
 app.use(cors({
-    origin: ['http://localhost:5173'],
+    origin: ['https://you-pick-henna.vercel.app/', 'http://localhost:5173'],
     credentials: true
 }));
 
