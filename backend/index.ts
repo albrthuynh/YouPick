@@ -193,7 +193,8 @@ app.post('/api/create-hangout', async (req, res) => {
             orgName,
             orgEmail,
             hangoutName,
-            activities, 
+            activities,
+            images, 
             numParticipants, 
             date1, 
             date2, 
@@ -219,6 +220,7 @@ app.post('/api/create-hangout', async (req, res) => {
             orgEmail, 
             hangoutName, 
             activities, 
+            images, 
             numParticipants, 
             date1,
             date2,
@@ -390,20 +392,6 @@ app.get('/api/get-hangout/:generatedCode', async (req, res) => {
             hangout: hangout
         })
 
-        // Just print names in the console for now
-        // console.log("=== All Hangouts ===");
-        // hangouts.forEach(h => console.log(h.title));
-
-        // res.json({
-        //     success: true,
-        //     count: hangouts.length,
-        //     hangouts: hangouts.map(h => ({
-        //         id: h._id,
-        //         title: h.title,
-        //         date: h.date,
-        //         location: h.location
-        //     }))
-        // });
     } catch (error) {
         console.error("Error fetching hangouts:", error);
         res.status(500).json({ success: false, error: "Failed to fetch hangouts" });

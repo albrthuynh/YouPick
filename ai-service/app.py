@@ -15,6 +15,44 @@ app = FastAPI(title="Generative AI Service", version="1.0.0")
 async def get_root():
     return {"message": "AI Service Running"}
 
+@app.get("/get-images")
+async def get_activities(activities: list[str], images: list[str]):
+    SYSTEM_PROMPT = """
+        For each activity in the list of activities, choose an image that matches it the best from the list of images provided.
+
+        IMPORTANT: Return ONLY a valid JSON array of objects. No additional text, explanations, or formatting.
+        Each object should have "activity" and "location" fields.
+        
+        Format: [{"activity": "activity name", "image": "image url"}, {"activity": "activity name", "image": "image url"}]
+        
+        Example: [{"activity": "Kayaking", "image": "kayaking.jpg"}, {"activity": "Bike Riding", "image": "bikeRiding.jpg"}, {"activity": "Zoo Visit", "image": zoo.jpg"}]
+    """
+
+    full_prompt = f"{SYSTEM_PROMPT}\n\nUser list of activities: {activities} with list of images: {images}"
+
+    response = client.models.generate_content(
+        model="gemini-2.0-flash",
+        contents=full_prompt
+    )
+
+    cleaned_response = response.text.strip()
+    
+    # Remove ```json and ``` markers
+    cleaned_response = re.sub(r'^```json\s*', '', cleaned_response)
+    cleaned_response = re.sub(r'^```\s*', '', cleaned_response)
+    cleaned_response = re.sub(r'\s*```$', '', cleaned_response)
+    cleaned_response = cleaned_response.strip()
+
+
+    # Validate it's actually JSON
+    try:
+        json.loads(cleaned_response)  # Test if it's valid JSON
+    except json.JSONDecodeError as e:
+        print(f"JSON parsing error: {e}")
+        return {"error": "Invalid JSON response from AI", "raw": cleaned_response}
+
+    return {"activity_images" : cleaned_response}
+
 @app.get("/get-activities")
 async def get_activities(user_prompt: str, location: str):
     print("i reached the localhost:8000!")
