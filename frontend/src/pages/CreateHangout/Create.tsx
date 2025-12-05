@@ -16,6 +16,7 @@ import {
 } from "@/components/ui/popover"
 import axios from 'axios';
 import { useAuth0 } from '@auth0/auth0-react';
+import { createClient } from '@supabase/supabase-js'
 
 interface ActivityOption {
     location: string;
@@ -82,7 +83,6 @@ export default function CreateHangout() {
     const [finalLocationList, setFinalLocationList] = useState<string[]>([])
     const [finalActivitiesList, setFinalActivitiesList] = useState<string[]>([])
 
-
     // const [imagesMap, setimagesMap] = useState<string[]>([])
 
     // ADDED AI STUFF
@@ -90,6 +90,11 @@ export default function CreateHangout() {
     const messagesEndRef = useRef<HTMLDivElement>(null)
     const [isTyping, setIsTyping] = useState(false)
     const [messages, setMessages] = useState<Message[]>([])
+
+    // supabase stuff
+    const supabaseUrl = import.meta.env.VITE_SUPABASE_URL
+    const supabaseKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
+    const supabase = createClient(supabaseUrl, supabaseKey)
 
     const addActivity = (activity: ActivityOption) => {
         // Check if activity already exists (by comparing both label and location)
@@ -119,8 +124,6 @@ export default function CreateHangout() {
                 }
             });
 
-            console.log("Response:", response.data);
-
             // Parse the JSON string from response.data.activities
             const activitiesArray = JSON.parse(response.data.activities);
 
@@ -147,8 +150,11 @@ export default function CreateHangout() {
 
     useEffect(() => {
         participantNumberCheck();
-        setMessages((prev) => [...prev, { role: "assistant", content: "To get started enter a location, and type out what type of activity or mood you're in and I'll give you some options!", suggestions: [] }])
     }, [participants]);
+
+    useEffect(() => {
+        setMessages([{ role: "assistant", content: "To get started enter a location, and type out what type of activity or mood you're in and I'll give you some options!", suggestions: [] }])
+    }, []);
 
     const navigate = useNavigate();
 
@@ -163,35 +169,37 @@ export default function CreateHangout() {
         // create activities into a dictionary
         let activitiesDict: Map<string, number> = new Map();
 
+        let activitiesString = ""
         // create dictionary for hangouts and their votes
         for (const activity of finalActivitiesList) {
             activitiesDict.set(activity, 0)
+            activitiesString += (activity + ", ")
         }
-
-        let imagesList = ["/images/beach.jpg", "/images/bowling.jpg", "/images/baking.jpg"]
 
         let activityMap: Map<string, string> = new Map();
 
+        
         // create images list based on chosen activities
         // send to our node backend
         try {
-            const response = await axios.get('/api/ai/get-activities', {
+            const response = await axios.get('/api/ai/get-images', {
                 params: {
-                    activities: finalActivitiesList,
-                    images: imagesList
+                    activities: activitiesString,
                 }
-            }
-        );
+            });
 
-        // Parse the JSON string from response.data.activity_images
-        const grabJSONList = JSON.parse(response.data.activity_images); //returns an array of objects
-      
-        // create dict to map images and activities to each other
-        activityMap = new Map(
-            grabJSONList.map((item: { activity: any; image: any; }) => [item.activity, item.image])
-        );
-        
-        }catch (error) {
+            // Parse the JSON string from response.data.activity_images
+            const grabJSONList = JSON.parse(response.data.activity_images); //returns an array of objects
+
+            // create dict to map images and activities to each other
+            activityMap = new Map(
+                grabJSONList.map((item: { activity: any; image: any; }) => {
+                    const imageUrl = supabase.storage.from('activity-images').getPublicUrl(item.image)
+                    return [item.activity, imageUrl.data.publicUrl]
+                })
+            );
+
+        } catch (error) {
             console.error("Error getting AI images:", error);
         } finally {
             setIsTyping(false);
@@ -199,14 +207,13 @@ export default function CreateHangout() {
 
         // create new hangout
         try {
-            console.log("LOCATION: ", location)
             await axios.post('/api/create-hangout', {
                 auth0Id: user.sub,
                 orgName: user.name,
                 orgEmail: user.email,
                 hangoutName: hangoutName,
                 activities: Object.fromEntries(activitiesDict),
-                images : activityMap,
+                images: Object.fromEntries(activityMap),
                 numParticipants: participants,
                 date1: [date1, 0],
                 date2: [date2, 0],

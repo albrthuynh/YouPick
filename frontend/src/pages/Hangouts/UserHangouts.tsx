@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import HangoutCard from "../../components/HangoutCard"; 
+import HangoutCard from "../../components/HangoutCard";
 import { useAuth0 } from "@auth0/auth0-react";
 import axios from 'axios';
 
@@ -9,7 +9,7 @@ type Hangout = {
     finalDate?: string | null;
     finalTime: string;
     finalActivity: string;
-    images: Map<string, string>;
+    images: { [key: string]: string };
     emailParticipants?: string[] | null;
     finalLocation?: string | null;
     orgName?: string | null;
@@ -28,7 +28,7 @@ function UserHangouts() {
         const fetchHangouts = async () => {
             try {
                 const res = await axios.get(`/api/user/hangouts/${user.email}`);
-                
+
                 if (res.data.success) {
                     setFinalizedHangouts(res.data.finalizedHangouts.reverse());
                     setPendingHangouts(res.data.pendingHangouts.reverse());
@@ -69,7 +69,7 @@ function UserHangouts() {
         // Parse the ISO date string
         const date = new Date(dateStr);
 
-         // Format date (e.g., "November 26, 2025")
+        // Format date (e.g., "November 26, 2025")
         const formattedDate = date.toLocaleDateString('en-US', {
             year: 'numeric',
             month: 'long',
@@ -79,13 +79,13 @@ function UserHangouts() {
     }
 
     // formatting time
-    const formatTime = (timeStr: any,dateStr: any) => {
-       // Parse the ISO date string
+    const formatTime = (timeStr: any, dateStr: any) => {
+        // Parse the ISO date string
         const date = new Date(dateStr);
-        
+
         // Convert timeStr to string and parse it (handles formats like "23:330" or numbers)
         const timeString = String(timeStr);
-        
+
         // If time is in format like "23:330", split it properly
         let hours: number, minutes: number;
         if (timeString.includes(':')) {
@@ -97,7 +97,7 @@ function UserHangouts() {
             hours = Math.floor(parseInt(timeString) / 100);
             minutes = parseInt(timeString) % 100;
         }
-        
+
         date.setHours(hours, minutes, 0, 0);
 
         // Format time to 12-hour with AM/PM
@@ -111,12 +111,13 @@ function UserHangouts() {
         return formattedTime
     }
 
-    const chooseImage = (imagesMap: Map<string, string>, finalActivity: string) => {
-        if(finalActivity === null || finalActivity === undefined){
+    const chooseImage = (imagesMap: { [key: string]: string }, finalActivity: string) => {
+        if (finalActivity === "" || finalActivity === null || finalActivity === undefined || imagesMap === null || imagesMap === undefined) {
             return "https://americanbehavioralclinics.com/wp-content/uploads/2023/06/Depositphotos_252922046_L.jpg"
         }
-        
-        return imagesMap.get(finalActivity)
+
+
+        return imagesMap[finalActivity]
     }
 
     return (
@@ -138,18 +139,18 @@ function UserHangouts() {
                             <p className="text-slate-500">You don't have any hangouts finalized.</p>
                         ) : (
                             <div className="grid grid-cols-1 md:grid-cols-1 gap-6">
-                                
+
                                 {finalizedHangouts.map(h => (
                                     <HangoutCard
-                                    key={h._id}
-                                    title={h.hangoutName}          
-                                    date={formatDate(h.finalDate) || "TBD"}
-                                    time={formatTime(h.finalTime,h.finalDate) || "TBD"}
-                                    image = {chooseImage(h.images, h.finalActivity)}
-                                    finalLocation = {h.finalLocation}
-                                    activity={h.finalActivity}    
-                                    organizer={h.orgName}           
-                                    voteStatus={h.voteStatus}
+                                        key={h._id}
+                                        title={h.hangoutName}
+                                        date={formatDate(h.finalDate) || "TBD"}
+                                        time={formatTime(h.finalTime, h.finalDate) || "TBD"}
+                                        image={chooseImage(h.images, h.finalActivity)}
+                                        finalLocation={h.finalLocation}
+                                        activity={h.finalActivity}
+                                        organizer={h.orgName}
+                                        voteStatus={h.voteStatus}
                                     />
                                 ))}
                             </div>
@@ -168,16 +169,16 @@ function UserHangouts() {
                             <p className="text-slate-500">You don't have any hangouts pending.</p>
                         ) : (
                             <div className="grid grid-cols-1 md:grid-cols-1 gap-6">
-                                {pendingHangouts.map(h => ( 
+                                {pendingHangouts.map(h => (
                                     <HangoutCard
                                         key={h._id}
-                                        title={h.hangoutName}     
-                                        date={h.finalDate || "TBD"}     
+                                        title={h.hangoutName}
+                                        date={h.finalDate || "TBD"}
                                         time={h.finalTime || "TBD"}
-                                        image = {chooseImage(h.images, h.finalActivity)}
-                                        activity={h.finalActivity || "TBD"}  
-                                        finalLocation={h.finalLocation || "TBD"}  
-                                        organizer={h.orgName}           
+                                        image={chooseImage(h.images, h.finalActivity)}
+                                        activity={h.finalActivity || "TBD"}
+                                        finalLocation={h.finalLocation || "TBD"}
+                                        organizer={h.orgName}
                                         voteStatus={h.voteStatus}
                                     />
                                 ))}

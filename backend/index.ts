@@ -32,9 +32,6 @@ app.post('/api/create-user', async (req, res) => {
     try {
         const { auth0Id, name, email } = req.body
 
-        // Log the incoming request for debugging
-        console.log('Create user request:', { auth0Id, name, email });
-
         // Validate the fields
         if (!auth0Id || !email) {
             console.error('Validation failed:', { auth0Id, email });
@@ -461,8 +458,6 @@ app.get("/api/user/hangouts/:email", async (req, res) => {
             finalizedHangouts
         });
 
-        // console.log(res) // This logs the response *object*, not the JSON payload
-
     } catch (err) {
         console.error("Error fetching user hangouts:", err);
         res.status(500).json({ error: "Failed to fetch hangouts" });
@@ -509,9 +504,6 @@ app.get('/api/ai/get-activities', async (req, res) => {
         // grab from front end
         const { userPrompt, location } = req.query;
 
-        console.log("from the frontend, ", userPrompt)
-        console.log("and the location is", location)
-
         // Call the AI service
         const response = await aiServiceClient.get('/get-activities', {
             params: {
@@ -519,8 +511,6 @@ app.get('/api/ai/get-activities', async (req, res) => {
                 location: location || ''
             }
         });
-
-        console.log("Here is the output: ", response)
 
         return res.json({
             success: true,
@@ -533,6 +523,31 @@ app.get('/api/ai/get-activities', async (req, res) => {
             success: false,
             error: "Failed to get AI Suggestions"
         });
+    }
+});
+
+app.get('/api/ai/get-images', async (req, res) => {
+    try {
+        const { activities } = req.query;
+        
+        // Call the AI service
+        const response = await aiServiceClient.get('/get-images', {
+            params: {
+                activities: activities
+            }
+        });
+
+
+        return res.json({
+            success: true,
+            activity_images: response.data.activity_images
+        });
+    } catch (e) {
+        console.error(`Error getting images, ${e}`)
+        res.status(500).json({
+            success: false,
+            error: "Failed to get associated images"
+        })
     }
 });
 

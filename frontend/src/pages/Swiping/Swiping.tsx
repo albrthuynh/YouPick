@@ -29,7 +29,7 @@ export default function SwipingPage() {
     // const [activitiesChosen, setActivitiesChosen] = useState<ActivityOption[]>([])
     const [activitiesChosen, setActivitiesChosen] = useState<string[]>([])
     const [locationsChosen, setLocationsChosen] = useState<string[]>([])
-    const [imagesChosen, setImagesChosen] = useState<Map<string, string>>(new Map());
+    const [imagesChosen, setImagesChosen] = useState<Record<string, string>>({});
 
     const [hangoutName, setHangoutName] = useState("")
     const [organizerName, setOrganizerName] = useState("")
@@ -111,7 +111,10 @@ export default function SwipingPage() {
     // set current event
     const currEvent = activitiesChosen.length > 0 ? activitiesChosen[currActivityIndex] : null;
     const currLocation = locationsChosen.length > 0 ? locationsChosen[currActivityIndex] : null;
-    const currImage = imagesChosen.size > 0 ? imagesChosen.get(activitiesChosen[currActivityIndex]) : null;
+    const currImage = imagesChosen && activitiesChosen[currActivityIndex] 
+      ? imagesChosen[activitiesChosen[currActivityIndex]] 
+      : null;
+    
     // const currImage = currEvent ? currEvent.value + '.jpg' : "";
     // const currImage = 'house.jpg';
   
@@ -177,17 +180,13 @@ export default function SwipingPage() {
         let count = 0
         for (const [key, value] of activities) {
           if (value === maxHangoutVote) {
-            console.log(hangoutData.locations[count])
             hangoutData.finalActivity = key;
             hangoutData.finalLocation = hangoutData.locations[count]
           }
           count += 1;
         }
       }
-
-      console.log(hangoutData.finalLocation);
       
-
       try {
         await axios.put('/api/update-hangout', {
           hangoutCode: generatedCode,
@@ -230,7 +229,7 @@ export default function SwipingPage() {
             
             {/* Add image to card */}
               <img
-                  src={`/images/${currImage}`} alt = ""
+                  src={`${currImage}`} alt = ""
                   className="w-[600px] h-[350px] object-cover"
               />
               

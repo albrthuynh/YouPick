@@ -41,7 +41,6 @@ const LocationSelect: React.FC<LocationSelectProps> = ({
             const data = await response.json();
 
             if (!data.features || data.features.length === 0) {
-                console.log('No results found for:', inputValue);
                 return { options: [] };
             }
 
@@ -91,8 +90,6 @@ const LocationSelect: React.FC<LocationSelectProps> = ({
 
                     return 0;
                 });
-
-            console.log('Loaded options:', options); // Debug log
             return { options };
         } catch (error) {
             console.error('Error fetching cities:', error);

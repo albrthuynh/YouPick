@@ -74,7 +74,7 @@ export default function FinalizePage() {
           <QRCodeSVG 
             value={qrCodeURL}
             size={150}
-          />,
+          />
         </div>
 
         {/* Add friends emails */}
