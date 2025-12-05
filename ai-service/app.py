@@ -42,11 +42,11 @@ async def get_images(activities: str):
             For each activity in the list of activities, choose an image that matches it the best from the list of images provided.
             Do not make up any of your own images or urls, just choose the ones from the list of images that are provided.
             IMPORTANT: Return ONLY a valid JSON array of objects. No additional text, explanations, or formatting.
-            Each object should have "activity" and "location" fields.
+            Each object should have "activity" and "image" fields where image is ONLY the filename.
             
-            Format: [{"activity": "activity name", "image": "image url"}, {"activity": "activity name", "image": "image url"}]
+            Format: [{"activity": "activity name", "image": "filename.png"}, {"activity": "activity name", "image": "filename.png"}]
             
-            Example: [{"activity": "Kayaking", "image": "kayaking.png"}, {"activity": "Bike Riding", "image": "bikeRiding.png"}, {"activity": "Zoo Visit", "image": zoo.png"}]
+            Example: [{"activity": "Kayaking", "image": "kayaking.png"}, {"activity": "Bike Riding", "image": "bikeRiding.png"}, {"activity": "Zoo Visit", "image": "zoo.png"}]
         """
 
         bucket = supabase.storage.from_("activity-images")
@@ -54,7 +54,11 @@ async def get_images(activities: str):
         files = bucket.list("")
         print(f"✅ Retrieved {len(files) if files else 0} files from bucket")
         
-        full_prompt = f"{SYSTEM_PROMPT}\n\nUser list of activities: {activities} with list of images: {files}"
+        # Extract just the filenames from the files list
+        filenames = [file['name'] for file in files if 'name' in file]
+        print(f"📝 Available filenames: {filenames}")
+        
+        full_prompt = f"{SYSTEM_PROMPT}\n\nUser list of activities: {activities}\n\nAvailable image files: {filenames}"
 
         response = client.models.generate_content(
             model="gemini-2.0-flash",
