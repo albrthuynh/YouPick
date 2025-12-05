@@ -7,16 +7,10 @@ import Confetti from "react-confetti";
 
 import axios from 'axios';
 import { useAuth0 } from '@auth0/auth0-react';
-import { activityOptions } from '../activities';
 
 import {CircleUserRound, Sparkles, BookHeart, X, Heart, NotebookText, MapPin} from "lucide-react"
 
 import { generatedCode } from '../JoinHangout/JoinHangoutPage';
-
-interface ActivityOption {
-  value: string;
-  label: string;
-}
 
 export default function SwipingPage() {
     const { user, isAuthenticated } = useAuth0();
