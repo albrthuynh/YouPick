@@ -36,6 +36,52 @@ export default function SwipingPage() {
     // const [location, setLocation] = useState("")
     const [showConfetti, setShowConfetti] = useState(false);
 
+    // formatting date
+    const formatDate = (dateStr: any) => {
+      // Parse the ISO date string
+      const date = new Date(dateStr);
+
+      // Format date (e.g., "November 26, 2025")
+      const formattedDate = date.toLocaleDateString('en-US', {
+          year: 'numeric',
+          month: 'long',
+          day: 'numeric'
+      });
+      return formattedDate
+    }
+
+    // formatting time
+    const formatTime = (timeStr: any, dateStr: any) => {
+        // Parse the ISO date string
+        const date = new Date(dateStr);
+
+        // Convert timeStr to string and parse it (handles formats like "23:330" or numbers)
+        const timeString = String(timeStr);
+
+        // If time is in format like "23:330", split it properly
+        let hours: number, minutes: number;
+        if (timeString.includes(':')) {
+            const parts = timeString.split(':');
+            hours = parseInt(parts[0]);
+            minutes = parseInt(parts[1]);
+        } else {
+            // If it's a number like 23330, parse it differently
+            hours = Math.floor(parseInt(timeString) / 100);
+            minutes = parseInt(timeString) % 100;
+        }
+
+        date.setHours(hours, minutes, 0, 0);
+
+        // Format time to 12-hour with AM/PM
+        const formattedTime = date.toLocaleTimeString('en-US', {
+            hour: 'numeric',
+            minute: '2-digit',
+            hour12: true
+        });
+
+
+        return formattedTime
+    }
 
     useEffect(()=> {
       const getActivities = async () => {
@@ -199,8 +245,8 @@ export default function SwipingPage() {
               hangoutName: hangoutData.hangoutName,
               finalActivity: hangoutData.finalActivity,
               finalLocation: hangoutData.finalLocation,
-              finalDate: hangoutData.finalDate,
-              finalTime: hangoutData.finalTime
+              finalDate: formatDate(hangoutData.finalDate),
+              finalTime: formatTime(hangoutData.finalTime, hangoutData.finalDate)
             },
             emailJSKey
           );

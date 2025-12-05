@@ -51,7 +51,7 @@ const Hero1 = ({
                 preserveAspectRatio="none"
               >
                 <path
-                  d="M10,25 Q40,10 70,25 T130,25 Q160,10 190,25"
+                  d="M0 6 C 30 0, 60 12, 90 6 S 150 12, 180 6 S 240 0, 300 6"
                   fill="none"
                   stroke="currentColor"
                   strokeWidth="6"
