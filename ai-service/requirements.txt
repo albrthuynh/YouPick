@@ -2,3 +2,5 @@ google-genai
 python-dotenv
 fastapi
 uvicorn
+supabase
+Pillow
