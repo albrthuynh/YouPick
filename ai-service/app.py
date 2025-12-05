@@ -117,4 +117,6 @@ async def get_activities(user_prompt: str, location: str):
 
 if __name__ == "__main__":
     import uvicorn 
-    uvicorn.run(app, host="localhost", port=8000)
+    port_str = os.getenv("PORT")
+    port = int(post_str)
+    uvicorn.run(app, host="localhost", port=port)
