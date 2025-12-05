@@ -82,6 +82,9 @@ export default function CreateHangout() {
     const [finalLocationList, setFinalLocationList] = useState<string[]>([])
     const [finalActivitiesList, setFinalActivitiesList] = useState<string[]>([])
 
+
+    // const [imagesMap, setimagesMap] = useState<string[]>([])
+
     // ADDED AI STUFF
     const [aiInput, setAiInput] = useState("");
     const messagesEndRef = useRef<HTMLDivElement>(null)
@@ -165,6 +168,35 @@ export default function CreateHangout() {
             activitiesDict.set(activity, 0)
         }
 
+        let imagesList = ["/images/beach.jpg", "/images/bowling.jpg", "/images/baking.jpg"]
+
+        let activityMap: Map<string, string> = new Map();
+
+        // create images list based on chosen activities
+        // send to our node backend
+        try {
+            const response = await axios.get('/api/ai/get-activities', {
+                params: {
+                    activities: finalActivitiesList,
+                    images: imagesList
+                }
+            }
+        );
+
+        // Parse the JSON string from response.data.activity_images
+        const grabJSONList = JSON.parse(response.data.activity_images); //returns an array of objects
+      
+        // create dict to map images and activities to each other
+        activityMap = new Map(
+            grabJSONList.map((item: { activity: any; image: any; }) => [item.activity, item.image])
+        );
+        
+        }catch (error) {
+            console.error("Error getting AI images:", error);
+        } finally {
+            setIsTyping(false);
+        }
+
         // create new hangout
         try {
             console.log("LOCATION: ", location)
@@ -174,6 +206,7 @@ export default function CreateHangout() {
                 orgEmail: user.email,
                 hangoutName: hangoutName,
                 activities: Object.fromEntries(activitiesDict),
+                images : activityMap,
                 numParticipants: participants,
                 date1: [date1, 0],
                 date2: [date2, 0],

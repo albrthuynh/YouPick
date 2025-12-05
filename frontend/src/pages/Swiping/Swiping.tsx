@@ -29,6 +29,7 @@ export default function SwipingPage() {
     // const [activitiesChosen, setActivitiesChosen] = useState<ActivityOption[]>([])
     const [activitiesChosen, setActivitiesChosen] = useState<string[]>([])
     const [locationsChosen, setLocationsChosen] = useState<string[]>([])
+    const [imagesChosen, setImagesChosen] = useState<Map<string, string>>(new Map());
 
     const [hangoutName, setHangoutName] = useState("")
     const [organizerName, setOrganizerName] = useState("")
@@ -66,7 +67,7 @@ export default function SwipingPage() {
           setLocationsChosen(hangoutData.locations)
           setHangoutName(hangoutData.hangoutName)
           setOrganizerName(hangoutData.orgName)
-          // setLocation(hangoutData.location)
+          setImagesChosen(hangoutData.images)
         } catch (error) {
           console.error("There is something wrong with grabbing the hangout: ", error)
         } finally {
@@ -110,8 +111,9 @@ export default function SwipingPage() {
     // set current event
     const currEvent = activitiesChosen.length > 0 ? activitiesChosen[currActivityIndex] : null;
     const currLocation = locationsChosen.length > 0 ? locationsChosen[currActivityIndex] : null;
+    const currImage = imagesChosen.size > 0 ? imagesChosen.get(activitiesChosen[currActivityIndex]) : null;
     // const currImage = currEvent ? currEvent.value + '.jpg' : "";
-    const currImage = 'house.jpg';
+    // const currImage = 'house.jpg';
   
     // find max
     function findMax(a: [string, number], b: [string, number], c: [string, number]){
@@ -154,7 +156,6 @@ export default function SwipingPage() {
         // update count for specific activity
         // hangoutData.activities[activity.value] = (hangoutData.activities[activity.value] || 0) + 1;
         hangoutData.activities[activity] = (hangoutData.activities[activity] || 0) + 1;
-
       }
       
       // updated num people voted

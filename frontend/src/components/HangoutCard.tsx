@@ -19,7 +19,7 @@ function HangoutCard(props: any) {
                 {/* Image */}
                 <div className="relative h-72 m-3 overflow-hidden text-white rounded-lg">
                     <img 
-                        src="https://americanbehavioralclinics.com/wp-content/uploads/2023/06/Depositphotos_252922046_L.jpg"
+                        src={props.image}
                         alt="Hangout"
                         className="w-full h-full object-cover"
                     />

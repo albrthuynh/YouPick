@@ -8,7 +8,8 @@ type Hangout = {
     hangoutName: string;
     finalDate?: string | null;
     finalTime: string;
-    finalActivity?: string | null;
+    finalActivity: string;
+    images: Map<string, string>;
     emailParticipants?: string[] | null;
     finalLocation?: string | null;
     orgName?: string | null;
@@ -78,7 +79,7 @@ function UserHangouts() {
     }
 
     // formatting time
-     const formatTime = (timeStr: any,dateStr: any) => {
+    const formatTime = (timeStr: any,dateStr: any) => {
        // Parse the ISO date string
         const date = new Date(dateStr);
         
@@ -110,6 +111,14 @@ function UserHangouts() {
         return formattedTime
     }
 
+    const chooseImage = (imagesMap: Map<string, string>, finalActivity: string) => {
+        if(finalActivity === null || finalActivity === undefined){
+            return "https://americanbehavioralclinics.com/wp-content/uploads/2023/06/Depositphotos_252922046_L.jpg"
+        }
+        
+        return imagesMap.get(finalActivity)
+    }
+
     return (
         <div className=" p-6">
             <div style={{ fontFamily: "American Typewriter, serif" }}>
@@ -136,6 +145,7 @@ function UserHangouts() {
                                     title={h.hangoutName}          
                                     date={formatDate(h.finalDate) || "TBD"}
                                     time={formatTime(h.finalTime,h.finalDate) || "TBD"}
+                                    image = {chooseImage(h.images, h.finalActivity)}
                                     finalLocation = {h.finalLocation}
                                     activity={h.finalActivity}    
                                     organizer={h.orgName}           
@@ -164,6 +174,7 @@ function UserHangouts() {
                                         title={h.hangoutName}     
                                         date={h.finalDate || "TBD"}     
                                         time={h.finalTime || "TBD"}
+                                        image = {chooseImage(h.images, h.finalActivity)}
                                         activity={h.finalActivity || "TBD"}  
                                         finalLocation={h.finalLocation || "TBD"}  
                                         organizer={h.orgName}           
