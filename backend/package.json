@@ -15,12 +15,14 @@
     "dotenv": "^17.2.3",
     "express": "^5.1.0",
     "mongodb": "^6.20.0",
+    "nodemailer": "^7.0.11",
     "qrcode.react": "^4.2.0"
   },
   "devDependencies": {
     "@types/cors": "^2.8.19",
     "@types/express": "^5.0.3",
     "@types/node": "^24.6.2",
+    "@types/nodemailer": "^7.0.4",
     "@types/qrcode.react": "^1.0.5",
     "tsx": "^4.0.0",
     "typescript": "^5.2.2"

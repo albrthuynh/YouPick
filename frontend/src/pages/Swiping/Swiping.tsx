@@ -7,10 +7,13 @@ import Confetti from "react-confetti";
 
 import axios from 'axios';
 import { useAuth0 } from '@auth0/auth0-react';
+import emailjs from "@emailjs/browser";
 
 import {CircleUserRound, Sparkles, BookHeart, X, Heart, NotebookText, MapPin} from "lucide-react"
 
 import { generatedCode } from '../JoinHangout/JoinHangoutPage';
+
+const emailJSKey = import.meta.env.VITE_EMAILJS_KEY;
 
 export default function SwipingPage() {
     const { user, isAuthenticated } = useAuth0();
@@ -178,6 +181,26 @@ export default function SwipingPage() {
             hangoutData.finalLocation = hangoutData.locations[count]
           }
           count += 1;
+        }
+
+        // Send finalization emails to all participants
+        const emailParticipants = hangoutData.emailParticipants || [];
+        const allEmails = [hangoutData.orgEmail, ...emailParticipants].filter(Boolean);
+
+        for (const email of allEmails) {
+          emailjs.send(
+            "service_pqdgudr",
+            "template_psdydet",
+            { 
+              email: email,
+              hangoutName: hangoutData.hangoutName,
+              finalActivity: hangoutData.finalActivity,
+              finalLocation: hangoutData.finalLocation,
+              finalDate: hangoutData.finalDate[0],
+              finalTime: hangoutData.finalTime[0]
+            },
+            emailJSKey
+          );
         }
       }
       
