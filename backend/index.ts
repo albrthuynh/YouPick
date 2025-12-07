@@ -9,7 +9,7 @@ dotenv.config({ path: '../.env' });
 
 const app = express();
 const PORT = process.env.BACKEND_PORT;
-const aiServiceUrl = process.env.AI_SERVICE 
+const aiServiceUrl = process.env.AI_SERVICE
 
 // specifying the ai service url
 const aiServiceClient = axios.create({
@@ -62,7 +62,7 @@ app.post('/api/create-user', async (req, res) => {
             auth0Id,
             name: name || '',
             email,
-            hangoutIds: [], 
+            hangoutIds: [],
             createdAt: new Date(),
         }
 
@@ -184,7 +184,7 @@ app.put('/api/update-user', async (req, res) => {
 });
 
 app.post('/api/create-hangout', async (req, res) => {
-    try{
+    try {
         // variables to set when hangout is first created
         const {
             auth0Id,
@@ -192,20 +192,20 @@ app.post('/api/create-hangout', async (req, res) => {
             orgEmail,
             hangoutName,
             activities,
-            images, 
-            numParticipants, 
-            date1, 
-            date2, 
-            date3, 
-            time1, 
-            time2, 
-            time3, 
+            images,
+            numParticipants,
+            date1,
+            date2,
+            date3,
+            time1,
+            time2,
+            time3,
             locations,
             hangoutCode
         } = req.body;
 
         console.log("Activities received:", activities);
-        
+
         // connect to MongoDB
         const client = await connectToMongoDB();
         const db = client.db('users');
@@ -215,11 +215,11 @@ app.post('/api/create-hangout', async (req, res) => {
         const newHangout = {
             auth0Id,
             orgName,
-            orgEmail, 
-            hangoutName, 
-            activities, 
-            images, 
-            numParticipants, 
+            orgEmail,
+            hangoutName,
+            activities,
+            images,
+            numParticipants,
             date1,
             date2,
             date3,
@@ -238,7 +238,7 @@ app.post('/api/create-hangout', async (req, res) => {
             idParticipants: [],
             emailParticipants: []
         };
-       
+
         // insert hangout into database
         const result = await collection.insertOne(newHangout);
 
@@ -257,7 +257,7 @@ app.post('/api/create-hangout', async (req, res) => {
                 message: 'Failed to create hangout'
             });
         }
-    }catch (error){
+    } catch (error) {
         console.error('MongoDB fetch error:', error);
         res.status(500).json({ error: 'Failed to create hangout' });
     }
@@ -265,30 +265,30 @@ app.post('/api/create-hangout', async (req, res) => {
 
 //update hangout document
 app.put('/api/update-hangout', async (req, res) => {
-    try{
-        const { 
+    try {
+        const {
             hangoutCode,
-            activities, 
-            date1, 
-            date2, 
-            date3, 
-            time1, 
-            time2, 
+            activities,
+            date1,
+            date2,
+            date3,
+            time1,
+            time2,
             time3,
-            finalTime, 
-            finalDate, 
-            finalActivity, 
+            finalTime,
+            finalDate,
+            finalActivity,
             finalLocation,
-            votedNum, 
-            voteStatus, 
-            idParticipants, 
+            votedNum,
+            voteStatus,
+            idParticipants,
             emailParticipants
         } = req.body
-    
+
         const client = await connectToMongoDB();
         const db = client.db('users');
         const collection = db.collection('hangouts');
-    
+
         // Validate the fields
         if (!hangoutCode) {
             return res.status(400).json({
@@ -296,14 +296,14 @@ app.put('/api/update-hangout', async (req, res) => {
                 message: 'hangout code is required'
             })
         }
-    
+
         const user = await collection.findOne({ hangoutCode })
-    
+
         // Build update object with only provided fields
         const updateFields: any = {
             updatedAt: new Date()
         }
-    
+
         if (activities !== undefined) updateFields.activities = activities
         if (date1 !== undefined) updateFields.date1 = date1
         if (date2 !== undefined) updateFields.date2 = date2
@@ -319,8 +319,8 @@ app.put('/api/update-hangout', async (req, res) => {
         if (voteStatus !== undefined) updateFields.voteStatus = voteStatus
         if (idParticipants !== undefined) updateFields.idParticipants = idParticipants
         if (emailParticipants !== undefined) updateFields.emailParticipants = emailParticipants
-    
-    
+
+
         // Update the hangout document
         const result = await collection.updateOne(
             { hangoutCode },
@@ -328,14 +328,14 @@ app.put('/api/update-hangout', async (req, res) => {
         )
 
         console.log(result);
-    
+
         if (result.matchedCount === 0) {
             return res.status(404).json({
                 success: false,
                 message: 'Hangout not found'
             })
         }
-    
+
         if (result.modifiedCount > 0) {
             res.json({
                 success: true,
@@ -347,7 +347,7 @@ app.put('/api/update-hangout', async (req, res) => {
                 message: 'No changes made'
             })
         }
-    }catch (error) {
+    } catch (error) {
         console.error('MongoDB error:', error);
         res.status(500).json({ error: 'Database query failed' });
     }
@@ -366,14 +366,14 @@ app.get('/api/get-hangout/:generatedCode', async (req, res) => {
                 message: 'generatedCode is required'
             })
         }
-        
+
         const client = await connectToMongoDB();
         const db = client.db('users');
         const collection = db.collection('hangouts');
 
         console.log("generated code ", generatedCode)
 
-        const hangout = await collection.findOne({ hangoutCode : Number(generatedCode) })
+        const hangout = await collection.findOne({ hangoutCode: Number(generatedCode) })
 
         console.log("hangout object", hangout)
 
@@ -476,18 +476,18 @@ app.get('/api/get-timeslots/:generatedCode', async (req, res) => {
         const collection = user_db.collection('hangouts');
 
         // Find the hangout document and return the array of time slots
-        const hangoutDocument = await collection.findOne({ hangoutCode : Number(generatedCode) })
+        const hangoutDocument = await collection.findOne({ hangoutCode: Number(generatedCode) })
 
-        if (!hangoutDocument) { return res.status(400).json({ error: "hangout document cannot be found "});}
+        if (!hangoutDocument) { return res.status(400).json({ error: "hangout document cannot be found " }); }
 
         // return the array of time slots
         return res.status(200).json({
-            "date1" : hangoutDocument.date1,
-            "date2" : hangoutDocument.date2,
-            "date3" : hangoutDocument.date3,
-            "time1" : hangoutDocument.time1, 
-            "time2" : hangoutDocument.time2, 
-            "time3" : hangoutDocument.time3, 
+            "date1": hangoutDocument.date1,
+            "date2": hangoutDocument.date2,
+            "date3": hangoutDocument.date3,
+            "time1": hangoutDocument.time1,
+            "time2": hangoutDocument.time2,
+            "time3": hangoutDocument.time3,
         });
 
     } catch (error) {
@@ -539,12 +539,12 @@ app.get('/api/ai/get-activities', async (req, res) => {
                 code: e.code,
                 isTimeout: e.code === 'ECONNABORTED'
             });
-            
+
             // Provide more helpful error messages
-            const errorMessage = e.code === 'ECONNABORTED' 
+            const errorMessage = e.code === 'ECONNABORTED'
                 ? "AI service is taking longer than usual (likely starting up). Please try again."
                 : "Failed to get AI Suggestions";
-            
+
             return res.status(503).json({ // Use 503 for service unavailable
                 success: false,
                 error: errorMessage,
@@ -565,7 +565,7 @@ app.get('/api/ai/get-activities', async (req, res) => {
 app.get('/api/ai/get-images', async (req, res) => {
     try {
         const { activities } = req.query;
-        
+
         console.log('🔍 Calling AI service for images:', {
             url: `${aiServiceUrl}/get-images`,
             activities
@@ -595,11 +595,11 @@ app.get('/api/ai/get-images', async (req, res) => {
                 code: e.code,
                 isTimeout: e.code === 'ECONNABORTED'
             });
-            
+
             const errorMessage = e.code === 'ECONNABORTED'
                 ? "AI service is taking longer than usual (likely starting up). Please try again."
                 : "Failed to get associated images";
-            
+
             return res.status(503).json({
                 success: false,
                 error: errorMessage,

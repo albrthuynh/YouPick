@@ -121,12 +121,12 @@ export default function CreateHangout() {
         while (retryCount <= maxRetries) {
             try {
                 setIsTyping(true);
-                
+
                 // Show warming up message on first retry
                 if (retryCount === 1) {
-                    setMessages((prev) => [...prev, { 
-                        role: "assistant", 
-                        content: "AI service is waking up, please wait a moment..." 
+                    setMessages((prev) => [...prev, {
+                        role: "assistant",
+                        content: "AI service is waking up, please wait a moment..."
                     }]);
                 }
 
@@ -156,10 +156,10 @@ export default function CreateHangout() {
                 setMessages((prev) => {
                     // Remove warming up message if it was added
                     const filtered = prev.filter(m => !m.content.includes("waking up"));
-                    return [...filtered, { 
-                        role: "assistant", 
-                        content: "Here are some ideas!", 
-                        suggestions: combinedSuggestions 
+                    return [...filtered, {
+                        role: "assistant",
+                        content: "Here are some ideas!",
+                        suggestions: combinedSuggestions
                     }];
                 });
 
@@ -167,7 +167,7 @@ export default function CreateHangout() {
 
             } catch (error) {
                 console.error(`Error getting AI activities (attempt ${retryCount + 1}):`, error);
-                
+
                 if (retryCount < maxRetries && axios.isAxiosError(error) && error.response?.status === 500) {
                     retryCount++;
                     // Wait before retrying (2 seconds for first retry, 4 for second)
@@ -176,9 +176,9 @@ export default function CreateHangout() {
                     // Final failure
                     setMessages((prev) => {
                         const filtered = prev.filter(m => !m.content.includes("waking up"));
-                        return [...filtered, { 
-                            role: "assistant", 
-                            content: "Sorry, I'm having trouble connecting right now. Please try again in a moment." 
+                        return [...filtered, {
+                            role: "assistant",
+                            content: "Sorry, I'm having trouble connecting right now. Please try again in a moment."
                         }];
                     });
                     break;
@@ -197,7 +197,7 @@ export default function CreateHangout() {
 
     useEffect(() => {
         setMessages([{ role: "assistant", content: "To get started enter a location, and type out what type of activity or mood you're in and I'll give you some options!", suggestions: [] }])
-        
+
         // Warm up the AI service when component mounts (silent background request)
         const warmUpAiService = async () => {
             try {
@@ -215,7 +215,7 @@ export default function CreateHangout() {
                 console.log('AI service warm-up initiated (may still be starting)');
             }
         };
-        
+
         warmUpAiService();
     }, []);
 
@@ -241,7 +241,7 @@ export default function CreateHangout() {
 
         let activityMap: Map<string, string> = new Map();
 
-        
+
         // create images list based on chosen activities
         // send to our node backend
         try {
