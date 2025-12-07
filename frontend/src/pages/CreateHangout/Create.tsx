@@ -106,7 +106,7 @@ export default function CreateHangout() {
         }
     }
 
-    // Handling the chat output here
+    // Handling the chat output here with retry logic for cold starts
     const handleSend = async () => {
         if (!aiInput.trim()) return;
 
@@ -114,37 +114,80 @@ export default function CreateHangout() {
         setMessages((prev) => [...prev, { role: "user", content: aiInput }]);
         setAiInput("");
 
+        const maxRetries = 2;
+        let retryCount = 0;
+
         // send to our node backend
-        try {
-            setIsTyping(true);
-            const response = await axios.get('/api/ai/get-activities', {
-                params: {
-                    userPrompt: aiInput,
-                    location: location
+        while (retryCount <= maxRetries) {
+            try {
+                setIsTyping(true);
+                
+                // Show warming up message on first retry
+                if (retryCount === 1) {
+                    setMessages((prev) => [...prev, { 
+                        role: "assistant", 
+                        content: "AI service is waking up, please wait a moment..." 
+                    }]);
                 }
-            });
 
-            // Parse the JSON string from response.data.activities
-            const activitiesArray = JSON.parse(response.data.activities);
+                const response = await axios.get('/api/ai/get-activities', {
+                    params: {
+                        userPrompt: aiInput,
+                        location: location
+                    },
+                    timeout: retryCount === 0 ? 30000 : 60000 // Longer timeout on retry
+                });
 
-            // Extract locations and activities into separate arrays
-            const locations = activitiesArray.map((item: any) => item.location);
-            const activities = activitiesArray.map((item: any) => item.activity);
+                // Parse the JSON string from response.data.activities
+                const activitiesArray = JSON.parse(response.data.activities);
 
-            setFinalLocationList(locations);
-            setFinalActivitiesList(activities);
+                // Extract locations and activities into separate arrays
+                const locations = activitiesArray.map((item: any) => item.location);
+                const activities = activitiesArray.map((item: any) => item.activity);
 
-            const combinedSuggestions = activitiesArray.map((item: any) => ({
-                activity: item.activity,
-                location: item.location
-            }));
+                setFinalLocationList(locations);
+                setFinalActivitiesList(activities);
 
-            setMessages((prev) => [...prev, { role: "assistant", content: "Here are some ideas!", suggestions: combinedSuggestions }])
+                const combinedSuggestions = activitiesArray.map((item: any) => ({
+                    activity: item.activity,
+                    location: item.location
+                }));
 
-        } catch (error) {
-            console.error("Error getting AI activities:", error);
-        } finally {
-            setIsTyping(false);
+                setMessages((prev) => {
+                    // Remove warming up message if it was added
+                    const filtered = prev.filter(m => !m.content.includes("waking up"));
+                    return [...filtered, { 
+                        role: "assistant", 
+                        content: "Here are some ideas!", 
+                        suggestions: combinedSuggestions 
+                    }];
+                });
+
+                break; // Success, exit loop
+
+            } catch (error) {
+                console.error(`Error getting AI activities (attempt ${retryCount + 1}):`, error);
+                
+                if (retryCount < maxRetries && axios.isAxiosError(error) && error.response?.status === 500) {
+                    retryCount++;
+                    // Wait before retrying (2 seconds for first retry, 4 for second)
+                    await new Promise(resolve => setTimeout(resolve, retryCount * 2000));
+                } else {
+                    // Final failure
+                    setMessages((prev) => {
+                        const filtered = prev.filter(m => !m.content.includes("waking up"));
+                        return [...filtered, { 
+                            role: "assistant", 
+                            content: "Sorry, I'm having trouble connecting right now. Please try again in a moment." 
+                        }];
+                    });
+                    break;
+                }
+            } finally {
+                if (retryCount > maxRetries || retryCount === 0) {
+                    setIsTyping(false);
+                }
+            }
         }
     }
 
@@ -154,6 +197,26 @@ export default function CreateHangout() {
 
     useEffect(() => {
         setMessages([{ role: "assistant", content: "To get started enter a location, and type out what type of activity or mood you're in and I'll give you some options!", suggestions: [] }])
+        
+        // Warm up the AI service when component mounts (silent background request)
+        const warmUpAiService = async () => {
+            try {
+                console.log('🔥 Warming up AI service...');
+                await axios.get('/api/ai/get-activities', {
+                    params: {
+                        userPrompt: 'warmup',
+                        location: 'warmup'
+                    },
+                    timeout: 5000 // Short timeout, we don't care if it fails
+                });
+                console.log('✅ AI service warmed up');
+            } catch (error) {
+                // Silently fail - this is just a warm-up
+                console.log('AI service warm-up initiated (may still be starting)');
+            }
+        };
+        
+        warmUpAiService();
     }, []);
 
     const navigate = useNavigate();

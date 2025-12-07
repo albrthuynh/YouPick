@@ -513,13 +513,13 @@ app.get('/api/ai/get-activities', async (req, res) => {
             }
         });
 
-        // Call the AI service
+        // Call the AI service with extended timeout for cold starts
         const response = await aiServiceClient.get('/get-activities', {
             params: {
                 user_prompt: userPrompt || 'give me activities on the beach',
                 location: location || ''
             },
-            timeout: 60000 // 60 second timeout for AI processing
+            timeout: 90000 // 90 second timeout to handle cold starts
         });
 
         console.log('✅ AI service responded successfully');
@@ -536,13 +536,20 @@ app.get('/api/ai/get-activities', async (req, res) => {
                 statusText: e.response?.statusText,
                 errorData: e.response?.data,
                 message: e.message,
-                code: e.code
+                code: e.code,
+                isTimeout: e.code === 'ECONNABORTED'
             });
             
-            return res.status(500).json({
+            // Provide more helpful error messages
+            const errorMessage = e.code === 'ECONNABORTED' 
+                ? "AI service is taking longer than usual (likely starting up). Please try again."
+                : "Failed to get AI Suggestions";
+            
+            return res.status(503).json({ // Use 503 for service unavailable
                 success: false,
-                error: "Failed to get AI Suggestions",
-                details: e.response?.data || e.message
+                error: errorMessage,
+                details: e.response?.data || e.message,
+                retryable: true
             });
         } else {
             console.error('❌ Unknown error:', e);
@@ -564,12 +571,12 @@ app.get('/api/ai/get-images', async (req, res) => {
             activities
         });
 
-        // Call the AI service
+        // Call the AI service with extended timeout
         const response = await aiServiceClient.get('/get-images', {
             params: {
                 activities: activities
             },
-            timeout: 60000 // 60 second timeout for AI processing
+            timeout: 90000 // 90 second timeout to handle cold starts
         });
 
         console.log('✅ AI image service responded successfully');
@@ -585,13 +592,19 @@ app.get('/api/ai/get-images', async (req, res) => {
                 statusText: e.response?.statusText,
                 errorData: e.response?.data,
                 message: e.message,
-                code: e.code
+                code: e.code,
+                isTimeout: e.code === 'ECONNABORTED'
             });
             
-            return res.status(500).json({
+            const errorMessage = e.code === 'ECONNABORTED'
+                ? "AI service is taking longer than usual (likely starting up). Please try again."
+                : "Failed to get associated images";
+            
+            return res.status(503).json({
                 success: false,
-                error: "Failed to get associated images",
-                details: e.response?.data || e.message
+                error: errorMessage,
+                details: e.response?.data || e.message,
+                retryable: true
             });
         } else {
             console.error('❌ Unknown error:', e);
