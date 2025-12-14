@@ -80,9 +80,6 @@ export default function CreateHangout() {
 
     const [activitiesChosen, setActivitiesChosen] = React.useState(true)
 
-    const [finalLocationList, setFinalLocationList] = useState<string[]>([])
-    const [finalActivitiesList, setFinalActivitiesList] = useState<string[]>([])
-
     // const [imagesMap, setimagesMap] = useState<string[]>([])
 
     // ADDED AI STUFF
@@ -140,13 +137,6 @@ export default function CreateHangout() {
 
                 // Parse the JSON string from response.data.activities
                 const activitiesArray = JSON.parse(response.data.activities);
-
-                // Extract locations and activities into separate arrays
-                const locations = activitiesArray.map((item: any) => item.location);
-                const activities = activitiesArray.map((item: any) => item.activity);
-
-                setFinalLocationList(locations);
-                setFinalActivitiesList(activities);
 
                 const combinedSuggestions = activitiesArray.map((item: any) => ({
                     activity: item.activity,
@@ -233,8 +223,12 @@ export default function CreateHangout() {
         let activitiesDict: Map<string, number> = new Map();
 
         let activitiesString = ""
+        // Extract activities and locations from selectedActivities
+        const activitiesList: string[] = selectedActivities.map(a => a.label);
+        const locationsList: string[] = selectedActivities.map(a => a.location);
+
         // create dictionary for hangouts and their votes
-        for (const activity of finalActivitiesList) {
+        for (const activity of activitiesList) {
             activitiesDict.set(activity, 0)
             activitiesString += (activity + ", ")
         }
@@ -284,7 +278,7 @@ export default function CreateHangout() {
                 time1: [time1, 0],
                 time2: [time2, 0],
                 time3: [time3, 0],
-                locations: finalLocationList,
+                locations: locationsList,
                 hangoutCode: generatedCode
             });
         } catch (error) {
